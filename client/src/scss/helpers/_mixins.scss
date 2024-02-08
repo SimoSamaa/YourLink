@@ -1,0 +1,59 @@
+@use './colors' as *;
+
+@mixin colorsApp() {
+  @each $color, $value in $appColers {
+    --clr-#{$color}: #{$value};
+  }
+}
+
+@mixin breakpoint($size-screen) {
+  @if($size-screen =='sm') {
+    @media (max-width: 480px) {
+      @content;
+    }
+  }
+
+  @else if ($size-screen =='md') {
+    @media (max-width: 1000px) {
+      @content;
+    }
+  }
+
+  @else if ($size-screen =='lg') {
+    @media (max-width: 1285px) {
+      @content;
+    }
+  }
+}
+
+@mixin setAnimation($name, $from-properties, $to-properties, $use-opacity) {
+  .#{$name}-enter-active {
+    animation: #{$name} 500ms ease-in;
+  }
+
+  .#{$name}-leave-active {
+    animation: #{$name} 500ms ease-out reverse;
+  }
+
+  @keyframes #{$name} {
+    from {
+      @if ($use-opacity =='opacity') {
+        opacity: 0;
+      }
+
+      @each $property, $value in $from-properties {
+        #{$property}: $value;
+      }
+    }
+
+    to {
+      @if ($use-opacity =='opacity') {
+        opacity: 1;
+      }
+
+      @each $property, $value in $to-properties {
+        #{$property}: $value;
+      }
+    }
+  }
+}

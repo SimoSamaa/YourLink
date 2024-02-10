@@ -1,15 +1,10 @@
 <template>
   <nav
     v-show="openNavMobile"
-    class="bg-white capitalize border-r border-border flex flex-col z-20"
+    class="bg-white capitalize border-r border-border flex flex-col"
   >
     <div class="nav-head flex gap-2 px-4 py-8 items-center">
-      <base-button
-        mode="nav-btn"
-        @click="toggleNave"
-        @mouseover="hoverIn"
-        @mouseleave="hoverOut"
-      >
+      <base-button mode="nav-btn" @click="toggleNave">
         <appIcon name="bar" />
       </base-button>
       <img class="min-w-10" src="../../assets/logo.png" alt="app-logo" />
@@ -39,6 +34,12 @@
           <div>appearance</div>
         </router-link>
       </li>
+      <li class="hidden max-[1000px]:block">
+        <router-link to="/yourLink/admin">
+          <appIcon name="eye" />
+          <div>preview</div>
+        </router-link>
+      </li>
       <li
         @click="selectPage($event, 2)"
         data-num-selected="2"
@@ -50,7 +51,7 @@
         </router-link>
       </li>
     </ul>
-    <div class="mt-auto grid p-4">
+    <div class="logout-container mt-auto grid p-4">
       <base-button class="logout">
         <appIcon name="logout" />
         <div>signout</div>
@@ -62,12 +63,7 @@
 <script lang="ts" setup>
 import { ref, onUpdated, PropType } from "vue";
 
-const emit = defineEmits([
-  "setToggleNav",
-  "setHoverOut",
-  "setHoverIn",
-  "setToggleNavMobile",
-]);
+const emit = defineEmits(["setToggleNav", "setToggleNavMobile"]);
 
 defineProps({
   openNavMobile: Boolean as PropType<boolean>,
@@ -75,15 +71,13 @@ defineProps({
 
 const actLink = ref<HTMLElement | null>(null);
 const navLinks = ref<NodeList>();
+const listLinks = ref<NodeList>();
 const activeClass = ref<number>(0);
 
 const toggleNave = () => {
   const checkNavMedia = window.matchMedia("(max-width: 1000px)");
   !checkNavMedia.matches ? emit("setToggleNav") : emit("setToggleNavMobile");
 };
-
-const hoverOut = () => emit("setHoverOut");
-const hoverIn = () => emit("setHoverIn");
 
 const selectPage = (e: MouseEvent, num: number) => {
   activeClass.value = num;
@@ -95,6 +89,47 @@ const selectPage = (e: MouseEvent, num: number) => {
 
 onUpdated(() => {
   const links = (navLinks.value = document.querySelectorAll("ul li a"));
+  const lists = (listLinks.value = document.querySelectorAll("ul li"));
+  const listContainer = lists[0].closest("ul") as HTMLElement;
+
+  let oldTab = lists[0] as HTMLElement;
+
+  lists.forEach((list: Element) => {
+    list.addEventListener("click", (e: Event) => {
+      const newTab = list as HTMLElement;
+
+      if (oldTab !== null && newTab !== oldTab) {
+        lineActiveAnimation(oldTab, newTab);
+      }
+
+      oldTab = newTab;
+    });
+  });
+
+  function lineActiveAnimation(oldTab: HTMLElement, newTab: HTMLElement) {
+    const newTabPosition = oldTab.compareDocumentPosition(newTab);
+    let transitionWidth: number;
+    const matchWidth = newTab.offsetWidth / listContainer.offsetWidth;
+
+    if (newTabPosition === 4) {
+      transitionWidth =
+        newTab.offsetLeft + newTab.offsetWidth - oldTab.offsetLeft;
+    } else {
+      transitionWidth =
+        oldTab.offsetLeft + oldTab.offsetWidth - newTab.offsetLeft;
+      listContainer.style.setProperty("--left", newTab.offsetLeft + "px");
+    }
+
+    listContainer.style.setProperty(
+      "--width",
+      (transitionWidth / listContainer.offsetWidth).toString()
+    );
+
+    setTimeout(() => {
+      listContainer.style.setProperty("--left", newTab.offsetLeft + "px");
+      listContainer.style.setProperty("--width", matchWidth.toString());
+    }, 220);
+  }
 
   links.forEach((link: Element) => {
     const list = link.closest("li") as HTMLElement;
@@ -178,7 +213,7 @@ nav {
     }
 
     li {
-      @apply z-10 relative;
+      @apply z-20 relative;
 
       a {
         @apply p-4 flex gap-4 whitespace-nowrap;
@@ -197,6 +232,10 @@ nav {
       background: var(--clr-bg);
       width: 5px;
       height: 100%;
+
+      @include breakpoint("md") {
+        display: none;
+      }
     }
 
     .act {
@@ -206,7 +245,48 @@ nav {
   }
 
   @include breakpoint("md") {
-    @apply absolute left-0 top-0;
+    @apply fixed left-0 bottom-0 w-full border-t-[1px]
+    border-border shadow-xl z-30;
+    :is(.nav-head, .active-link, .logout-container) {
+      @apply hidden;
+    }
+
+    ul {
+      @apply flex p-0 gap-0;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 4px;
+        scale: var(--width, 0.25) 1;
+        translate: var(--left, 0) 0;
+        transform-origin: left;
+        background-color: var(--clr-textPrimary);
+        transition: scale 200ms, translate 200ms;
+        z-index: 40;
+      }
+
+      li:not(:first-child) {
+        border-left: solid 1px var(--clr-border);
+      }
+
+      li {
+        width: calc(100% / 4);
+
+        a {
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  @include breakpoint("sm") {
+    ul li a div {
+      @apply hidden;
+    }
   }
 }
 </style>

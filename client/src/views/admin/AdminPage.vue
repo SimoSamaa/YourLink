@@ -1,36 +1,47 @@
 <template>
   <section
-    class="admin-body overflow-hidden grid relative"
+    class="admin-body overflow-hidden max-[1000px]:overflow-auto grid relative"
     :class="{ 'close-nav': closeClass }"
   >
-    <header
-      class="py-2 px-4 bg-white border-border border hidden max-[1000px]:block"
-    >
+    <!-- <header class="py-2 px-4 bg-white border-border border hidden">
       <div class="flex gap-2 items-center">
         <base-button mode="nav-btn" @click="handledToggleNavMobile">
           <appIcon name="bar"
         /></base-button>
         <img class="max-w-[120px]" src="../../assets/logo.png" alt="llogo" />
       </div>
-    </header>
-    <transition name="test">
+    </header> -->
+    <NavigationAdmin
+      :openNavMobile="openNavMobile"
+      @set-toggle-nav="handledToggleNav"
+    />
+    <!-- <transition name="test">
       <NavigationAdmin
         :openNavMobile="openNavMobile"
         @set-toggle-nav="handledToggleNav"
         @set-toggle-nav-mobile="handledToggleNavMobile"
       />
-    </transition>
+    </transition> -->
     <!-- backdrop -->
-    <transition name="test2">
+    <!-- <transition name="test2">
       <div
         v-if="openNavMobile"
         @click="handledToggleNavMobile"
         class="backdrop hidden absolute inset-0 bg-black bg-opacity-50"
       ></div>
-    </transition>
-    <main class="p-4 grid">
+    </transition> -->
+    <main class="py-5 pl-5 grid overflow-auto max-[1000px]:overflow-y-hidden">
+      <!-- ADMIN PAGES -->
       <router-view></router-view>
-      <section class="zaba">PHONE SECTION</section>
+      <!-- PHONE RESULT -->
+      <section
+        class="phone-containe border-l-[1px] border-border p-4 flex justify-center"
+      >
+        <div
+          ref="zaba"
+          class="phone fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
+        ></div>
+      </section>
     </main>
   </section>
 </template>
@@ -41,14 +52,15 @@ import NavigationAdmin from "../../components/layouts/NavigationAdmin.vue";
 
 const closeClass = ref<boolean>(true);
 const openNavMobile = ref<boolean>(false);
+const zaba = ref();
 
 const handledToggleNav = () => {
   closeClass.value = !closeClass.value;
   localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
 };
 
-const handledToggleNavMobile = () =>
-  (openNavMobile.value = !openNavMobile.value);
+// const handledToggleNavMobile = () =>
+//   (openNavMobile.value = !openNavMobile.value);
 
 onMounted(() => {
   const storedValue = localStorage.getItem("nav-status");
@@ -60,7 +72,7 @@ onMounted(() => {
     const e = ev.currentTarget as MediaQueryList;
     if (e.matches) {
       closeClass.value = false;
-      openNavMobile.value = false;
+      openNavMobile.value = true;
       localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
     } else {
       openNavMobile.value = true;
@@ -76,6 +88,18 @@ onMounted(() => {
     })
   );
   checkNavMedia.addListener(loadNavMedia);
+
+  window.addEventListener("resize", function () {
+    var height = zaba.value.offsetHeight;
+    var width = zaba.value.offsetWidth;
+
+    if (height < width) {
+      // zaba.value.style.width = height + "px";
+      // zaba.value.style.width = height - 100 + "px";
+    } else {
+      zaba.value.style.width = height / 2 + "px";
+    }
+  });
 });
 </script>
 
@@ -94,10 +118,18 @@ onMounted(() => {
 
   main {
     grid-template-columns: 2fr 1fr;
+    min-height: 100dvh;
+    .phone-containe {
+      .phone {
+        background-color: white;
+        width: 250px;
+        height: min(500px, 90%);
 
-    // overflow-y: scroll;
-    .zaba {
-      // background: red;
+        &:before {
+          @apply content-[''] absolute left-1/2 -top-1
+          -translate-x-1/2 bg-black2 w-32 h-5 rounded-bl-lg rounded-br-lg;
+        }
+      }
     }
   }
 
@@ -105,8 +137,11 @@ onMounted(() => {
     display: block;
     --nav-size: 0;
 
+    header {
+      @apply block sticky top-0;
+    }
     .backdrop {
-      display: block;
+      @apply block;
     }
 
     // animation

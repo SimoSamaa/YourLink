@@ -1,5 +1,9 @@
 @use './helpers/reset' as *;
 
-// .admin-page {
-//   @apply z-10
-// }
+.admin-page {
+  @apply pr-4 z-20;
+
+  header {
+    @apply mt-4;
+  }
+}

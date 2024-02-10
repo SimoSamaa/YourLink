@@ -8,7 +8,7 @@
 
 @mixin breakpoint($size-screen) {
   @if($size-screen =='sm') {
-    @media (max-width: 480px) {
+    @media (max-width: 650px) {
       @content;
     }
   }

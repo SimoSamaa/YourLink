@@ -1,20 +1,18 @@
 import { createApp } from 'vue';
-import { createStore, Store } from 'vuex';
 import App from './App.vue';
+
 import '@/scss/main-style.scss'
-import router from './router';
+import router from '@/router';
+import store from '@/modules/index';
 
-const app = createApp(App)
 
-import AppIcons from '@/components/UI/AppIcons.vue'
-import baseButton from '@/components/UI/BaseButton.vue'
+const app = createApp(App);
 
-app.component('appIcon', AppIcons)
-app.component('base-button', baseButton)
+import AppIcons from '@/components/UI/AppIcons.vue';
+import baseButton from '@/components/UI/BaseButton.vue';
 
-const store = createStore({
-
-});
+app.component('appIcon', AppIcons);
+app.component('base-button', baseButton);
 
 app.use(store);
 

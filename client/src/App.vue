@@ -11,26 +11,18 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+<script lang="ts" setup>
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 
-export default defineComponent({
-  setup() {
-    const route = useRoute();
-    const removeNavVis = computed<boolean>(
-      () =>
-        route.name === "dashboard" ||
-        route.name === "linksPage" ||
-        route.name === "AppearancePage" ||
-        route.name === "account"
-    );
+const route = useRoute();
 
-    const zaba = ref();
-
-    console.log(zaba.value);
-
-    return { removeNavVis };
-  },
-});
+const removeNavVis = computed<boolean>(
+  () =>
+    route.name === "dashboard" ||
+    route.name === "linksPage" ||
+    route.name === "AppearancePage" ||
+    route.name === "account" ||
+    route.name === "preview"
+);
 </script>

@@ -9,7 +9,7 @@
       </base-button>
       <img class="min-w-10" src="../../assets/logo.png" alt="app-logo" />
     </div>
-    <ul class="grid gap-8 pl-4 relative">
+    <ul class="list-container grid gap-8 pl-4 relative">
       <span
         ref="actLink"
         class="active-link bg-bg absolute rounded-tl-full rounded-bl-full h-[56px] left-4 bg-bg transition-all duration-300 ease-out"
@@ -35,7 +35,7 @@
         </router-link>
       </li>
       <li class="hidden max-[1000px]:block">
-        <router-link to="/yourLink/admin">
+        <router-link to="/yourLink/admin/preview">
           <appIcon name="eye" />
           <div>preview</div>
         </router-link>
@@ -62,6 +62,7 @@
 
 <script lang="ts" setup>
 import { ref, onUpdated, PropType } from "vue";
+import useMediaQuery from "../../hooks/matchMedia";
 
 const emit = defineEmits(["setToggleNav", "setToggleNavMobile"]);
 
@@ -89,22 +90,32 @@ const selectPage = (e: MouseEvent, num: number) => {
 
 onUpdated(() => {
   const links = (navLinks.value = document.querySelectorAll("ul li a"));
-  const lists = (listLinks.value = document.querySelectorAll("ul li"));
+  const lists = (listLinks.value =
+    document.querySelectorAll(".list-container li"));
   const listContainer = lists[0].closest("ul") as HTMLElement;
-
   let oldTab = lists[0] as HTMLElement;
 
-  lists.forEach((list: Element) => {
-    list.addEventListener("click", (e: Event) => {
-      const newTab = list as HTMLElement;
+  function handleClickNavMobile(event: Event) {
+    const newTab = event.currentTarget as HTMLElement;
 
-      if (oldTab !== null && newTab !== oldTab) {
-        lineActiveAnimation(oldTab, newTab);
-      }
+    if (oldTab !== null && newTab !== oldTab) {
+      lineActiveAnimation(oldTab, newTab);
+    }
 
-      oldTab = newTab;
+    oldTab = newTab;
+  }
+
+  function addListeners() {
+    lists.forEach((list: Element) => {
+      list.addEventListener("click", handleClickNavMobile);
     });
-  });
+  }
+
+  function removeListeners() {
+    lists.forEach((list: Element) => {
+      list.removeEventListener("click", handleClickNavMobile);
+    });
+  }
 
   function lineActiveAnimation(oldTab: HTMLElement, newTab: HTMLElement) {
     const newTabPosition = oldTab.compareDocumentPosition(newTab);
@@ -130,6 +141,15 @@ onUpdated(() => {
       listContainer.style.setProperty("--width", matchWidth.toString());
     }, 220);
   }
+
+  useMediaQuery(
+    () => {
+      addListeners();
+    },
+    () => {
+      removeListeners();
+    }
+  );
 
   links.forEach((link: Element) => {
     const list = link.closest("li") as HTMLElement;
@@ -174,6 +194,9 @@ onUpdated(() => {
     }
   }
 
+  .logout {
+    padding-inline: 0;
+  }
   .logout div {
     display: none;
   }

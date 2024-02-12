@@ -34,8 +34,4 @@ const headers = computed(() => store.getters["links/headers"]);
 console.log("hello", headers.value);
 </script>
 
-<style scoped lang="scss">
-section {
-  // background: white;
-}
-</style>
+<style scoped lang="scss"></style>

@@ -5,6 +5,7 @@ import AdminPage from '@/views/admin/AdminPage.vue';
 import LinksPage from '@/views/admin/LinksPage.vue';
 import AppearancePage from '@/views/admin/AppearancePage.vue';
 import AccountPage from '@/views/admin/AccountPage.vue';
+import PreviewPage from '@/views/admin/PreviewPage.vue';
 
 
 const router = createRouter({
@@ -36,6 +37,11 @@ const router = createRouter({
           path: 'account',
           component: AccountPage,
           name: 'account'
+        },
+        {
+          path: 'preview',
+          component: PreviewPage,
+          name: 'preview'
         }
       ],
       name: 'dashboard'

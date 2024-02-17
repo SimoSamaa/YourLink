@@ -12,44 +12,8 @@ export default {
         },
         {
           id: '2',
-          title: 'two',
+          title: 'two'
         },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        },
-        {
-          id: '2',
-          title: 'two',
-        }
       ] as HeaderLinks[]
     }
   },

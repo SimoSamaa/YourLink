@@ -1,6 +1,6 @@
 <template>
   <section
-    class="phone-containe border-l-[1px] border-border p-4 flex justify-center"
+    class="phone-containe border-l-[1px] border-border p-4 flex justify-center max-[1000px]:p-0"
   >
     <div
       ref="zaba"

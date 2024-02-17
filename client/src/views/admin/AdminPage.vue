@@ -64,9 +64,14 @@ onMounted(() => {
     () => {
       closeClass.value = false;
       openNavMobile.value = true;
-      localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
+      // localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
     },
-    () => (openNavMobile.value = true)
+    () => {
+      openNavMobile.value = true;
+      if (localStorage.getItem("nav-status") === "true") {
+        closeClass.value = true;
+      }
+    }
   );
 });
 </script>
@@ -105,19 +110,19 @@ onMounted(() => {
     }
 
     // animation
-    // @include setAnimation(
-    //   "test",
-    //   (
-    //     transform: translateY(-470px),
-    //     opacity: 0.5,
-    //   ),
-    //   (
-    //     opacity: 1,
-    //     transform: translateY(0),
-    //   ),
-    //   null
-    // );
-    // @include setAnimation("test2", null, null, "opacity");
+    @include setAnimation(
+      "test",
+      (
+        transform: translateY(-470px),
+        opacity: 0.5,
+      ),
+      (
+        opacity: 1,
+        transform: translateY(0),
+      ),
+      null
+    );
+    @include setAnimation("test2", null, null, "opacity");
   }
 }
 </style>

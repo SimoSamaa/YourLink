@@ -8,11 +8,13 @@ export default {
       headerLinks: [
         {
           id: '1',
-          title: 'one'
+          title: 'one',
+          isDisable: false,
         },
         {
           id: '2',
-          title: 'two'
+          title: 'two',
+          isDisable: false,
         },
       ] as HeaderLinks[]
     }

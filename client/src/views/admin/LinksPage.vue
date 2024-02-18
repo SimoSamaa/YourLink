@@ -2,24 +2,28 @@
   <section class="admin-page">
     <h1>Links</h1>
     <header class="flex justify-between pb-4 border-b-[1px] border-border">
-      <base-button mode="white-btn">
+      <base-button mode="white-btn" @click="handledAddeHeader">
         <appIcon name="header" />
-        headers
+        add headers
       </base-button>
       <base-button mode="white-btn add">
         <appIcon name="add" />
         add link
       </base-button>
     </header>
-    <ul
-      class="headers-container grid gap-4 mt-4"
+    <transition-group
+      tag="ul"
+      appear
+      name="zaba"
+      @after-enter="focusInput"
+      class="relative headers-container grid gap-4 mt-4"
       @dragover.prevent="dropDragElement"
     >
       <li
         v-for="header in headers"
         :key="header.id"
         draggable="true"
-        class="bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm"
+        class="bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full"
         :class="{ dragging: header.isDrag }"
         @dragstart="startDragElement(header)"
         @dragend="endDragElement(header)"
@@ -42,7 +46,7 @@
               v-else
               :value="header.title"
               type="text"
-              class="inputHeader text-center outline-none w-full"
+              class="input-header text-center outline-none w-full"
               @blur="handledHeaderEmpty(header)"
               maxlength="25"
               @input="zaba($event, header)"
@@ -90,12 +94,12 @@
           </div>
         </div>
       </li>
-    </ul>
+    </transition-group>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onUpdated, onMounted } from "vue";
+import { ref, computed, nextTick, onMounted } from "vue";
 import { useStore } from "vuex";
 import { HeaderLinks } from "../../types/interfaces";
 
@@ -103,8 +107,21 @@ const store = useStore();
 
 const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
 
+const isEditing = ref<boolean>(false);
+
 const editHeader = (header: HeaderLinks) => {
   header.isEdit = !header.isEdit;
+  // isEditing.value = header.isEdit;
+  if (header.isEdit) focusInput();
+};
+
+const focusInput = () => {
+  nextTick(() => {
+    const inputHeader = document.querySelector(".input-header");
+    if (inputHeader instanceof HTMLInputElement) {
+      inputHeader.focus();
+    }
+  });
 };
 
 const handledHeaderEmpty = (header: HeaderLinks) => {
@@ -167,37 +184,42 @@ function getDragAfterElement(
   return foundElement;
 }
 
+// CREATE HEADER
+const handledAddeHeader = () => {
+  const data = {
+    id: "3",
+    title: "",
+    isDisable: false,
+  };
+  store.dispatch("links/addHeaderLink", data);
+};
+
 // DELETE HEADER
 const handledDeleteHeader = (id: string) => {
+  // header.isOpenDelete = false;
   store.dispatch("links/deleteHeaderLink", id);
 };
 
-onUpdated(() => {
-  const inputHeader = document.querySelector(".inputHeader");
-  if (inputHeader instanceof HTMLInputElement) {
-    inputHeader.focus();
-  }
-});
-
 onMounted(() => {
-  // const a = document.querySelectorAll<Element>("ul li input") as NodeList;
-  // a.forEach((b) => {
-  //   b.addEventListener("input", () => {
-  //     if (b instanceof HTMLInputElement) {
-  //       console.log(b.id, b.checked);
-  //     }
-  //   });
-  // });
+  const a = document.querySelectorAll<Element>("ul li input") as NodeList;
+  a.forEach((b) => {
+    b.addEventListener("input", () => {
+      if (b instanceof HTMLInputElement) {
+        console.log(b.id, b.checked);
+      }
+    });
+  });
 });
 </script>
 
 <style scoped lang="scss">
+@import "../../scss/helpers/mixins";
+
 li {
   transition: opacity 300ms ease, border 300ms ease-in;
   &.dragging {
     @apply border-text2 border opacity-0;
   }
-
   .actions {
     label {
       &:before {
@@ -231,4 +253,17 @@ li {
     }
   }
 }
+
+@include setAnimation(
+  "zaba",
+  (
+    transform: scale(0.5),
+    opacity: 0,
+  ),
+  (
+    opacity: 1,
+    transform: scale(1),
+  ),
+  null
+);
 </style>

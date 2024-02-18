@@ -28,11 +28,16 @@
 
 @mixin setAnimation($name, $from-properties, $to-properties, $use-opacity) {
   .#{$name}-enter-active {
-    animation: #{$name} 500ms ease-in;
+    animation: #{$name} 300ms ease;
   }
 
   .#{$name}-leave-active {
-    animation: #{$name} 500ms ease-out reverse;
+    animation: #{$name} 300ms ease reverse;
+    position: absolute;
+  }
+
+  .#{$name}-move {
+    transition: all 300ms ease;
   }
 
   @keyframes #{$name} {

@@ -25,7 +25,7 @@
         @dragend="endDragElement(header)"
       >
         <div class="flex justify-between items-center gap-2 relative">
-          <span v-if="header.isEdit" class="absolute bottom-4 left-24 text-sm">
+          <span v-if="header.isEdit" class="absolute bottom-1 left-8 text-sm">
             {{ header.title.length }}/25
           </span>
           <div class="drager cursor-grab">
@@ -83,7 +83,9 @@
               <base-button @click="header.isOpenDelete = false"
                 >cancel</base-button
               >
-              <base-button mode="err">delete</base-button>
+              <base-button mode="err" @click="handledDeleteHeader(header.id)"
+                >delete</base-button
+              >
             </div>
           </div>
         </div>
@@ -98,8 +100,6 @@ import { useStore } from "vuex";
 import { HeaderLinks } from "../../types/interfaces";
 
 const store = useStore();
-
-const isDrag = ref<boolean>(false);
 
 const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
 
@@ -136,9 +136,11 @@ const endDragElement = (header: HeaderLinks) => {
   header.isDrag = false;
 };
 
-const dropDragElement = (e: any) => {
-  const headersContainer = document.querySelector(".headers-container");
-  const draggingItem = document.querySelector(".dragging");
+const dropDragElement = (e: DragEvent) => {
+  const headersContainer = document.querySelector(
+    ".headers-container"
+  ) as HTMLElement;
+  const draggingItem = document.querySelector(".dragging") as HTMLElement;
 
   const afterElement = getDragAfterElement(headersContainer, e.clientY);
   if (afterElement == null) {
@@ -148,18 +150,27 @@ const dropDragElement = (e: any) => {
   }
 };
 
-function getDragAfterElement(container: any, y: any) {
+function getDragAfterElement(
+  container: HTMLElement,
+  y: number
+): HTMLElement | undefined {
   let draggableElements = Array.from(
     container.querySelectorAll("li:not(.dragging)")
-  );
-  draggableElements = draggableElements.find((element) => {
+  ) as HTMLElement[];
+
+  const foundElement = draggableElements.find((element) => {
     const { top, bottom } = element.getBoundingClientRect();
     const offset = y - (top + bottom) / 2;
     return offset < 0;
   });
 
-  return draggableElements;
+  return foundElement;
 }
+
+// DELETE HEADER
+const handledDeleteHeader = (id: string) => {
+  store.dispatch("links/deleteHeaderLink", id);
+};
 
 onUpdated(() => {
   const inputHeader = document.querySelector(".inputHeader");
@@ -181,36 +192,43 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.actions {
-  label {
-    &:before {
-      @apply content-[''] w-5 h-5 rounded-full cursor-pointer
+li {
+  transition: opacity 300ms ease, border 300ms ease-in;
+  &.dragging {
+    @apply border-text2 border opacity-0;
+  }
+
+  .actions {
+    label {
+      &:before {
+        @apply content-[''] w-5 h-5 rounded-full cursor-pointer
     top-0 left-0 absolute transition-[left] duration-300
     ease-out bg-white border-gray-400 border-2;
+      }
+    }
+
+    input:checked ~ label {
+      @apply bg-sky-500;
+    }
+
+    input:checked ~ label::before {
+      @apply left-5 border-sky-500;
     }
   }
 
-  input:checked ~ label {
-    @apply bg-sky-500;
-  }
+  .delete-header {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows ease-out 300ms;
 
-  input:checked ~ label::before {
-    @apply left-5 border-sky-500;
-  }
-}
+    &.open-delete {
+      grid-template-rows: 1fr;
+      @apply border-t p-4;
+    }
 
-.delete-header {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows ease-out 300ms;
-
-  &.open-delete {
-    grid-template-rows: 1fr;
-    @apply border-t p-4;
-  }
-
-  div {
-    overflow: hidden;
+    div {
+      @apply overflow-hidden;
+    }
   }
 }
 </style>

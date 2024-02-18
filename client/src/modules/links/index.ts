@@ -1,5 +1,8 @@
-import linksGetters from './getters'
-import { HeaderLinks } from '../../types/interfaces'
+import linksMutations from './mutations';
+import linksActions from './actions';
+import linksGetters from './getters';
+
+import { HeaderLinks } from '../../types/interfaces';
 
 export default {
   namespaced: true,
@@ -19,7 +22,7 @@ export default {
       ] as HeaderLinks[]
     }
   },
-  // mutations: null,
-  // actions: null,
+  mutations: linksMutations,
+  actions: linksActions,
   getters: linksGetters,
 }

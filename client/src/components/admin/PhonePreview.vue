@@ -4,19 +4,38 @@
   >
     <div
       ref="zaba"
-      class="phone fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
-    ></div>
+      class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
+    >
+      <ul class="space-y-4 text-center font-semibold">
+        <li v-for="header in filteredHeaders" :key="header.id">
+          {{ header.title }}
+        </li>
+      </ul>
+    </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
-const zaba = ref();
+import { ref, onMounted, computed } from "vue";
+import { useStore } from "vuex";
+import { HeaderLinks } from "../../types/interfaces";
+
+const store = useStore();
+
+const zaba = ref<HTMLElement | null>(null);
+
+const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
+
+console.log(headers.value);
+
+const filteredHeaders = computed<HeaderLinks[]>(() =>
+  headers.value.filter((header: HeaderLinks) => header.isDisable !== false)
+);
 
 onMounted(() => {
   window.addEventListener("resize", function () {
-    var height = zaba.value.offsetHeight;
-    var width = zaba.value.offsetWidth;
+    const height = zaba.value.offsetHeight;
+    const width = zaba.value.offsetWidth;
 
     if (height < width) {
       // zaba.value.style.width = height + "px";
@@ -31,7 +50,6 @@ onMounted(() => {
 <style scoped lang="scss">
 .phone-containe {
   .phone {
-    background-color: white;
     width: 250px;
     height: min(500px, 90%);
 

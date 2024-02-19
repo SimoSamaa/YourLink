@@ -9,16 +9,16 @@ export default {
   state() {
     return {
       headerLinks: [
-        {
-          id: '1',
-          title: 'one',
-          isDisable: false,
-        },
-        {
-          id: '2',
-          title: 'two',
-          isDisable: false,
-        },
+        // {
+        //   id: '1',
+        //   title: 'one',
+        //   isDisable: true,
+        // },
+        // {
+        //   id: '2',
+        //   title: 'two',
+        //   isDisable: true,
+        // },
       ] as HeaderLinks[]
     }
   },

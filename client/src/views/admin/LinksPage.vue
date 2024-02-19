@@ -14,13 +14,15 @@
     <transition-group
       tag="ul"
       appear
-      name="zaba"
+      name="animated-headers"
       @after-enter="focusInput"
       class="relative headers-container grid gap-4 mt-4"
       @dragover.prevent="dropDragElement"
+      @drop="changeElementOrders($event)"
     >
       <li
-        v-for="header in headers"
+        v-for="(header, ind) in headers"
+        :data-index="ind"
         :key="header.id"
         draggable="true"
         class="bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full"
@@ -30,7 +32,7 @@
       >
         <div class="flex justify-between items-center gap-2 relative">
           <span v-if="header.isEdit" class="absolute bottom-1 left-8 text-sm">
-            {{ header.title.length }}/25
+            {{ header.title.length }}/20
           </span>
           <div class="drager cursor-grab">
             <appIcon name="dotes" />
@@ -47,9 +49,10 @@
               :value="header.title"
               type="text"
               class="input-header text-center outline-none w-full"
-              @blur="handledHeaderEmpty(header)"
-              maxlength="25"
-              @input="zaba($event, header)"
+              @blur="handledHeaderEmpty($event, header)"
+              @keydown.enter="handleKeyPress($event, header)"
+              @input="zaba2($event, header)"
+              maxlength="20"
             />
             <appIcon
               v-if="!header.isEdit"
@@ -63,6 +66,8 @@
               type="checkbox"
               :id="`disable-${header.id}`"
               class="hidden"
+              :disabled="!header.title"
+              v-model="header.isDisable"
             />
             <label
               class="relative block w-10 h-5 rounded-full bg-gray-400 shadow"
@@ -107,8 +112,6 @@ const store = useStore();
 
 const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
 
-const isEditing = ref<boolean>(false);
-
 const editHeader = (header: HeaderLinks) => {
   header.isEdit = !header.isEdit;
   // isEditing.value = header.isEdit;
@@ -124,8 +127,15 @@ const focusInput = () => {
   });
 };
 
-const handledHeaderEmpty = (header: HeaderLinks) => {
+const handleKeyPress = (e: KeyboardEvent, header: HeaderLinks) => {
+  if (e.keyCode === 13) {
+    handledHeaderEmpty(e, header);
+  }
+};
+
+const handledHeaderEmpty = (e: Event, header: HeaderLinks) => {
   header.isEdit = false;
+  zaba(e, header);
 };
 
 const zaba = (e: Event, header: HeaderLinks) => {
@@ -135,13 +145,19 @@ const zaba = (e: Event, header: HeaderLinks) => {
     // } else {
     //   console.log("no");
     // }
-    header.title = e.target.value;
+    !header.title ? (header.isDisable = false) : (header.isDisable = true);
   }
+};
+
+const zaba2 = (e: any, header: any) => {
+  header.title = e.target.value;
 };
 
 const openDeleteHeader = (header: HeaderLinks) => {
   header.isOpenDelete = true;
 };
+
+headers.value.sort((a, b) => a.dataIndex - b.dataIndex);
 
 const startDragElement = (header: HeaderLinks) => {
   console.log("start");
@@ -167,6 +183,27 @@ const dropDragElement = (e: DragEvent) => {
   }
 };
 
+// taskContainer.addEventListener('drop', async () => {
+//     const items = [ ...taskContainer.querySelectorAll('li') ];
+//     items.forEach(async (item, index) => {
+//       item.dataset.index = index;
+
+//       const updatedTasks = items.map(item => ({
+//         _id: item.dataset.id,
+//         dataIndex: parseInt(item.dataset.index)
+//       }));
+
+//       // Call the backend to update the order
+//       await fetch('http://localhost:1111/update-order', {
+//         method: 'PUT',
+//         headers: {
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({ tasks: updatedTasks })
+//       });
+//     });
+//   });
+
 function getDragAfterElement(
   container: HTMLElement,
   y: number
@@ -184,12 +221,29 @@ function getDragAfterElement(
   return foundElement;
 }
 
+// CHANGE ORDERS ELEMENT IN DRAG
+const changeElementOrders = (e: any) => {
+  console.log("zaba", e.currentTarget);
+
+  const items = [...e.currentTarget.querySelectorAll("li")];
+
+  items.forEach(async (item, index) => {
+    item.dataset.index = index;
+
+    // const updatedTasks = items.map((item) => ({
+    //   _id: item.dataset.id,
+    //   dataIndex: parseInt(item.dataset.index),
+    // }));
+  });
+};
+
 // CREATE HEADER
 const handledAddeHeader = () => {
   const data = {
     id: "3",
     title: "",
     isDisable: false,
+    dataIndex: headers.value.length, // here
   };
   store.dispatch("links/addHeaderLink", data);
 };
@@ -224,8 +278,8 @@ li {
     label {
       &:before {
         @apply content-[''] w-5 h-5 rounded-full cursor-pointer
-    top-0 left-0 absolute transition-[left] duration-300
-    ease-out bg-white border-gray-400 border-2;
+        top-0 left-0 absolute transition-[left] duration-300
+        ease-out bg-white border-gray-400 border-2;
       }
     }
 
@@ -235,6 +289,10 @@ li {
 
     input:checked ~ label::before {
       @apply left-5 border-sky-500;
+    }
+
+    input:disabled ~ :is(label::before, label) {
+      @apply cursor-no-drop bg-opacity-50;
     }
   }
 
@@ -255,14 +313,14 @@ li {
 }
 
 @include setAnimation(
-  "zaba",
+  "animated-headers",
   (
-    transform: scale(0.5),
+    transform: scaleY(0.6) translateX(-200px),
     opacity: 0,
   ),
   (
     opacity: 1,
-    transform: scale(1),
+    transform: scaleY(1) translateX(0),
   ),
   null
 );

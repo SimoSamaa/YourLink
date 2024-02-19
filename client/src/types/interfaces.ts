@@ -4,7 +4,8 @@ interface HeaderLinks {
   isDisable: boolean,
   isEdit: boolean,
   isOpenDelete: boolean,
-  isDrag: boolean
+  isDrag: boolean,
+  dataIndex: number
 }
 
 export { HeaderLinks }

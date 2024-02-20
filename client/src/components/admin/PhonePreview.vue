@@ -7,7 +7,7 @@
       class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
     >
       <ul class="space-y-4 text-center font-semibold">
-        <li v-for="header in filteredHeaders" :key="header.id">
+        <li v-for="header in sortedHeaders" :key="header.id">
           {{ header.title }}
         </li>
       </ul>
@@ -26,10 +26,11 @@ const zaba = ref<HTMLElement | null>(null);
 
 const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
 
-console.log(headers.value);
-
-const filteredHeaders = computed<HeaderLinks[]>(() =>
-  headers.value.filter((header: HeaderLinks) => header.isDisable !== false)
+// Filter out headers with empty title
+const sortedHeaders = computed<HeaderLinks[]>(() =>
+  headers.value
+    .filter((header: HeaderLinks) => header.isDisable !== false) //
+    .sort((a: HeaderLinks, b: HeaderLinks) => a.dataIndex + b.dataIndex)
 );
 
 onMounted(() => {

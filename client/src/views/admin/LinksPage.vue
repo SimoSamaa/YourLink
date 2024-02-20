@@ -24,6 +24,7 @@
         v-for="(header, ind) in headers"
         :data-index="ind"
         :key="header.id"
+        :id="header.id"
         draggable="true"
         class="bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full"
         :class="{ dragging: header.isDrag }"
@@ -50,8 +51,8 @@
               type="text"
               class="input-header text-center outline-none w-full"
               @blur="handledHeaderEmpty($event, header)"
-              @keydown.enter="handleKeyPress($event, header)"
-              @input="zaba2($event, header)"
+              @keydown.enter.prevent.stop="handledHeaderEmpty($event, header)"
+              @input="InputValue($event, header)"
               maxlength="20"
             />
             <appIcon
@@ -70,7 +71,7 @@
               v-model="header.isDisable"
             />
             <label
-              class="relative block w-10 h-5 rounded-full bg-gray-400 shadow"
+              class="relative block w-10 h-5 rounded-full bg-gray-200 shadow"
               :for="`disable-${header.id}`"
             ></label>
             <base-button
@@ -114,7 +115,6 @@ const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
 
 const editHeader = (header: HeaderLinks) => {
   header.isEdit = !header.isEdit;
-  // isEditing.value = header.isEdit;
   if (header.isEdit) focusInput();
 };
 
@@ -127,18 +127,23 @@ const focusInput = () => {
   });
 };
 
-const handleKeyPress = (e: KeyboardEvent, header: HeaderLinks) => {
-  if (e.keyCode === 13) {
-    handledHeaderEmpty(e, header);
-  }
-};
-
-const handledHeaderEmpty = (e: Event, header: HeaderLinks) => {
+// UPDATE HEADER
+const handledHeaderEmpty = async (e: Event, header: HeaderLinks) => {
   header.isEdit = false;
-  zaba(e, header);
+  checkHeaderIFDisable(e, header);
+
+  const updatedHeaders = {
+    id: header.id,
+    title: header.title,
+    isDisable: header.isDisable,
+  };
+  // if (e.target.value.length <= 25) return;
+  console.log(updatedHeaders); // if title empty stop
+
+  // await store.dispatch("links/updateHeader", updatedHeaders);
 };
 
-const zaba = (e: Event, header: HeaderLinks) => {
+const checkHeaderIFDisable = (e: Event, header: HeaderLinks) => {
   if (e.target instanceof HTMLInputElement) {
     // if (e.target.value.length <= 25) {
     //   console.log("yes");
@@ -149,7 +154,7 @@ const zaba = (e: Event, header: HeaderLinks) => {
   }
 };
 
-const zaba2 = (e: any, header: any) => {
+const InputValue = (e: any, header: any) => {
   header.title = e.target.value;
 };
 
@@ -183,27 +188,6 @@ const dropDragElement = (e: DragEvent) => {
   }
 };
 
-// taskContainer.addEventListener('drop', async () => {
-//     const items = [ ...taskContainer.querySelectorAll('li') ];
-//     items.forEach(async (item, index) => {
-//       item.dataset.index = index;
-
-//       const updatedTasks = items.map(item => ({
-//         _id: item.dataset.id,
-//         dataIndex: parseInt(item.dataset.index)
-//       }));
-
-//       // Call the backend to update the order
-//       await fetch('http://localhost:1111/update-order', {
-//         method: 'PUT',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ tasks: updatedTasks })
-//       });
-//     });
-//   });
-
 function getDragAfterElement(
   container: HTMLElement,
   y: number
@@ -222,37 +206,45 @@ function getDragAfterElement(
 }
 
 // CHANGE ORDERS ELEMENT IN DRAG
-const changeElementOrders = (e: any) => {
-  console.log("zaba", e.currentTarget);
+const changeElementOrders = (e: DragEvent) => {
+  const target = e.currentTarget as Element;
+  const items = [...target.querySelectorAll("li")];
+  const updatedHeaders = items.map((item, index) => ({
+    ...headers.value.find((header) => header.id === item.id),
+    dataIndex: index,
+  }));
 
-  const items = [...e.currentTarget.querySelectorAll("li")];
-
-  items.forEach(async (item, index) => {
-    item.dataset.index = index;
-
-    // const updatedTasks = items.map((item) => ({
-    //   _id: item.dataset.id,
-    //   dataIndex: parseInt(item.dataset.index),
-    // }));
-  });
+  store.dispatch("links/UpdateHeaderOrder", updatedHeaders);
 };
 
 // CREATE HEADER
-const handledAddeHeader = () => {
-  const data = {
-    id: "3",
+const handledAddeHeader = async () => {
+  interface headerData {
+    title: string;
+    isDisable: boolean;
+    dataIndex: number;
+  }
+
+  const header: headerData = {
     title: "",
     isDisable: false,
-    dataIndex: headers.value.length, // here
+    dataIndex: headers.value.length,
   };
-  store.dispatch("links/addHeaderLink", data);
+
+  await store.dispatch("links/addHeaderLink", header);
 };
 
 // DELETE HEADER
-const handledDeleteHeader = (id: string) => {
-  // header.isOpenDelete = false;
-  store.dispatch("links/deleteHeaderLink", id);
+const handledDeleteHeader = async (id: string) => {
+  await store.dispatch("links/deleteHeaderLink", id);
 };
+
+// LOAD HEADERS DATA
+const loadHeaders = async () => {
+  await store.dispatch("links/featchHeaders");
+};
+
+loadHeaders();
 
 onMounted(() => {
   const a = document.querySelectorAll<Element>("ul li input") as NodeList;
@@ -279,7 +271,7 @@ li {
       &:before {
         @apply content-[''] w-5 h-5 rounded-full cursor-pointer
         top-0 left-0 absolute transition-[left] duration-300
-        ease-out bg-white border-gray-400 border-2;
+        ease-out bg-white border-gray-200 border-2;
       }
     }
 

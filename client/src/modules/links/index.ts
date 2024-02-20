@@ -13,11 +13,13 @@ export default {
         //   id: '1',
         //   title: 'one',
         //   isDisable: true,
+        //   dataIndex: 0
         // },
         // {
         //   id: '2',
         //   title: 'two',
         //   isDisable: true,
+        //   dataIndex: 1
         // },
       ] as HeaderLinks[]
     }

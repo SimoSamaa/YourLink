@@ -50,9 +50,11 @@
               :value="header.title"
               type="text"
               class="input-header text-center outline-none w-full"
-              @blur="handledHeaderEmpty($event, header)"
-              @keydown.enter.prevent.stop="handledHeaderEmpty($event, header)"
-              @input="InputValue($event, header)"
+              @keydown.enter.prevent="handledUpdateHeaderKey($event, header)"
+              @blur.prevent="
+                handledUpdateHeaderBlur($event, header, header.oldTitle)
+              "
+              @change="InputValue($event, header)"
               maxlength="20"
             />
             <appIcon
@@ -65,10 +67,11 @@
           <div class="actions grid gap-4 place-items-center">
             <input
               type="checkbox"
-              :id="`disable-${header.id}`"
-              class="hidden"
-              :disabled="!header.title"
               v-model="header.isDisable"
+              class="hidden"
+              :id="`disable-${header.id}`"
+              :disabled="!header.title"
+              @change="hideHeader($event, header.id)"
             />
             <label
               class="relative block w-10 h-5 rounded-full bg-gray-200 shadow"
@@ -107,14 +110,15 @@
 <script lang="ts" setup>
 import { ref, computed, nextTick, onMounted } from "vue";
 import { useStore } from "vuex";
-import { HeaderLinks } from "../../types/interfaces";
+import { HeaderLinks, Header, HeaderWithId } from "@/types/interfaces";
 
 const store = useStore();
 
 const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
 
 const editHeader = (header: HeaderLinks) => {
-  header.isEdit = !header.isEdit;
+  header.isEdit = true;
+  header.oldTitle = header.title;
   if (header.isEdit) focusInput();
 };
 
@@ -128,34 +132,61 @@ const focusInput = () => {
 };
 
 // UPDATE HEADER
-const handledHeaderEmpty = async (e: Event, header: HeaderLinks) => {
+// USE KEY EVENT
+const handledUpdateHeaderKey = async (e: Event, header: HeaderLinks) => {
+  if (header.isEdit === true) {
+    header.isEdit = false;
+    return checkHeaderIFDisable(e, header);
+  }
+};
+
+// USE BLUR EVENT
+const handledUpdateHeaderBlur = async (
+  e: Event,
+  header: HeaderLinks,
+  oldValue: string
+) => {
   header.isEdit = false;
   checkHeaderIFDisable(e, header);
 
-  const updatedHeaders = {
-    id: header.id,
-    title: header.title,
-    isDisable: header.isDisable,
-  };
-  // if (e.target.value.length <= 25) return;
-  console.log(updatedHeaders); // if title empty stop
+  const updatedValue = (e.target as HTMLInputElement).value;
+  if (updatedValue === oldValue || updatedValue.length > 20) return;
 
-  // await store.dispatch("links/updateHeader", updatedHeaders);
+  const updatedHeader: HeaderWithId = {
+    id: header.id,
+    title: updatedValue,
+    isDisable: header.isDisable,
+    dataIndex: header.dataIndex,
+  };
+  console.log(updatedHeader);
+
+  try {
+    await store.dispatch("links/updateHeader", updatedHeader);
+  } catch (err) {
+    (err as Error).message;
+  }
 };
 
 const checkHeaderIFDisable = (e: Event, header: HeaderLinks) => {
   if (e.target instanceof HTMLInputElement) {
-    // if (e.target.value.length <= 25) {
-    //   console.log("yes");
-    // } else {
-    //   console.log("no");
-    // }
     !header.title ? (header.isDisable = false) : (header.isDisable = true);
   }
 };
 
-const InputValue = (e: any, header: any) => {
-  header.title = e.target.value;
+const hideHeader = async (e: Event, id: string) => {
+  const checkedValue = (e.target as HTMLInputElement).checked;
+  try {
+    await store.dispatch("links/updateHideHeader", {
+      id: id,
+      isDisable: checkedValue,
+    });
+  } catch (err) {
+    (err as Error).message;
+  }
+};
+
+const InputValue = (e: Event, header: HeaderLinks) => {
+  header.title = (e.target as HTMLInputElement).value.trim();
 };
 
 const openDeleteHeader = (header: HeaderLinks) => {
@@ -214,24 +245,22 @@ const changeElementOrders = (e: DragEvent) => {
     dataIndex: index,
   }));
 
-  store.dispatch("links/UpdateHeaderOrder", updatedHeaders);
+  store.dispatch("links/updateHeaderOrder", updatedHeaders);
 };
 
 // CREATE HEADER
 const handledAddeHeader = async () => {
-  interface headerData {
-    title: string;
-    isDisable: boolean;
-    dataIndex: number;
-  }
-
-  const header: headerData = {
+  const header: Header = {
     title: "",
     isDisable: false,
     dataIndex: headers.value.length,
   };
 
-  await store.dispatch("links/addHeaderLink", header);
+  try {
+    await store.dispatch("links/addHeaderLink", header);
+  } catch (err) {
+    (err as Error).message;
+  }
 };
 
 // DELETE HEADER
@@ -241,21 +270,25 @@ const handledDeleteHeader = async (id: string) => {
 
 // LOAD HEADERS DATA
 const loadHeaders = async () => {
-  await store.dispatch("links/featchHeaders");
+  try {
+    await store.dispatch("links/featchHeaders");
+  } catch (err) {
+    console.log((err as Error).message);
+  }
 };
 
 loadHeaders();
 
-onMounted(() => {
-  const a = document.querySelectorAll<Element>("ul li input") as NodeList;
-  a.forEach((b) => {
-    b.addEventListener("input", () => {
-      if (b instanceof HTMLInputElement) {
-        console.log(b.id, b.checked);
-      }
-    });
-  });
-});
+// onMounted(() => {
+//   const a = document.querySelectorAll<Element>("ul li input") as NodeList;
+//   a.forEach((b) => {
+//     b.addEventListener("input", () => {
+//       if (b instanceof HTMLInputElement) {
+//         console.log(b.id, b.checked);
+//       }
+//     });
+//   });
+// });
 </script>
 
 <style scoped lang="scss">

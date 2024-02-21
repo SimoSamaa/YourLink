@@ -1,11 +1,19 @@
-interface HeaderLinks {
-  id: string;
+interface Header {
   title: string;
-  isDisable: boolean,
+  dataIndex: number;
+  isDisable: boolean;
+};
+
+interface HeaderWithId extends Header {
+  id: string
+}
+
+interface HeaderLinks extends Header {
+  id: string;
   isEdit: boolean,
   isOpenDelete: boolean,
   isDrag: boolean,
-  dataIndex: number
+  oldTitle: string
 }
 
-export { HeaderLinks }
+export { HeaderLinks, Header, HeaderWithId }

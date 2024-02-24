@@ -1,7 +1,7 @@
 <template>
   <section class="admin-page">
     <h1>Links</h1>
-    <header class="flex justify-between pb-4 border-b-[1px] border-border">
+    <header class="flex justify-between pb-4 border-b-[1px] border-border mb-4">
       <base-button mode="white-btn" @click="handledAddeHeader">
         <appIcon name="header" />
         add headers
@@ -11,12 +11,14 @@
         add link
       </base-button>
     </header>
+    <!-- HEADERS -->
     <transition-group
       tag="ul"
       appear
       name="animated-headers"
       @after-enter="focusInput"
-      class="relative headers-container grid gap-4 mt-4"
+      class="link-container-style headers-container"
+      :style="checkMarginBottom"
       @dragover.prevent="dropDragElement"
       @drop="changeElementOrders($event)"
     >
@@ -26,7 +28,7 @@
         :key="header.id"
         :id="header.id"
         draggable="true"
-        class="bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full"
+        class="link-content-style"
         :class="{ dragging: header.isDrag }"
         @dragstart="startDragElement(header)"
         @dragend="endDragElement(header)"
@@ -36,7 +38,7 @@
             {{ header.title.length }}/20
           </span>
           <div class="drager cursor-grab">
-            <appIcon name="dotes" />
+            <appIcon name="dotes" size="20px" />
           </div>
           <div class="flex gap-2 font-semibold text-xl">
             <div v-if="!header.isEdit">
@@ -54,17 +56,18 @@
               @blur.prevent="
                 handledUpdateHeaderBlur($event, header, header.oldTitle)
               "
-              @change="InputValue($event, header)"
+              @input="InputValue($event, header)"
               maxlength="20"
             />
             <appIcon
               v-if="!header.isEdit"
               name="edit"
+              size="20px"
               class="cursor-pointer"
               @click="editHeader(header)"
             />
           </div>
-          <div class="actions grid gap-4 place-items-center">
+          <div class="checkbox-style grid gap-4 place-items-center">
             <input
               type="checkbox"
               v-model="header.isDisable"
@@ -82,7 +85,7 @@
               :disabled="header.isOpenDelete"
               @click="openDeleteHeader(header)"
             >
-              <appIcon name="delete" />
+              <appIcon name="delete" size="20px" />
             </base-button>
           </div>
         </div>
@@ -104,17 +107,40 @@
         </div>
       </li>
     </transition-group>
+    <!-- LINKS -->
+    <ul class="link-container-style">
+      <linksSection
+        v-for="link in links"
+        :key="link.id"
+        :link-id="link.id"
+        :link-title="link.title"
+        :link="link.link"
+        :link-checked="link.isDisable"
+      ></linksSection>
+    </ul>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { useStore } from "vuex";
-import { HeaderLinks, Header, HeaderWithId } from "@/types/interfaces";
+import linksSection from "@/components/admin/linksSection.vue";
+import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
+import { link } from "@/types/interfacesLink";
 
 const store = useStore();
 
-const headers = computed<HeaderLinks[]>(() => store.getters["links/headers"]);
+const headers = computed<HeaderLinks[]>(() =>
+  store.getters["links/headers"].sort(
+    (a: any, b: any) => a.dataIndex - b.dataIndex
+  )
+);
+
+const links = computed<link[]>(() => store.getters["links/links"]);
+
+const checkMarginBottom = computed<{ marginBottom: string }>(() => {
+  return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };
+});
 
 const editHeader = (header: HeaderLinks) => {
   header.isEdit = true;
@@ -158,7 +184,6 @@ const handledUpdateHeaderBlur = async (
     isDisable: header.isDisable,
     dataIndex: header.dataIndex,
   };
-  console.log(updatedHeader);
 
   try {
     await store.dispatch("links/updateHeader", updatedHeader);
@@ -186,14 +211,14 @@ const hideHeader = async (e: Event, id: string) => {
 };
 
 const InputValue = (e: Event, header: HeaderLinks) => {
-  header.title = (e.target as HTMLInputElement).value.trim();
+  const inputHeader = (e.target as HTMLInputElement).value.trim();
+  if (inputHeader == "") header.isDisable = false;
+  header.title = inputHeader;
 };
 
 const openDeleteHeader = (header: HeaderLinks) => {
   header.isOpenDelete = true;
 };
-
-headers.value.sort((a, b) => a.dataIndex - b.dataIndex);
 
 const startDragElement = (header: HeaderLinks) => {
   console.log("start");
@@ -237,15 +262,20 @@ function getDragAfterElement(
 }
 
 // CHANGE ORDERS ELEMENT IN DRAG
-const changeElementOrders = (e: DragEvent) => {
+const changeElementOrders = async (e: DragEvent) => {
   const target = e.currentTarget as Element;
   const items = [...target.querySelectorAll("li")];
+  // ...headers.value.find((header) => header.id === item.id),
   const updatedHeaders = items.map((item, index) => ({
     ...headers.value.find((header) => header.id === item.id),
     dataIndex: index,
   }));
 
-  store.dispatch("links/updateHeaderOrder", updatedHeaders);
+  try {
+    await store.dispatch("links/updateHeaderOrder", updatedHeaders);
+  } catch (err) {
+    (err as Error).message;
+  }
 };
 
 // CREATE HEADER
@@ -253,7 +283,7 @@ const handledAddeHeader = async () => {
   const header: Header = {
     title: "",
     isDisable: false,
-    dataIndex: headers.value.length,
+    dataIndex: 0,
   };
 
   try {
@@ -278,17 +308,6 @@ const loadHeaders = async () => {
 };
 
 loadHeaders();
-
-// onMounted(() => {
-//   const a = document.querySelectorAll<Element>("ul li input") as NodeList;
-//   a.forEach((b) => {
-//     b.addEventListener("input", () => {
-//       if (b instanceof HTMLInputElement) {
-//         console.log(b.id, b.checked);
-//       }
-//     });
-//   });
-// });
 </script>
 
 <style scoped lang="scss">
@@ -298,27 +317,6 @@ li {
   transition: opacity 300ms ease, border 300ms ease-in;
   &.dragging {
     @apply border-text2 border opacity-0;
-  }
-  .actions {
-    label {
-      &:before {
-        @apply content-[''] w-5 h-5 rounded-full cursor-pointer
-        top-0 left-0 absolute transition-[left] duration-300
-        ease-out bg-white border-gray-200 border-2;
-      }
-    }
-
-    input:checked ~ label {
-      @apply bg-sky-500;
-    }
-
-    input:checked ~ label::before {
-      @apply left-5 border-sky-500;
-    }
-
-    input:disabled ~ :is(label::before, label) {
-      @apply cursor-no-drop bg-opacity-50;
-    }
   }
 
   .delete-header {

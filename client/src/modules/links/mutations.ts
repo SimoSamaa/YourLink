@@ -1,4 +1,4 @@
-import { HeaderLinks } from '../../types/interfaces'
+import { HeaderLinks } from '@/types/interfacesHeader'
 
 export default {
   setAddHeaderLink(state: { headerLinks: HeaderLinks[] }, payload: HeaderLinks) {
@@ -16,11 +16,5 @@ export default {
     state.headerLinks = state.headerLinks.filter((header: HeaderLinks) => {
       return header.id !== id
     })
-  },
-  setUpdateHeader(state: any, payload: any) {
-    // state.headerLinks = payload;
-  },
-  setHeaderOrder(state: any, payload: any) {
-    state.headerLinks = payload;
   },
 };

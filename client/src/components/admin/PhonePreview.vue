@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
-import { HeaderLinks } from "@/types/interfaces";
+import { HeaderLinks } from "@/types/interfacesHeader";
 
 const store = useStore();
 

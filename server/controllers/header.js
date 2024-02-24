@@ -1,4 +1,3 @@
-const header = require('../models/header');
 const Header = require('../models/header');
 const { validationResult } = require('express-validator');
 
@@ -148,20 +147,22 @@ exports.updateHeaderCheckbox = (req, res, next) => {
     });
 };
 
-// UPDATE DRAG ELEMENT
+// UPDATE ORDER
 exports.updateHeadersOrders = (req, res, next) => {
-  // const updatedHeaders = req.body;
+  const updatedHeaders = req.body;
 
-  // console.log(updatedHeaders);
-
-  // Promise.all(updatedHeaders.map(header => Header.findByIdAndUpdate(header.id, { dataIndex: header.dataIndex })))
-  //   .then(() => {
-  //     res.status(200).json({ message: 'Order updated successfully' });
-  //   })
-  //   .catch(err => {
-  //     res.status(500).json({ error: err.message });
-  //   });
+  Promise.all(
+    updatedHeaders.map((header) => {
+      return Header.findByIdAndUpdate(header.id, { dataIndex: header.dataIndex });
+    })
+  )
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: 'Order updated successfully!' });
+    })
+    .catch(err => {
+      catchError(err);
+      next(err);
+    });
 };
-
-
-// Order updated successfully

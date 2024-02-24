@@ -1,4 +1,4 @@
-import { HeaderLinks, HeaderWithId } from '@/types/interfaces';
+import { HeaderLinks, HeaderWithId } from '@/types/interfacesHeader';
 import { ActionContext } from 'vuex';
 
 const URL_SERVER = 'http://localhost:2024/admin/'
@@ -98,16 +98,19 @@ export default {
 
     serverError(req, res, 'failed to change state')
   },
-  async updateHeaderOrder({ commit }: ActionContext<HeaderLinks, any>, payload: any) {
+  async updateHeaderOrder({ state }: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
+    state.headerLinks = payload
 
-    // const req = await fetch(`${ URL_SERVER }update-headers-orders`, {
-    //   method: 'PUT',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify(payload)
-    // });
+    const req = await fetch(`${ URL_SERVER }update-headers-orders`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-    commit('setHeaderOrder', payload);
+    const res: { message: string } = await req.json();
+
+    serverError(req, res, 'Update Orders fails!!');
   }
 };

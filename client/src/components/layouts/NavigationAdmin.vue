@@ -9,10 +9,12 @@
       </base-button>
       <img class="min-w-10" src="../../assets/logo.png" alt="app-logo" />
     </div>
-    <ul class="list-container grid gap-8 pl-4 relative">
+    <ul
+      class="list-container grid gap-8 pl-4 relative max-md:divide-x-[1px] divide-border"
+    >
       <span
         ref="actLink"
-        class="active-link bg-bg absolute rounded-tl-full rounded-bl-full h-[56px] left-4 bg-bg transition-all duration-300 ease-out"
+        class="active-link absolute rounded-tl-full rounded-bl-full h-[56px] left-4 bg-bg transition-all duration-300 ease-out"
       ></span>
       <li
         @click="selectPage($event, 0)"
@@ -290,10 +292,6 @@ nav {
         background-color: var(--clr-textPrimary);
         transition: scale 200ms, translate 200ms;
         z-index: 40;
-      }
-
-      li:not(:first-child) {
-        border-left: solid 1px var(--clr-border);
       }
 
       li {

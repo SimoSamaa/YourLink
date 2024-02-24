@@ -11,4 +11,37 @@
   header {
     @apply mt-4;
   }
+
+  // CONTAINER
+  .link-container-style {
+    @apply relative grid gap-4;
+
+    // CONTENT
+    .link-content-style {
+      @apply bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full;
+
+      // CUSTOM CHECKBOX
+      .checkbox-style {
+        label {
+          @apply relative block w-10 h-5 rounded-full bg-gray-200 shadow;
+
+          &:before {
+            @apply content-[''] w-5 h-5 rounded-full cursor-pointer top-0 left-0 absolute transition-[left] duration-300 ease-out bg-white border-gray-200 border-2;
+          }
+        }
+
+        input:checked~label {
+          @apply bg-sky-500;
+        }
+
+        input:checked~label::before {
+          @apply left-5 border-sky-500;
+        }
+
+        input:disabled~ :is(label::before, label) {
+          @apply cursor-no-drop bg-opacity-50;
+        }
+      }
+    }
+  }
 }

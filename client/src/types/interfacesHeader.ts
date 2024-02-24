@@ -5,10 +5,11 @@ interface Header {
 };
 
 interface HeaderWithId extends Header {
-  id: string
+  id: string;
 }
 
 interface HeaderLinks extends Header {
+  headerLinks: HeaderWithId;
   id: string;
   isEdit: boolean,
   isOpenDelete: boolean,

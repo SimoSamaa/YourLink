@@ -1,6 +1,6 @@
 <template>
   <button
-    class="disabled:hidden flex gap-4 capitalize justify-center bg-bg rounded-full py-2 px-4 border-border border text-text2 active:scale-90 outline-none"
+    class="disabled:hidden base-btn flex gap-4 capitalize justify-center bg-bg rounded-full py-2 px-4 border-border border text-text2 relative active:scale-90 outline-none"
     :class="mode"
     :disabled="disabled"
   >

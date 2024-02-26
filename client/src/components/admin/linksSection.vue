@@ -42,11 +42,23 @@
           class="outline-none w-1/2 h-[28px]"
         />
       </div>
-      <ul class="flex gap-8 mt-2">
-        <li><appIcon name="appearance" size="20px" /></li>
-        <li><appIcon name="image" size="20px" /></li>
-        <li><appIcon name="share" size="20px" /></li>
-        <li><appIcon name="delete" size="20px" /></li>
+      <ul class="links-actions flex gap-8 mt-2">
+        <li>
+          <appIcon name="appearance" size="20px" />
+          <BaseActionHover title="layout" />
+        </li>
+        <li>
+          <appIcon name="image" size="20px" />
+          <BaseActionHover title="thumbnail" />
+        </li>
+        <li>
+          <appIcon name="share" size="20px" />
+          <BaseActionHover title="share" />
+        </li>
+        <li>
+          <appIcon name="delete" size="20px" />
+          <BaseActionHover title="delete" />
+        </li>
       </ul>
     </div>
     <div class="checkbox-style">
@@ -65,6 +77,7 @@
 
 <script lang="ts" setup>
 import { ref, PropType, nextTick } from "vue";
+import BaseActionHover from "@/components/UI/BaseActionHover.vue";
 
 const props = defineProps({
   linkId: String as PropType<string>,
@@ -103,6 +116,15 @@ li {
   grid-template-columns: 30px 1fr auto;
   div {
     margin-top: 0 !important;
+  }
+
+  .links-actions li {
+    @apply cursor-pointer transition-all
+    duration-300 ease-out p-1 rounded-md relative;
+
+    &:hover {
+      @apply bg-bg;
+    }
   }
 }
 </style>

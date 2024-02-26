@@ -85,6 +85,7 @@
               :disabled="header.isOpenDelete"
               @click="openDeleteHeader(header)"
             >
+              <BaseActionHover title="delete" />
               <appIcon name="delete" size="20px" />
             </base-button>
           </div>
@@ -127,6 +128,7 @@ import { useStore } from "vuex";
 import linksSection from "@/components/admin/linksSection.vue";
 import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
 import { link } from "@/types/interfacesLink";
+import BaseActionHover from "@/components/UI/BaseActionHover.vue";
 
 const store = useStore();
 

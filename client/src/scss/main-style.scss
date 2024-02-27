@@ -31,11 +31,11 @@
         }
 
         input:checked~label {
-          @apply bg-sky-500;
+          @apply bg-purple-500;
         }
 
         input:checked~label::before {
-          @apply left-5 border-sky-500;
+          @apply left-5 border-purple-500;
         }
 
         input:disabled~ :is(label::before, label) {

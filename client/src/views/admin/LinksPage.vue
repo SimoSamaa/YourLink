@@ -19,7 +19,7 @@
       @after-enter="focusInput"
       class="link-container-style headers-container"
       :style="checkMarginBottom"
-      @dragover.prevent="dropDragElement"
+      @dragover.prevent="dropDragElementHeaders"
       @drop="changeElementOrders($event)"
     >
       <li
@@ -109,7 +109,10 @@
       </li>
     </transition-group>
     <!-- LINKS -->
-    <ul class="link-container-style">
+    <ul
+      class="link-container-style links-container"
+      @dragover.prevent="dropDragElementLinks"
+    >
       <linksSection
         v-for="link in links"
         :key="link.id"
@@ -123,7 +126,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, nextTick } from "vue";
+import { computed, nextTick } from "vue";
 import { useStore } from "vuex";
 import linksSection from "@/components/admin/linksSection.vue";
 import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
@@ -134,7 +137,8 @@ const store = useStore();
 
 const headers = computed<HeaderLinks[]>(() =>
   store.getters["links/headers"].sort(
-    (a: any, b: any) => a.dataIndex - b.dataIndex
+    (a: { dataIndex: number }, b: { dataIndex: number }) =>
+      a.dataIndex - b.dataIndex
   )
 );
 
@@ -218,31 +222,39 @@ const InputValue = (e: Event, header: HeaderLinks) => {
   header.title = inputHeader;
 };
 
-const openDeleteHeader = (header: HeaderLinks) => {
-  header.isOpenDelete = true;
-};
+const openDeleteHeader = (header: HeaderLinks) => (header.isOpenDelete = true);
 
-const startDragElement = (header: HeaderLinks) => {
-  console.log("start");
-  header.isDrag = true;
-};
+const startDragElement = (header: HeaderLinks) => (header.isDrag = true);
 
-const endDragElement = (header: HeaderLinks) => {
-  console.log("end");
-  header.isDrag = false;
-};
+const endDragElement = (header: HeaderLinks) => (header.isDrag = false);
 
-const dropDragElement = (e: DragEvent) => {
+const dropDragElementHeaders = (e: DragEvent) => {
   const headersContainer = document.querySelector(
     ".headers-container"
   ) as HTMLElement;
-  const draggingItem = document.querySelector(".dragging") as HTMLElement;
 
+  const draggingItem = document.querySelector(".dragging") as HTMLElement;
   const afterElement = getDragAfterElement(headersContainer, e.clientY);
+
   if (afterElement == null) {
     headersContainer.appendChild(draggingItem);
   } else {
     headersContainer.insertBefore(draggingItem, afterElement);
+  }
+};
+
+const dropDragElementLinks = (e: DragEvent) => {
+  const linksContainer = document.querySelector(
+    ".links-container"
+  ) as HTMLElement;
+
+  const draggingItem = document.querySelector(".dragging") as HTMLElement;
+  const afterElement = getDragAfterElement(linksContainer, e.clientY);
+
+  if (afterElement == null) {
+    linksContainer.appendChild(draggingItem);
+  } else {
+    linksContainer.insertBefore(draggingItem, afterElement);
   }
 };
 
@@ -267,7 +279,6 @@ function getDragAfterElement(
 const changeElementOrders = async (e: DragEvent) => {
   const target = e.currentTarget as Element;
   const items = [...target.querySelectorAll("li")];
-  // ...headers.value.find((header) => header.id === item.id),
   const updatedHeaders = items.map((item, index) => ({
     ...headers.value.find((header) => header.id === item.id),
     dataIndex: index,
@@ -318,7 +329,8 @@ loadHeaders();
 li {
   transition: opacity 300ms ease, border 300ms ease-in;
   &.dragging {
-    @apply border-text2 border opacity-0;
+    opacity: 0;
+    border: 3px solid var(--text2) !important;
   }
 
   .delete-header {

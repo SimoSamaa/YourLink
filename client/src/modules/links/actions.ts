@@ -82,8 +82,6 @@ export default {
     const res: { message: string } = await req.json();
 
     serverError(req, res, 'failed to update header');
-
-    commit('setUpdateHeader', paylaod)
   },
   async updateHideHeader(_context: ActionContext<HeaderLinks, any>, paylaod: HeaderWithId) {
     const req = await fetch(`${ URL_SERVER }update-header-checkbox/${ paylaod.id }`, {

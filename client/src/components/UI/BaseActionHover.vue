@@ -14,7 +14,7 @@ defineProps({
 </script>
 
 <style lang="scss">
-$hover-classes: ("links-actions li", "base-btn");
+$hover-classes: ("links-actions div", "base-btn");
 @each $class in $hover-classes {
   #title-hover {
     @apply absolute -bottom-9 left-1/2 -translate-x-1/2

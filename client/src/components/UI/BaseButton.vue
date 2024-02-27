@@ -52,4 +52,13 @@ button {
     @apply bg-red-500;
   }
 }
+
+.close {
+  @apply rounded-full size-[30px] p-0 border-none
+  grid place-content-center;
+
+  &:is(:hover, :focus-visible) {
+    @apply bg-red-500;
+  }
+}
 </style>

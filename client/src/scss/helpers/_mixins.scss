@@ -33,7 +33,7 @@
 
   .#{$name}-leave-active {
     animation: #{$name} 300ms ease reverse;
-    position: absolute;
+    position: if($use-opacity, static, absolute);
   }
 
   .#{$name}-move {

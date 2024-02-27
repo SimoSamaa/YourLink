@@ -10,7 +10,7 @@
       <img class="min-w-10" src="../../assets/logo.png" alt="app-logo" />
     </div>
     <ul
-      class="list-container grid gap-8 pl-4 relative max-md:divide-x-[1px] divide-border"
+      class="list-container grid gap-8 pl-4 relative max-[1000px]:divide-x-[1px] divide-border"
     >
       <span
         ref="actLink"

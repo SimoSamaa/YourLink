@@ -15,21 +15,23 @@
       <!-- LINKS -->
       <ul class="links grid gap-4">
         <li
-          class="bg-red-500 rounded-full duration-150 transition-transform ease hover:scale-105"
+          class="bg-[#ddd] duration-150 transition-transform hover:scale-105 ease-out"
+          :class="link.layout"
           v-for="link in links"
           :key="link.id"
         >
-          <a
-            :href="link.link"
-            target="_blank"
-            class="flex items-center justify-between py-2 px-4"
-          >
+          <a :href="link.link" target="_blank" class="py-2 px-4">
             <div v-html="link.icon"></div>
             <div class="text-sm">{{ link.title }}</div>
-            <appIcon name="more" size="20px" />
+            <div><appIcon name="more" size="20px" /></div>
           </a>
         </li>
       </ul>
+      <img
+        src="../../assets/logo.png"
+        class="w-[100px] absolute bottom-4 left-1/2 -translate-x-1/2"
+        alt="logo"
+      />
     </div>
   </section>
 </template>
@@ -81,6 +83,36 @@ onMounted(() => {
     &:before {
       @apply content-[''] absolute left-1/2 -top-1
           -translate-x-1/2 bg-black2 w-32 h-5 rounded-bl-lg rounded-br-lg;
+    }
+
+    // CLASSSIC LAYOUT (DEFAULT)
+    .classic {
+      @apply rounded-full;
+      a {
+        @apply flex items-center justify-between;
+      }
+    }
+    // FEATURED LAYOUT
+    .featured {
+      @apply rounded-lg;
+      a {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+
+        div:nth-child(1) {
+          grid-column: span 3;
+          grid-row: span 2;
+        }
+
+        div:nth-child(2) {
+          grid-column: span 2;
+        }
+
+        div:nth-child(3) {
+          margin-left: auto;
+        }
+      }
     }
   }
 }

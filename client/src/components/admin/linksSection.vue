@@ -25,9 +25,9 @@
           </div>
           <input
             v-else
-            @blur="handledInputLinkTitleBlur"
+            @blur="handledInputLinkTitleBlur($event)"
             type="text"
-            v-model="props.linkTitle"
+            :value="props.linkTitle"
             ref="inputTitleLink"
             class="outline-none w-1/2 h-[28px] font-semibold"
             maxlength="20"
@@ -82,12 +82,14 @@
         </ol>
       </div>
       <div class="checkbox-style">
+        <!-- v-model="props.linkChecked" -->
         <input
           type="checkbox"
-          v-model="props.linkChecked"
           class="hidden"
           :id="`disable-${props.linkId}`"
           :disabled="!props.linkTitle"
+          :checked="props.linkChecked"
+          @change="hideLink($event, props.linkId)"
         />
         <label :for="`disable-${props.linkId}`"></label>
       </div>
@@ -99,11 +101,11 @@
       class="sec-two grid"
       :class="{ 'open-sec-func': actionAct }"
     >
-      <transition name="zaba" mode="out-in">
+      <transition name="opacity-animated" mode="out-in">
         <!-- LAYOUT -->
         <template v-if="actionAct === 1">
-          <div class="layout">
-            <div class="flex justify-between items-center mb-2">
+          <div class="layout space-y-3">
+            <div class="flex justify-between items-center">
               <h3>LAYOUT</h3>
               <base-button mode="close" @click="closeActions">
                 <appIcon name="close" size="20px" />
@@ -111,13 +113,58 @@
             </div>
             <p class="text-text2">Choose a layout for your link</p>
             <label
-              for="classic"
-              class="block p-4 rounded-xl border-border border-2"
+              :for="`classic-${linkId}`"
+              :class="{ 'checked-layout': isChecked === 'classic' }"
             >
-              <input type="radio" id="classic" class="hidden" />
-              <span
-                class="size-[30px] border-purple-500 border-2 relative rounded-full grid place-items-center"
-              ></span>
+              <input
+                type="radio"
+                :id="`classic-${linkId}`"
+                :name="`layout-${props.linkId}`"
+                value="classic"
+                @change="chooseLayout('classic', props.linkId)"
+                checked
+              />
+              <span></span>
+              <div class="mr-auto max-[650px]:m-0">
+                <strong>Classic</strong>
+                <p class="text-text2">Efficient, direct and compact.</p>
+              </div>
+              <div
+                class="h-8 w-[150px] max-[650px]:w-full bg-purple-500 rounded-full flex items-center justify-between p-2"
+              >
+                <div class="size-5 bg-white rounded-full"></div>
+                <appIcon name="more" size="20px" class="text-white" />
+              </div>
+            </label>
+            <label
+              :for="`featured-${linkId}`"
+              :class="{ 'checked-layout': isChecked === 'featured' }"
+            >
+              <input
+                type="radio"
+                :id="`featured-${linkId}`"
+                :name="`layout-${props.linkId}`"
+                @change="chooseLayout('featured', props.linkId)"
+              />
+              <span></span>
+              <div class="mr-auto max-[650px]:m-0 max-w-[300px]">
+                <strong>Featured</strong>
+                <p class="text-text2">
+                  Make your link stand out with a larger, more attractive
+                  display.
+                </p>
+              </div>
+              <div
+                class="bg-purple-500 flex flex-col justify-between rounded-lg w-[150px] max-[650px]:w-full h-20 p-2"
+              >
+                <div class="size-5 bg-white rounded-full"></div>
+                <div
+                  class="flex items-center justify-between text-white text-[10px]"
+                >
+                  <p>this is your link</p>
+                  <appIcon name="more" size="20px" />
+                </div>
+              </div>
             </label>
           </div>
         </template>
@@ -155,22 +202,35 @@
 
 <script lang="ts" setup>
 import { ref, PropType, nextTick } from "vue";
+import { useStore } from "vuex";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
 
 const props = defineProps({
-  linkId: String as PropType<string>,
-  linkTitle: String as PropType<string>,
+  linkId: {
+    type: String as PropType<string>,
+    default: "",
+  },
+  linkTitle: {
+    type: String as PropType<string>,
+    default: "",
+  },
   link: String as PropType<string>,
   linkChecked: Boolean as PropType<boolean>,
+  // linkLayout: String as PropType<string>,
 });
+
+const emit = defineEmits(["update-title"]);
+
+const store = useStore();
 
 const isEditModeTitle = ref<boolean>(false);
 const isEditModeLink = ref<boolean>(false);
 const inputTitleLink = ref<HTMLElement | null>(null);
 const inputLink = ref<HTMLElement | null>(null);
 const sectionActions = ref<HTMLElement>();
-const actionAct = ref<number | null>(1);
+const actionAct = ref<number | null>(null);
 const isDrag = ref<boolean>(false);
+const isChecked = ref<string | null>("classic");
 
 // OPEN EDIT LINK TITLE
 const openEditModeTitleLink = () => {
@@ -178,8 +238,9 @@ const openEditModeTitleLink = () => {
   nextTick(() => (inputTitleLink.value as HTMLInputElement).focus());
 };
 
-const handledInputLinkTitleBlur = () => {
+const handledInputLinkTitleBlur = (e: Event) => {
   isEditModeTitle.value = false;
+  emit("update-title", (e.target as HTMLInputElement).value);
 };
 // END
 
@@ -204,11 +265,35 @@ const closeActions = () => {
 const startDragElement = () => (isDrag.value = true);
 
 const endDragElement = () => (isDrag.value = false);
+
+const hideLink = async (e: Event, id: string) => {
+  const inputState = (e.target as HTMLInputElement).checked;
+  const updatedHideLink = {
+    id: id,
+    isDisable: inputState,
+  };
+
+  try {
+    await store.dispatch("links/updateHideLink", updatedHideLink);
+  } catch (err) {
+    (err as Error).message;
+  }
+};
+
+// SHOOS LAYOUT
+const chooseLayout = async (layout: string, id: string) => {
+  isChecked.value = layout;
+
+  try {
+    await store.dispatch("links/updateLayout", { id: id, layout: layout });
+  } catch (err) {
+    (err as Error).message;
+  }
+};
 </script>
 
 <style scoped lang="scss">
 @import "@/scss//helpers/mixins";
-
 li {
   section {
     margin-top: 0 !important;
@@ -246,21 +331,33 @@ li {
 
     .layout {
       label {
-        @apply cursor-pointer;
+        @apply cursor-pointer flex gap-4 items-center justify-between p-4
+        rounded-xl border-border border duration-300 transition-all ease-out hover:bg-purple-100;
 
-        span::before {
-          content: "";
-          position: absolute;
-          transform: scale(0);
-          display: block;
-          width: 15px;
-          aspect-ratio: 1 / 1;
-          border-radius: 50%;
-          transition: 300ms ease transform;
-          @apply bg-purple-500;
+        &.checked-layout {
+          @apply border-purple-500 border bg-purple-100;
         }
 
-        input[type="radio"]:checked ~ span::before {
+        @include breakpoint("sm") {
+          @apply flex-col text-center;
+        }
+
+        input {
+          @apply hidden;
+        }
+
+        span {
+          @apply min-w-[30px] max-w-[30px] h-[30px] border-purple-500 border-2 relative
+          rounded-full grid place-items-center max-[650px]:hidden;
+
+          &::before {
+            @apply content-[''] absolute size-4 rounded-full  bg-purple-500;
+            transform: scale(0);
+            transition: transform 300ms ease;
+          }
+        }
+
+        input:checked ~ span::before {
           transform: scale(1);
         }
       }
@@ -268,5 +365,5 @@ li {
   }
 }
 
-@include setAnimation("zaba", null, null, "opacity");
+@include setAnimation("opacity-animated", null, null, "opacity");
 </style>

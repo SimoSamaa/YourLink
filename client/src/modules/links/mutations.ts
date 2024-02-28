@@ -1,6 +1,8 @@
-import { HeaderLinks } from '@/types/interfacesHeader'
+import { HeaderLinks } from '@/types/interfacesHeader';
+import { link } from '@/types/interfacesLink';
 
 export default {
+  // HEADERS
   setAddHeaderLink(state: { headerLinks: HeaderLinks[] }, payload: HeaderLinks) {
     state.headerLinks.unshift(payload)
   },
@@ -17,4 +19,27 @@ export default {
       return header.id !== id
     })
   },
+  // LINKS
+  setUpdateHideLink(state: { links: link[] }, paylaod: any) {
+    state.links = state.links.map((link: any) => {
+      if (link.id === paylaod.id) {
+        return {
+          ...link,
+          isDisable: paylaod.isDisable
+        }
+      }
+      return link
+    })
+  },
+  setUpdateLayout(state: { links: link[] }, payload: link) {
+    state.links = state.links.map((link: link) => {
+      if (link.id === payload.id) {
+        return {
+          ...link,
+          layout: payload.layout
+        }
+      }
+      return link
+    });
+  }
 };

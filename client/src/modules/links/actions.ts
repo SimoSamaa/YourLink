@@ -1,5 +1,7 @@
 import { HeaderLinks, HeaderWithId } from '@/types/interfacesHeader';
+import { link } from '@/types/interfacesLink';
 import { ActionContext } from 'vuex';
+import links from '.';
 
 const URL_SERVER = 'http://localhost:2024/admin/'
 
@@ -11,6 +13,7 @@ function serverError(req: Response, res: { message: string }, messErr: string) {
 };
 
 export default {
+  // HEADERS
   async addHeaderLink({ commit }: ActionContext<HeaderLinks, any>, paylaod: HeaderLinks) {
 
     const header = {
@@ -70,7 +73,7 @@ export default {
 
     commit('setDeleteHeaderLink', id);
   },
-  async updateHeader({ commit }: ActionContext<HeaderLinks, any>, paylaod: HeaderWithId) {
+  async updateHeader(_context: ActionContext<HeaderLinks, any>, paylaod: HeaderWithId) {
     const req = await fetch(`${ URL_SERVER }update-header/${ paylaod.id }`, {
       method: 'PUT',
       headers: {
@@ -110,5 +113,13 @@ export default {
     const res: { message: string } = await req.json();
 
     serverError(req, res, 'Update Orders fails!!');
+  },
+  // LINKS
+  async updateHideLink({ commit }: ActionContext<link, any>, paylaod: any) {
+    commit('setUpdateHideLink', paylaod);
+  },
+  async updateLayout({ commit }: ActionContext<link, any>, payload: any) {
+
+    commit('setUpdateLayout', payload);
   }
 };

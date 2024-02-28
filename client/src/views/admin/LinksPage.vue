@@ -120,6 +120,8 @@
         :link-title="link.title"
         :link="link.link"
         :link-checked="link.isDisable"
+        :link-layout="link.layout"
+        @update-title="updateLinkTitle($event, link.id)"
       ></linksSection>
     </ul>
   </section>
@@ -141,7 +143,6 @@ const headers = computed<HeaderLinks[]>(() =>
       a.dataIndex - b.dataIndex
   )
 );
-
 const links = computed<link[]>(() => store.getters["links/links"]);
 
 const checkMarginBottom = computed<{ marginBottom: string }>(() => {
@@ -152,6 +153,17 @@ const editHeader = (header: HeaderLinks) => {
   header.isEdit = true;
   header.oldTitle = header.title;
   if (header.isEdit) focusInput();
+};
+
+// sss
+const updateLinkTitle = (newTitle: string, linkId: string) => {
+  const updatedLinks = [...links.value];
+  const linkIndex = updatedLinks.findIndex((link) => link.id === linkId);
+
+  if (linkIndex !== -1) {
+    updatedLinks[linkIndex].title = newTitle;
+    // store.dispatch("links/updateLinkTitle", { id: linkId, title: newTitle });
+  }
 };
 
 const focusInput = () => {

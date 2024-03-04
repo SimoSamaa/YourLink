@@ -41,11 +41,7 @@ button {
   transition-property: background-color;
 
   &:is(:hover, :focus-visible) {
-    @apply text-white bg-purple-400 shadow-none;
-  }
-
-  &.add:is(:hover, :focus-visible) {
-    @apply bg-sky-500;
+    @apply text-white bg-purple-500 shadow-none;
   }
 
   &.err:is(:hover, :focus-visible) {
@@ -60,5 +56,10 @@ button {
   &:is(:hover, :focus-visible) {
     @apply bg-red-500;
   }
+}
+
+.btn-icon {
+  all: unset;
+  @apply cursor-pointer rounded px-[3px];
 }
 </style>

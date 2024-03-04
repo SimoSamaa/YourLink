@@ -170,11 +170,19 @@
         </template>
         <!-- THUMBNAIL -->
         <template v-else-if="actionAct === 2">
-          <div class="flex justify-between items-center mb-2">
-            <h3>THUMBNAIL</h3>
-            <base-button mode="close" @click="closeActions">
-              <appIcon name="close" size="20px" />
-            </base-button>
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3>THUMBNAIL</h3>
+              <base-button mode="close" @click="closeActions">
+                <appIcon name="close" size="20px" />
+              </base-button>
+            </div>
+            <p class="text-text2">Add a Thumbnail or Icon to this Link.</p>
+            <base-button
+              @click="setThumbnail"
+              class="w-full mt-4 text-white bg-purple-500"
+              >set Thumbnail</base-button
+            >
           </div>
         </template>
         <!-- SHARE -->
@@ -219,7 +227,7 @@ const props = defineProps({
   // linkLayout: String as PropType<string>,
 });
 
-const emit = defineEmits(["update-title"]);
+const emit = defineEmits(["update-title", "set-thumbnail"]);
 
 const store = useStore();
 
@@ -266,6 +274,10 @@ const startDragElement = () => (isDrag.value = true);
 
 const endDragElement = () => (isDrag.value = false);
 
+const setThumbnail = () => {
+  emit("set-thumbnail", true);
+};
+
 const hideLink = async (e: Event, id: string) => {
   const inputState = (e.target as HTMLInputElement).checked;
   const updatedHideLink = {
@@ -293,7 +305,8 @@ const chooseLayout = async (layout: string, id: string) => {
 </script>
 
 <style scoped lang="scss">
-@import "@/scss//helpers/mixins";
+@import "@/scss/helpers/mixins";
+
 li {
   section {
     margin-top: 0 !important;

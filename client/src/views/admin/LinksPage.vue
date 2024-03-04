@@ -1,18 +1,22 @@
 <template>
-  <section class="admin-page">
+  <section class="admin-page relative">
+    <transition name="test">
+      <AddThumbnail v-if="thumbnail" @set-close-Thumbnail="closeThumbnail" />
+    </transition>
     <h1>Links</h1>
     <header class="flex justify-between pb-4 border-b-[1px] border-border mb-4">
       <base-button mode="white-btn" @click="handledAddeHeader">
         <appIcon name="header" />
         add headers
       </base-button>
-      <base-button mode="white-btn add">
+      <base-button mode="white-btn">
         <appIcon name="add" />
         add link
       </base-button>
     </header>
     <!-- HEADERS -->
     <transition-group
+      v-if="!thumbnail"
       tag="ul"
       appear
       name="animated-headers"
@@ -110,6 +114,7 @@
     </transition-group>
     <!-- LINKS -->
     <ul
+      v-if="!thumbnail"
       class="link-container-style links-container"
       @dragover.prevent="dropDragElementLinks"
     >
@@ -122,18 +127,20 @@
         :link-checked="link.isDisable"
         :link-layout="link.layout"
         @update-title="updateLinkTitle($event, link.id)"
+        @set-thumbnail="openThumbnail"
       ></linksSection>
     </ul>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { useStore } from "vuex";
 import linksSection from "@/components/admin/linksSection.vue";
 import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
 import { link } from "@/types/interfacesLink";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
+import AddThumbnail from "@/components/admin/AddThumbnail.vue";
 
 const store = useStore();
 
@@ -166,6 +173,11 @@ const updateLinkTitle = (newTitle: string, linkId: string) => {
   }
 };
 
+const thumbnail = ref<boolean>(false);
+const openThumbnail = (open: boolean) => (thumbnail.value = open);
+const closeThumbnail = () => (thumbnail.value = false);
+
+// ssss
 const focusInput = () => {
   nextTick(() => {
     const inputHeader = document.querySelector(".input-header");
@@ -370,6 +382,19 @@ li {
   (
     opacity: 1,
     transform: scaleY(1) translateX(0),
+  ),
+  null
+);
+
+@include setAnimation(
+  "test",
+  (
+    transform: translateY(-200px),
+    opacity: 0,
+  ),
+  (
+    opacity: 1,
+    transform: translateX(0),
   ),
   null
 );

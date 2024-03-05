@@ -8,7 +8,7 @@
     @dragend="endDragElement()"
   >
     <section class="sec-one grid items-center">
-      <div class="drager cursor-grab">
+      <div class="drager cursor-grab" title="move">
         <appIcon name="dotes" size="20px" />
       </div>
       <div class="ml-8">
@@ -18,34 +18,41 @@
             v-if="!isEditModeTitle"
             class="flex font-semibold gap-2 items-center"
           >
-            <p>{{ props.linkTitle }}</p>
+            <p v-if="linkTitle">{{ props.linkTitle }}</p>
+            <p v-else class="text-border">Title</p>
             <div @click="openEditModeTitleLink" class="mb-1 cursor-pointer">
               <appIcon name="edit" size="20px" />
             </div>
           </div>
           <input
             v-else
-            @blur="handledInputLinkTitleBlur($event)"
+            @blur="handledInputLinkTitleBlur($event, props.linkId)"
             type="text"
             :value="props.linkTitle"
             ref="inputTitleLink"
             class="outline-none w-1/2 h-[28px] font-semibold"
-            maxlength="20"
+            maxlength="15"
           />
         </div>
         <!-- LINK -->
         <div>
           <div v-if="!isEditModeLink" class="flex gap-2 items-center">
-            <p>{{ props.link }}</p>
+            <p
+              v-if="link"
+              class="text-ellipsis text-nowrap overflow-hidden max-w-[400px]"
+            >
+              {{ props.link }}
+            </p>
+            <p v-else class="text-border font-semibold">URL</p>
             <div @click="openEditModeLink" class="mb-1 cursor-pointer">
               <appIcon name="edit" size="20px" />
             </div>
           </div>
           <input
             v-else
-            @blur="handledInputLinkBlur"
+            @blur="handledInputLinkBlur($event, props.linkId)"
             type="text"
-            v-model="props.link"
+            :value="props.link"
             ref="inputLink"
             class="outline-none w-1/2 h-[28px]"
           />
@@ -82,7 +89,6 @@
         </ol>
       </div>
       <div class="checkbox-style">
-        <!-- v-model="props.linkChecked" -->
         <input
           type="checkbox"
           class="hidden"
@@ -178,9 +184,7 @@
               </base-button>
             </div>
             <p class="text-text2">Add a Thumbnail or Icon to this Link.</p>
-            <base-button
-              @click="setThumbnail"
-              class="w-full mt-4 text-white bg-purple-500"
+            <base-button @click="setThumbnail(props.linkId)" mode="full"
               >set Thumbnail</base-button
             >
           </div>
@@ -196,11 +200,16 @@
         </template>
         <!-- DELETE -->
         <template v-else-if="actionAct === 4">
-          <div class="flex justify-between items-center mb-2">
-            <h3>DELETE</h3>
-            <base-button mode="close" @click="closeActions">
-              <appIcon name="close" size="20px" />
-            </base-button>
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3>DELETE</h3>
+              <base-button mode="close" @click="closeActions">
+                <appIcon name="close" size="20px" />
+              </base-button>
+            </div>
+            <base-button mode="full err" @click="deleteLink(props.linkId)"
+              >delete link</base-button
+            >
           </div>
         </template>
       </transition>
@@ -227,7 +236,7 @@ const props = defineProps({
   // linkLayout: String as PropType<string>,
 });
 
-const emit = defineEmits(["update-title", "set-thumbnail"]);
+const emit = defineEmits(["set-thumbnail", "zaba-zaba"]);
 
 const store = useStore();
 
@@ -246,9 +255,14 @@ const openEditModeTitleLink = () => {
   nextTick(() => (inputTitleLink.value as HTMLInputElement).focus());
 };
 
-const handledInputLinkTitleBlur = (e: Event) => {
+const handledInputLinkTitleBlur = async (e: Event, id: string) => {
   isEditModeTitle.value = false;
-  emit("update-title", (e.target as HTMLInputElement).value);
+  const linkTitle = (e.target as HTMLInputElement).value;
+  if (linkTitle === "") hideLink(e, id);
+  store.dispatch("links/updateLinkTitle", {
+    id: id,
+    title: linkTitle,
+  });
 };
 // END
 
@@ -258,7 +272,15 @@ const openEditModeLink = () => {
   nextTick(() => (inputLink.value as HTMLInputElement).focus());
 };
 
-const handledInputLinkBlur = () => (isEditModeLink.value = false);
+const handledInputLinkBlur = async (e: Event, id: string) => {
+  isEditModeLink.value = false;
+  const link = (e.target as HTMLInputElement).value.trim();
+  if (link === "") hideLink(e, id);
+  store.dispatch("links/updateLink", {
+    id: id,
+    link: link,
+  });
+};
 // END
 
 // OPEN ACTIONS
@@ -274,8 +296,8 @@ const startDragElement = () => (isDrag.value = true);
 
 const endDragElement = () => (isDrag.value = false);
 
-const setThumbnail = () => {
-  emit("set-thumbnail", true);
+const setThumbnail = (id: string) => {
+  emit("set-thumbnail", { linkId: id, open: true });
 };
 
 const hideLink = async (e: Event, id: string) => {
@@ -292,12 +314,21 @@ const hideLink = async (e: Event, id: string) => {
   }
 };
 
-// SHOOS LAYOUT
+// CHOOSE LAYOUT
 const chooseLayout = async (layout: string, id: string) => {
   isChecked.value = layout;
 
   try {
     await store.dispatch("links/updateLayout", { id: id, layout: layout });
+  } catch (err) {
+    (err as Error).message;
+  }
+};
+
+// DELETE LINK
+const deleteLink = async (id: string) => {
+  try {
+    await store.dispatch("links/deleteLink", id);
   } catch (err) {
     (err as Error).message;
   }

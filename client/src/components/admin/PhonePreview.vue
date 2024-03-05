@@ -21,7 +21,9 @@
           :key="link.id"
         >
           <a :href="link.link" target="_blank" class="py-2 px-4">
-            <div v-html="link.icon"></div>
+            <div>
+              <box-icon type="logo" :name="link.icon"></box-icon>
+            </div>
             <div class="text-sm">{{ link.title }}</div>
             <div><appIcon name="more" size="20px" /></div>
           </a>
@@ -56,7 +58,9 @@ const sortedHeaders = computed<HeaderLinks[]>(() =>
 
 // LINKS
 const links = computed<any>(() =>
-  store.getters["links/links"].filter((link: any) => link.isDisable !== false)
+  store.getters["links/links"]
+    .filter((link: any) => link.isDisable !== false)
+    .sort((a: HeaderLinks, b: HeaderLinks) => a.dataIndex + b.dataIndex)
 );
 
 onMounted(() => {
@@ -89,7 +93,10 @@ onMounted(() => {
     .classic {
       @apply rounded-full;
       a {
-        @apply flex items-center justify-between;
+        @apply flex justify-between;
+        div:nth-child(1) {
+          @apply grid place-content-center;
+        }
       }
     }
     // FEATURED LAYOUT
@@ -103,6 +110,7 @@ onMounted(() => {
         div:nth-child(1) {
           grid-column: span 3;
           grid-row: span 2;
+          // display: block;
         }
 
         div:nth-child(2) {

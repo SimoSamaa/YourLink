@@ -1,7 +1,16 @@
 <template>
   <section class="admin-page relative">
+    <!-- ADD LINK -->
     <transition name="test">
-      <AddThumbnail v-if="thumbnail" @set-close-Thumbnail="closeThumbnail" />
+      <AddLink v-if="linkPage" @set-close-AddLink="closeAddLink" />
+    </transition>
+    <!-- ADD ICON || IMG TO LINKS -->
+    <transition name="test">
+      <AddThumbnail
+        v-if="thumbnail"
+        :link-id="id"
+        @set-close-Thumbnail="closeThumbnail"
+      />
     </transition>
     <h1>Links</h1>
     <header class="flex justify-between pb-4 border-b-[1px] border-border mb-4">
@@ -9,14 +18,14 @@
         <appIcon name="header" />
         add headers
       </base-button>
-      <base-button mode="white-btn">
+      <base-button mode="white-btn" @click="openAddLinkPage">
         <appIcon name="add" />
         add link
       </base-button>
     </header>
     <!-- HEADERS -->
     <transition-group
-      v-if="!thumbnail"
+      v-if="!thumbnail && !linkPage"
       tag="ul"
       appear
       name="animated-headers"
@@ -27,8 +36,7 @@
       @drop="changeElementOrders($event)"
     >
       <li
-        v-for="(header, ind) in headers"
-        :data-index="ind"
+        v-for="header in headers"
         :key="header.id"
         :id="header.id"
         draggable="true"
@@ -41,7 +49,7 @@
           <span v-if="header.isEdit" class="absolute bottom-1 left-8 text-sm">
             {{ header.title.length }}/20
           </span>
-          <div class="drager cursor-grab">
+          <div class="drager cursor-grab" title="move">
             <appIcon name="dotes" size="20px" />
           </div>
           <div class="flex gap-2 font-semibold text-xl">
@@ -86,6 +94,7 @@
             ></label>
             <base-button
               mode="err"
+              class="disabled:hidden"
               :disabled="header.isOpenDelete"
               @click="openDeleteHeader(header)"
             >
@@ -114,7 +123,7 @@
     </transition-group>
     <!-- LINKS -->
     <ul
-      v-if="!thumbnail"
+      v-if="!thumbnail && !linkPage"
       class="link-container-style links-container"
       @dragover.prevent="dropDragElementLinks"
     >
@@ -126,7 +135,6 @@
         :link="link.link"
         :link-checked="link.isDisable"
         :link-layout="link.layout"
-        @update-title="updateLinkTitle($event, link.id)"
         @set-thumbnail="openThumbnail"
       ></linksSection>
     </ul>
@@ -141,6 +149,7 @@ import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
 import { link } from "@/types/interfacesLink";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
 import AddThumbnail from "@/components/admin/AddThumbnail.vue";
+import AddLink from "@/components/admin/AddLink.vue";
 
 const store = useStore();
 
@@ -150,11 +159,31 @@ const headers = computed<HeaderLinks[]>(() =>
       a.dataIndex - b.dataIndex
   )
 );
-const links = computed<link[]>(() => store.getters["links/links"]);
+const links = computed<link[]>(() =>
+  store.getters["links/links"].sort(
+    (a: { dataIndex: number }, b: { dataIndex: number }) =>
+      a.dataIndex - b.dataIndex
+  )
+);
 
 const checkMarginBottom = computed<{ marginBottom: string }>(() => {
   return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };
 });
+
+// ADD LINK (PAGE)
+const linkPage = ref<boolean>(false);
+
+const openAddLinkPage = () => (linkPage.value = true);
+const closeAddLink = (close: boolean) => (linkPage.value = close);
+
+// BOXICONS & UPLOAD LOGOG LINK (PAGE)
+const id = ref<string>("");
+const thumbnail = ref<boolean>(false);
+const openThumbnail = ({ linkId, open }: { linkId: string; open: boolean }) => {
+  thumbnail.value = open;
+  id.value = linkId;
+};
+const closeThumbnail = () => (thumbnail.value = false);
 
 const editHeader = (header: HeaderLinks) => {
   header.isEdit = true;
@@ -162,22 +191,6 @@ const editHeader = (header: HeaderLinks) => {
   if (header.isEdit) focusInput();
 };
 
-// sss
-const updateLinkTitle = (newTitle: string, linkId: string) => {
-  const updatedLinks = [...links.value];
-  const linkIndex = updatedLinks.findIndex((link) => link.id === linkId);
-
-  if (linkIndex !== -1) {
-    updatedLinks[linkIndex].title = newTitle;
-    // store.dispatch("links/updateLinkTitle", { id: linkId, title: newTitle });
-  }
-};
-
-const thumbnail = ref<boolean>(false);
-const openThumbnail = (open: boolean) => (thumbnail.value = open);
-const closeThumbnail = () => (thumbnail.value = false);
-
-// ssss
 const focusInput = () => {
   nextTick(() => {
     const inputHeader = document.querySelector(".input-header");

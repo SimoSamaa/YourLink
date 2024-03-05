@@ -1,6 +1,6 @@
 <template>
   <button
-    class="disabled:hidden base-btn flex gap-4 capitalize justify-center bg-bg rounded-full py-2 px-4 border-border border text-text2 relative active:scale-90 outline-none"
+    class="base-btn flex gap-4 capitalize justify-center bg-bg rounded-full py-2 px-4 border-border border text-text2 relative active:scale-90 outline-none"
     :class="mode"
     :disabled="disabled"
   >
@@ -27,8 +27,14 @@ defineProps({
 
 <style scoped lang="scss">
 button {
+  transition: all 150ms ease-out;
+
   &:is(:hover, :focus-visible) {
     @extend .white-btn;
+  }
+
+  &:disabled {
+    @apply cursor-no-drop brightness-50;
   }
 }
 .nav-btn {
@@ -61,5 +67,9 @@ button {
 .btn-icon {
   all: unset;
   @apply cursor-pointer rounded px-[3px];
+}
+
+.full {
+  @apply w-full mt-4 text-white bg-purple-500;
 }
 </style>

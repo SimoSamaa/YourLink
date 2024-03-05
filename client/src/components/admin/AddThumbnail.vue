@@ -74,9 +74,10 @@
         >
           <h3 v-if="iconNotFound">No icon found</h3>
           <button
+            class="size-[70px] rounded-md border hover:bg-purple-100 outline-none focus:bg-purple-100"
             v-for="icon in icons"
             :key="icon._id"
-            class="size-[70px] rounded-md border hover:bg-purple-100 outline-none focus:bg-purple-100"
+            @click="chooseBoxicon(icon.name)"
           >
             <box-icon
               :type="icon.type_of_icon.toLowerCase()"
@@ -94,8 +95,15 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import { pageProps, BoxIcons } from "@/types/interfacesLink";
+import { useStore } from "vuex";
 
 const emit = defineEmits(["set-close-Thumbnail"]);
+
+const props = defineProps({
+  linkId: String,
+});
+
+const store = useStore();
 
 const actionIcons = ref<boolean>(true);
 const searchIcons = ref<string>("");
@@ -118,6 +126,17 @@ const icons = computed(() => {
     return [];
   }
 });
+
+const chooseBoxicon = async (boxiconName: string) => {
+  try {
+    await store.dispatch("links/updateChooseBoxicon", {
+      id: props.linkId,
+      icon: boxiconName,
+    });
+  } catch (err) {
+    (err as Error).message;
+  }
+};
 
 async function getBoxIcon() {
   const res = await fetch(

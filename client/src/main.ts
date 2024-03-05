@@ -10,6 +10,7 @@ const app = createApp(App);
 
 import AppIcons from '@/components/UI/AppIcons.vue';
 import baseButton from '@/components/UI/BaseButton.vue';
+import baseCard from '@/components/UI/baseCard.vue';
 
 app.component('appIcon', AppIcons);
 app.component('base-button', baseButton);

@@ -259,10 +259,12 @@ const handledInputLinkTitleBlur = async (e: Event, id: string) => {
   isEditModeTitle.value = false;
   const linkTitle = (e.target as HTMLInputElement).value;
   if (linkTitle === "") hideLink(e, id);
-  store.dispatch("links/updateLinkTitle", {
-    id: id,
-    title: linkTitle,
-  });
+  try {
+    await store.dispatch("links/updateLinkTitle", {
+      id: id,
+      title: linkTitle,
+    });
+  } catch (err) {}
 };
 // END
 
@@ -276,10 +278,12 @@ const handledInputLinkBlur = async (e: Event, id: string) => {
   isEditModeLink.value = false;
   const link = (e.target as HTMLInputElement).value.trim();
   if (link === "") hideLink(e, id);
-  store.dispatch("links/updateLink", {
-    id: id,
-    link: link,
-  });
+  try {
+    await store.dispatch("links/updateLink", {
+      id: id,
+      link: link,
+    });
+  } catch (err) {}
 };
 // END
 

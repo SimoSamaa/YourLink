@@ -348,16 +348,18 @@ const handledDeleteHeader = async (id: string) => {
   await store.dispatch("links/deleteHeaderLink", id);
 };
 
-// LOAD HEADERS DATA
-const loadHeaders = async () => {
+const loadData = async () => {
   try {
+    // LOAD HEADERS DATA
     await store.dispatch("links/featchHeaders");
+    // LOAD LINKS DATA
+    await store.dispatch("links/fetchLinks");
   } catch (err) {
     console.log((err as Error).message);
   }
 };
 
-loadHeaders();
+loadData();
 </script>
 
 <style scoped lang="scss">

@@ -58,7 +58,7 @@ exports.deleteHeader = (req, res, next) => {
     .then((header) => {
 
       if(!header) {
-        const error = new Error('Could not find post');
+        const error = new Error('Header not found');
         error.statusCode = 404;
         throw error;
       }

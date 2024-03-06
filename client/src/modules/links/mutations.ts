@@ -37,6 +37,9 @@ export default {
   setAddLink(state: { links: link[] }, payload: any) {
     state.links.unshift(payload);
   },
+  setFetchLinks(state: { links: link[] }, payload: any) {
+    state.links = payload;
+  },
   setUpdateLinkTitle(state: { links: link[] }, payload: { id: string; title: string }) {
     updateLinkProperty(state, { id: payload.id, property: 'title', value: payload.title });
   },

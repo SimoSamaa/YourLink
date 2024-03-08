@@ -1,3 +1,5 @@
+const { validationResult } = require('express-validator');
+
 const handleErrCatch = (err, next, statusCode = 500) => {
   if(!err.statusCode) {
     err.statusCode = statusCode;
@@ -5,4 +7,22 @@ const handleErrCatch = (err, next, statusCode = 500) => {
   next(err);
 };
 
-module.exports = { handleErrCatch };
+const handleNotFound = (model, propertyName, next) => {
+  if(!model) {
+    const error = new Error(`${ propertyName } not found`);
+    error.statusCode = 404;
+    throw error;
+  }
+};
+
+const handleValidationErrors = (req) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    const error = new Error('Validation faild, entered data is incorrect');
+    error.statusCode = 422;
+    error.validationErrors = errors.array();
+    throw error;
+  }
+};
+
+module.exports = { handleErrCatch, handleNotFound, handleValidationErrors };

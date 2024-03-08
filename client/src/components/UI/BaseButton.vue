@@ -70,6 +70,6 @@ button {
 }
 
 .full {
-  @apply w-full mt-4 text-white bg-purple-500;
+  @apply w-full text-white bg-purple-500;
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
   <section class="admin-page relative">
     <!-- ADD LINK -->
-    <transition name="test">
+    <transition name="animation-from-top">
       <AddLink v-if="linkPage" @set-close-AddLink="closeAddLink" />
     </transition>
     <!-- ADD ICON || IMG TO LINKS -->
-    <transition name="test">
+    <transition name="animation-from-top">
       <AddThumbnail
         v-if="thumbnail"
         :link-id="id"
@@ -110,7 +110,7 @@
           <div>
             <h3 class="text-center">Delete this forever?</h3>
             <div class="columns-2 gap-4 mt-4 [&_button]:w-full">
-              <base-button @click="header.isOpenDelete = false"
+              <base-button mode="full" @click="header.isOpenDelete = false"
                 >cancel</base-button
               >
               <base-button mode="err" @click="handledDeleteHeader(header.id)"
@@ -122,8 +122,11 @@
       </li>
     </transition-group>
     <!-- LINKS -->
-    <ul
+    <transition-group
+      tag="ul"
       v-if="!thumbnail && !linkPage"
+      appear
+      name="animated-headers"
       class="link-container-style links-container"
       @dragover.prevent="dropDragElementLinks"
     >
@@ -137,7 +140,15 @@
         :link-layout="link.layout"
         @set-thumbnail="openThumbnail"
       ></linksSection>
-    </ul>
+    </transition-group>
+    <transition name="animation-from-top">
+      <div
+        v-if="checkedLinkPage && !linkPage"
+        class="min-h-[69vh] w-full grid place-content-center"
+      >
+        <h1>No links now</h1>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -159,12 +170,15 @@ const headers = computed<HeaderLinks[]>(() =>
       a.dataIndex - b.dataIndex
   )
 );
+
 const links = computed<link[]>(() =>
   store.getters["links/links"].sort(
     (a: { dataIndex: number }, b: { dataIndex: number }) =>
       a.dataIndex - b.dataIndex
   )
 );
+
+const checkedLinkPage = computed(() => store.getters["links/checkedLinkPage"]);
 
 const checkMarginBottom = computed<{ marginBottom: string }>(() => {
   return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };
@@ -363,7 +377,7 @@ loadData();
 </script>
 
 <style scoped lang="scss">
-@import "../../scss/helpers/mixins";
+@import "@/scss/helpers/mixins";
 
 li {
   transition: opacity 300ms ease, border 300ms ease-in;
@@ -402,7 +416,7 @@ li {
 );
 
 @include setAnimation(
-  "test",
+  "animation-from-top",
   (
     transform: translateY(-200px),
     opacity: 0,

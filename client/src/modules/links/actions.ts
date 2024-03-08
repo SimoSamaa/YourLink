@@ -176,14 +176,40 @@ export default {
     commit('setUpdateLink', payload);
   },
   async updateHideLink({ commit }: ActionContext<link, any>, payload: any) {
+    const req = await fetch(`${ URL_SERVER }update-hidden-link/${ payload.id }`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const res: { message: string } = await req.json();
+    serverError(req, res, 'failed to change state')
+
     commit('setUpdateHideLink', payload);
   },
   // LAYOUT
   async updateLayout({ commit }: ActionContext<link, any>, payload: any) {
+    const req = await fetch(`${ URL_SERVER }update-layout-link/${ payload.id }`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const res: { message: string } = await req.json();
+    serverError(req, res, 'failed to update layout')
     commit('setUpdateLayout', payload);
   },
   // BOXICONS
   async updateChooseBoxicon({ commit }: ActionContext<link, any>, payload: any) {
+    const req = await fetch(`${ URL_SERVER }update-icon-link/${ payload.id }`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const res: { message: string } = await req.json();
+    serverError(req, res, 'failed to update layout')
+
     commit('setUpdateChooseBoxicon', payload);
   },
   // DELETE TITLE

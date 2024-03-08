@@ -103,7 +103,6 @@ const addLink = async () => {
 
   button {
     width: 100px !important;
-    margin: 0;
     font-weight: bold;
   }
 

@@ -20,13 +20,19 @@
           >
             <p v-if="linkTitle">{{ props.linkTitle }}</p>
             <p v-else class="text-border">Title</p>
-            <div @click="openEditModeTitleLink" class="mb-1 cursor-pointer">
+            <div
+              @click="openEditModeTitleLink(props.linkTitle)"
+              class="mb-1 cursor-pointer"
+            >
               <appIcon name="edit" size="20px" />
             </div>
           </div>
           <input
             v-else
             @blur="handledInputLinkTitleBlur($event, props.linkId)"
+            @keydown.enter.prevent="
+              handledInputLinkTitleBlur($event, props.linkId)
+            "
             type="text"
             :value="props.linkTitle"
             ref="inputTitleLink"
@@ -44,13 +50,17 @@
               {{ props.link }}
             </p>
             <p v-else class="text-border font-semibold">URL</p>
-            <div @click="openEditModeLink" class="mb-1 cursor-pointer">
+            <div
+              @click="openEditModeLink(props.link)"
+              class="mb-1 cursor-pointer"
+            >
               <appIcon name="edit" size="20px" />
             </div>
           </div>
           <input
             v-else
             @blur="handledInputLinkBlur($event, props.linkId)"
+            @keydown.enter.prevent="handledInputLinkBlur($event, props.linkId)"
             type="text"
             :value="props.link"
             ref="inputLink"
@@ -120,7 +130,7 @@
             <p class="text-text2">Choose a layout for your link</p>
             <label
               :for="`classic-${linkId}`"
-              :class="{ 'checked-layout': isChecked === 'classic' }"
+              :class="{ 'checked-layout': props.linkLayout === 'classic' }"
             >
               <input
                 type="radio"
@@ -128,7 +138,7 @@
                 :name="`layout-${props.linkId}`"
                 value="classic"
                 @change="chooseLayout('classic', props.linkId)"
-                checked
+                :checked="props.linkLayout === 'classic' ? true : false"
               />
               <span></span>
               <div class="mr-auto max-[650px]:m-0">
@@ -144,13 +154,14 @@
             </label>
             <label
               :for="`featured-${linkId}`"
-              :class="{ 'checked-layout': isChecked === 'featured' }"
+              :class="{ 'checked-layout': props.linkLayout === 'featured' }"
             >
               <input
                 type="radio"
                 :id="`featured-${linkId}`"
                 :name="`layout-${props.linkId}`"
                 @change="chooseLayout('featured', props.linkId)"
+                :checked="props.linkLayout === 'featured' ? true : false"
               />
               <span></span>
               <div class="mr-auto max-[650px]:m-0 max-w-[300px]">
@@ -183,7 +194,7 @@
                 <appIcon name="close" size="20px" />
               </base-button>
             </div>
-            <p class="text-text2">Add a Thumbnail or Icon to this Link.</p>
+            <p class="text-text2 mb-4">Add a Thumbnail or Icon to this Link.</p>
             <base-button @click="setThumbnail(props.linkId)" mode="full"
               >set Thumbnail</base-button
             >
@@ -231,14 +242,19 @@ const props = defineProps({
     type: String as PropType<string>,
     default: "",
   },
-  link: String as PropType<string>,
+  link: {
+    type: String as PropType<string>,
+    default: "",
+  },
   linkChecked: Boolean as PropType<boolean>,
-  // linkLayout: String as PropType<string>,
+  linkLayout: String as PropType<string>,
 });
 
 const emit = defineEmits(["set-thumbnail", "zaba-zaba"]);
 
 const store = useStore();
+
+console.log("layout", props.linkLayout);
 
 const isEditModeTitle = ref<boolean>(false);
 const isEditModeLink = ref<boolean>(false);
@@ -247,17 +263,19 @@ const inputLink = ref<HTMLElement | null>(null);
 const sectionActions = ref<HTMLElement>();
 const actionAct = ref<number | null>(null);
 const isDrag = ref<boolean>(false);
-const isChecked = ref<string | null>("classic");
+const oldValue = ref<string>("");
 
 // OPEN EDIT LINK TITLE
-const openEditModeTitleLink = () => {
+const openEditModeTitleLink = (value: string) => {
   isEditModeTitle.value = true;
+  oldValue.value = value;
   nextTick(() => (inputTitleLink.value as HTMLInputElement).focus());
 };
 
 const handledInputLinkTitleBlur = async (e: Event, id: string) => {
   isEditModeTitle.value = false;
   const linkTitle = (e.target as HTMLInputElement).value;
+  if (linkTitle === oldValue.value || linkTitle.length > 15) return;
   if (linkTitle === "") hideLink(e, id);
   try {
     await store.dispatch("links/updateLinkTitle", {
@@ -269,14 +287,16 @@ const handledInputLinkTitleBlur = async (e: Event, id: string) => {
 // END
 
 // OPEN EDIT LINK
-const openEditModeLink = () => {
+const openEditModeLink = (value: string) => {
   isEditModeLink.value = true;
+  oldValue.value = value;
   nextTick(() => (inputLink.value as HTMLInputElement).focus());
 };
 
 const handledInputLinkBlur = async (e: Event, id: string) => {
   isEditModeLink.value = false;
   const link = (e.target as HTMLInputElement).value.trim();
+  if (link === oldValue.value) return;
   if (link === "") hideLink(e, id);
   try {
     await store.dispatch("links/updateLink", {
@@ -320,8 +340,6 @@ const hideLink = async (e: Event, id: string) => {
 
 // CHOOSE LAYOUT
 const chooseLayout = async (layout: string, id: string) => {
-  isChecked.value = layout;
-
   try {
     await store.dispatch("links/updateLayout", { id: id, layout: layout });
   } catch (err) {

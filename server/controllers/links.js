@@ -1,6 +1,9 @@
 const Link = require('../models/links');
-const { validationResult } = require('express-validator');
-const { handleErrCatch } = require('../util/helper');
+const {
+  handleErrCatch,
+  handleNotFound,
+  handleValidationErrors
+} = require('../util/helper');
 
 // GET ALL LINKS
 exports.getLinks = (req, res, next) => {
@@ -18,13 +21,7 @@ exports.getLinks = (req, res, next) => {
 
 // CREATE LINK
 exports.createLink = (req, res, next) => {
-  const erros = validationResult(req);
-
-  if(!erros.isEmpty()) {
-    const error = new Error('Validation faild, URL is incorrect');
-    error.statusCode = 422;
-    throw error;
-  }
+  handleValidationErrors(req);
 
   const { title, link, dataIndex, isDisable, layout, icon } = req.body;
 
@@ -55,13 +52,7 @@ exports.deleteLink = (req, res, next) => {
 
   Link.findById(deletedLinkId)
     .then((link) => {
-
-      if(!link) {
-        const error = new Error('Link not found');
-        error.statusCode = 404;
-        throw error;
-      }
-
+      handleNotFound(link, 'link', next);
       return Link.findByIdAndDelete(deletedLinkId);
     })
     .then(() => {
@@ -74,72 +65,105 @@ exports.deleteLink = (req, res, next) => {
 
 // UPDATE TITLE LINK
 exports.updateTitleLink = (req, res, next) => {
-  const errors = validationResult(req);
   const updatedTitileId = req.params.id;
   const updatedTitile = req.body.title;
 
-  if(!errors.isEmpty()) {
-    const error =
-      new Error("Validation faild, entered data is incorrect");
-    error.statusCode = 422;
-    throw error;
-  }
+  handleValidationErrors(req);
 
   Link.findById(updatedTitileId)
     .then((link) => {
-      if(!link) {
-        const error = new Error('Link not found');
-        error.statusCode = 404;
-        throw error;
-      }
-
+      handleNotFound(link, 'link', next);
       link.title = updatedTitile;
-
       return link.save();
     })
-    .then((updatedTitile) => {
+    .then(() => {
       res
         .status(200)
-        .json({
-          title: updatedTitile.title,
-          message: 'title is updated successfully!'
-        });
+        .json({ message: 'title is updated successfully!' });
     })
     .catch((err) => handleErrCatch(err, next));
 };
 
 // UPDATE URL LINK
 exports.updateUrlLink = (req, res, next) => {
-  const errors = validationResult(req);
   const updatedUrlId = req.params.id;
   const updatedTUrl = req.body.link;
 
-  if(!errors.isEmpty()) {
-    const error =
-      new Error("Validation faild, entered data is incorrect");
-    error.statusCode = 422;
-    throw error;
-  }
+  handleValidationErrors(req);
 
   Link.findById(updatedUrlId)
     .then((link) => {
-      if(!link) {
-        const error = new Error('Link not found');
-        error.statusCode = 404;
-        throw error;
-      }
-
+      handleNotFound(link, 'link', next);
       link.link = updatedTUrl;
-
       return link.save();
     })
-    .then((updatedUrl) => {
+    .then(() => {
       res
         .status(200)
-        .json({
-          title: updatedUrl.link,
-          message: 'URL is updated successfully!'
-        });
+        .json({ message: 'URL is updated successfully!' });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};
+
+// UPDATE THE HIDDEN LINK STATE
+exports.updateHiddenLink = (req, res, next) => {
+  const updatedHiddenId = req.params.id;
+  const isDisable = req.body.isDisable;
+
+  if(typeof isDisable !== 'boolean') {
+    const error = new Error('isDisable must be a boolean value');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  Link.findById(updatedHiddenId)
+    .then((link) => {
+      handleNotFound(link, 'link', next);
+      link.isDisable = isDisable;
+      return link.save();
+    })
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: 'checked successfully!' });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};
+
+// UPDATE LAYOUT
+exports.updateLayout = (req, res, next) => {
+  const updatedLayoutId = req.params.id;
+  const updatedLayout = req.body.layout;
+
+  Link.findById(updatedLayoutId)
+    .then((link) => {
+      handleNotFound(link, 'link', next);
+      link.layout = updatedLayout;
+      return link.save();
+    })
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: 'layout updated successfully!' });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};
+
+// UPDATE BOXICONS
+exports.updateIcon = (req, res, next) => {
+  const updatedIconId = req.params.id;
+  const updatedIcon = req.body.icon;
+
+  Link.findById(updatedIconId)
+    .then((link) => {
+      handleNotFound(link, 'link', next);
+      link.icon = updatedIcon;
+      return link.save();
+    })
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: 'icon updated successfully!' });
     })
     .catch((err) => handleErrCatch(err, next));
 };

@@ -16,6 +16,7 @@ const store = useStore();
 const loadHeaders = async () => {
   try {
     await store.dispatch("links/featchHeaders");
+    await store.dispatch("links/fetchLinks");
   } catch (err) {
     (err as Error).message;
   }

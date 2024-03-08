@@ -1,9 +1,9 @@
 const Header = require('../models/header');
-const { validationResult } = require('express-validator');
-
-function catchError(err) {
-  if(!err.statusCode) err.statusCode = 500;
-}
+const {
+  handleErrCatch,
+  handleNotFound,
+  handleValidationErrors
+} = require('../util/helper');
 
 // LOAD HEADERS
 exports.getHeaders = (req, res, next) => {
@@ -16,18 +16,12 @@ exports.getHeaders = (req, res, next) => {
           headers: headers
         });
     })
-    .catch((err) => {
-      catchError(err);
-      next(err);
-    });
+    .catch((err) => handleErrCatch(err, next));
 };
 
 // CREATE HEADER
 exports.createHeader = (req, res, next) => {
-  const headerData = req.body;
-  const title = headerData.title;
-  const dataIndex = headerData.dataIndex;
-  const isDisable = headerData.isDisable;
+  const { title, dataIndex, isDisable } = req.body;
 
   const header = new Header({
     title: title,
@@ -44,10 +38,7 @@ exports.createHeader = (req, res, next) => {
           header: header
         });
     })
-    .catch((err) => {
-      catchError(err);
-      next(err);
-    });
+    .catch((err) => handleErrCatch(err, next));
 };
 
 // DELETE HEADER
@@ -56,13 +47,7 @@ exports.deleteHeader = (req, res, next) => {
 
   Header.findById(headerId)
     .then((header) => {
-
-      if(!header) {
-        const error = new Error('Header not found');
-        error.statusCode = 404;
-        throw error;
-      }
-
+      handleNotFound(header, 'header', next);
       return Header.findByIdAndDelete(headerId);
     })
     .then(() => {
@@ -70,35 +55,22 @@ exports.deleteHeader = (req, res, next) => {
         .status(200)
         .json({ message: 'header deleted successfully!' });
     })
-    .catch((err) => {
-      catchError(err);
-      next(err);
-    });
+    .catch((err) => handleErrCatch(err, next));
 };
 
 // UPDATE HEADER
 exports.updateHeader = (req, res, next) => {
   const headerId = req.body.id;
-  const errors = validationResult(req);
 
-  if(!errors.isEmpty()) {
-    const error =
-      new Error("Validation faild, entered data is incorrect");
-    error.statusCode = 422;
-    throw error;
-  }
+  handleValidationErrors(req);
 
-  const updatedHeader = req.body;
-  const title = updatedHeader.title;
-  const isDisable = updatedHeader.isDisable;
+  const { title, isDisable } = req.body;
 
   Header.findById(headerId)
     .then((header) => {
-      if(!header) {
-        const error = new Error('Could not find post');
-        error.statusCode = 404;
-        throw error;
-      } else if(header.title === title) {
+      handleNotFound(header, 'header', next);
+
+      if(header.title === title) {
         const error =
           new Error("the header already exist");
         error.statusCode = 422;
@@ -119,20 +91,17 @@ exports.updateHeader = (req, res, next) => {
             header: updateHeader
           });
     })
-    .catch((err) => {
-      catchError(err);
-      next(err);
-    });
+    .catch((err) => handleErrCatch(err, next));
 };
 
 // UPDATE CHECKBOX
 exports.updateHeaderCheckbox = (req, res, next) => {
   const headerId = req.params.id;
-  const updateCheck = req.body;
-  const isDisable = updateCheck.isDisable;
+  const isDisable = req.body.isDisable;
 
   Header.findById(headerId)
     .then((header) => {
+      handleNotFound(header, 'header', next);
       header.isDisable = isDisable;
       return header.save();
     })
@@ -141,10 +110,7 @@ exports.updateHeaderCheckbox = (req, res, next) => {
         .status(200)
         .json({ message: 'checked  successfully!' });
     })
-    .catch((err) => {
-      catchError(err);
-      next(err);
-    });
+    .catch((err) => handleErrCatch(err, next));
 };
 
 // UPDATE ORDER
@@ -161,8 +127,5 @@ exports.updateHeadersOrders = (req, res, next) => {
         .status(200)
         .json({ message: 'Order updated successfully!' });
     })
-    .catch(err => {
-      catchError(err);
-      next(err);
-    });
+    .catch((err) => handleErrCatch(err, next));
 };

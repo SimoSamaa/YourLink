@@ -19,7 +19,11 @@ router.put('/update-header/:id',
   ],
   headerControllers.updateHeader);
 
-router.put('/update-header-checkbox/:id', headerControllers.updateHeaderCheckbox);
+router.put('/update-header-checkbox/:id', [
+  body('isDisable')
+    .isBoolean()
+    .withMessage('isDisable must be a boolean value')
+], headerControllers.updateHeaderCheckbox);
 
 router.put('/update-headers-orders', headerControllers.updateHeadersOrders);
 

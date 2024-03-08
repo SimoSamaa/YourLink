@@ -8,5 +8,8 @@ export default {
   },
   links(state: { links: link }) {
     return state.links;
+  },
+  checkedLinkPage(state: { links: link[] | null, headerLinks: HeaderLinks[] | null }) {
+    return state.headerLinks?.length === 0 && state.links?.length === 0;
   }
 };

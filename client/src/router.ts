@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 import HomePage from '@/views/visitor/HomePage.vue';
+import loginPage from '@/views/auth/LoginPage.vue';
+import signupPage from '@/views/auth/signupPage.vue';
 import AdminPage from '@/views/admin/AdminPage.vue';
 import LinksPage from '@/views/admin/LinksPage.vue';
 import AppearancePage from '@/views/admin/AppearancePage.vue';
@@ -13,14 +15,24 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/yourLink'
+      redirect: '/'
     },
     {
-      path: '/yourLink',
+      path: '',
       component: HomePage
     },
     {
-      path: '/yourLink/admin',
+      path: '/auth/login',
+      component: loginPage,
+      name: 'loginPage'
+    },
+    {
+      path: '/auth/signup',
+      component: signupPage,
+      name: 'signupPage'
+    },
+    {
+      path: '/admin',
       component: AdminPage,
       children: [
         {

@@ -1,12 +1,6 @@
 <template>
   <section>
-    <header v-if="!removeNavVis" class="p-4 bg-black text-white">
-      <ul>
-        <li>
-          <router-link to="/yourLink/admin/links">admin</router-link>
-        </li>
-      </ul>
-    </header>
+    <NavigationVisitor v-if="!removeNavVis" />
     <router-view></router-view>
   </section>
 </template>
@@ -14,6 +8,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import NavigationVisitor from "@/components/layouts/NavigationVisitor.vue";
 
 const route = useRoute();
 
@@ -23,6 +18,8 @@ const removeNavVis = computed<boolean>(
     route.name === "linksPage" ||
     route.name === "AppearancePage" ||
     route.name === "account" ||
-    route.name === "preview"
+    route.name === "preview" ||
+    route.name === "loginPage" ||
+    route.name === "signupPage"
 );
 </script>

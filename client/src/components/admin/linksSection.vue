@@ -254,8 +254,6 @@ const emit = defineEmits(["set-thumbnail", "zaba-zaba"]);
 
 const store = useStore();
 
-console.log("layout", props.linkLayout);
-
 const isEditModeTitle = ref<boolean>(false);
 const isEditModeLink = ref<boolean>(false);
 const inputTitleLink = ref<HTMLElement | null>(null);

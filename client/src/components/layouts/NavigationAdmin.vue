@@ -7,7 +7,7 @@
       <base-button mode="nav-btn" @click="toggleNave">
         <appIcon name="bar" />
       </base-button>
-      <img class="min-w-10" src="../../assets/logo.png" alt="app-logo" />
+      <img class="min-w-10" src="../../assets/logo.webp" alt="logo" />
     </div>
     <ul
       class="list-container grid gap-8 pl-4 relative max-[1000px]:divide-x-[1px] divide-border"
@@ -21,7 +21,7 @@
         data-num-selected="0"
         :class="{ act: activeClass === 0 }"
       >
-        <router-link to="/yourLink/admin/links">
+        <router-link to="/admin/links">
           <appIcon name="link" />
           <div>links</div>
         </router-link>
@@ -31,13 +31,13 @@
         data-num-selected="1"
         :class="{ act: activeClass === 1 }"
       >
-        <router-link to="/yourLink/admin/appearance">
+        <router-link to="/admin/appearance">
           <appIcon name="appearance" />
           <div>appearance</div>
         </router-link>
       </li>
       <li class="hidden max-[1000px]:block">
-        <router-link to="/yourLink/admin/preview">
+        <router-link to="/admin/preview">
           <appIcon name="eye" />
           <div>preview</div>
         </router-link>
@@ -47,7 +47,7 @@
         data-num-selected="2"
         :class="{ act: activeClass === 2 }"
       >
-        <router-link to="/yourLink/admin/account">
+        <router-link to="/admin/account">
           <appIcon name="acoount" />
           <div>my account</div>
         </router-link>

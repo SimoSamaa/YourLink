@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
-import { link } from "@/types/interfacesLink";
+import { Link } from "@/types/interfacesLink";
 
 const emit = defineEmits(["set-close-AddLink"]);
 
@@ -74,7 +74,7 @@ const addLink = async () => {
   if (!checkUrlValidation.value) return;
   const name = extractDomainName(urlLink.value);
 
-  const link: link = {
+  const link: Link = {
     id: Date.now().toString(),
     link: urlLink.value,
     title: name,

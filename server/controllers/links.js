@@ -167,3 +167,19 @@ exports.updateIcon = (req, res, next) => {
     })
     .catch((err) => handleErrCatch(err, next));
 };
+
+exports.updateLinksOrders = (req, res, next) => {
+  const updateOrders = req.body;
+
+  Promise.all(
+    updateOrders.map((link) => {
+      return Link.findByIdAndUpdate(link.id, { dataIndex: link.dataIndex });
+    })
+  )
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: 'Order updated successfully!' });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};

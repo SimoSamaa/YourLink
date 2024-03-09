@@ -1,5 +1,5 @@
 import { HeaderLinks, HeaderWithId } from '@/types/interfacesHeader';
-import { link } from '@/types/interfacesLink';
+import { Link } from '@/types/interfacesLink';
 import { ActionContext } from 'vuex';
 
 const URL_SERVER = 'http://localhost:2024/admin/'
@@ -111,7 +111,7 @@ export default {
   },
   // LINKS
   // ADD LINK
-  async addLink({ commit }: ActionContext<link, any>, payload: any) {
+  async addLink({ commit }: ActionContext<Link, any>, payload: any) {
 
     const req = await fetch(`${ URL_SERVER }link`, {
       method: 'POST',
@@ -126,7 +126,7 @@ export default {
 
     commit('setAddLink', { ...payload, id: id })
   },
-  async fetchLinks({ commit }: ActionContext<link, any>) {
+  async fetchLinks({ commit }: ActionContext<Link, any>) {
     const req = await fetch(`${ URL_SERVER }links`)
     const res = await req.json()
     const resLinks = res.links;
@@ -151,7 +151,7 @@ export default {
     commit('setFetchLinks', links)
   },
   // UPDATE TITLE
-  async updateLinkTitle({ commit }: ActionContext<link, any>, payload: any) {
+  async updateLinkTitle({ commit }: ActionContext<Link, any>, payload: any) {
     const req = await fetch(`${ URL_SERVER }update-title-link/${ payload.id }`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -163,7 +163,7 @@ export default {
 
     commit('setUpdateLinkTitle', payload);
   },
-  async updateLink({ commit }: ActionContext<link, any>, payload: any) {
+  async updateLink({ commit }: ActionContext<Link, any>, payload: any) {
     const req = await fetch(`${ URL_SERVER }update-url-link/${ payload.id }`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -175,7 +175,7 @@ export default {
 
     commit('setUpdateLink', payload);
   },
-  async updateHideLink({ commit }: ActionContext<link, any>, payload: any) {
+  async updateHideLink({ commit }: ActionContext<Link, any>, payload: any) {
     const req = await fetch(`${ URL_SERVER }update-hidden-link/${ payload.id }`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ export default {
     commit('setUpdateHideLink', payload);
   },
   // LAYOUT
-  async updateLayout({ commit }: ActionContext<link, any>, payload: any) {
+  async updateLayout({ commit }: ActionContext<Link, any>, payload: any) {
     const req = await fetch(`${ URL_SERVER }update-layout-link/${ payload.id }`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -200,7 +200,7 @@ export default {
     commit('setUpdateLayout', payload);
   },
   // BOXICONS
-  async updateChooseBoxicon({ commit }: ActionContext<link, any>, payload: any) {
+  async updateChooseBoxicon({ commit }: ActionContext<Link, any>, payload: any) {
     const req = await fetch(`${ URL_SERVER }update-icon-link/${ payload.id }`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -213,7 +213,7 @@ export default {
     commit('setUpdateChooseBoxicon', payload);
   },
   // DELETE TITLE
-  async deleteLink({ commit }: ActionContext<link, any>, id: string) {
+  async deleteLink({ commit }: ActionContext<Link, any>, id: string) {
     const req = await fetch(`${ URL_SERVER }delete-link/${ id }`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -224,5 +224,18 @@ export default {
     serverError(req, res, 'failed to delete link');
 
     commit('setDeleteLink', id);
+  },
+  async updateLinksOrder({ state }: ActionContext<{ links: Link }, any>, payload: Link) {
+    state.links = payload
+
+    const req = await fetch(`${ URL_SERVER }update-links-orders`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const res: { message: string } = await req.json();
+
+    serverError(req, res, 'Update Orders fails!!');
   }
 };

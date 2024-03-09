@@ -25,15 +25,15 @@
     </header>
     <!-- HEADERS -->
     <transition-group
-      v-if="!thumbnail && !linkPage"
       tag="ul"
+      v-if="hasLinks"
       appear
       name="animated-headers"
       @after-enter="focusInput"
       class="link-container-style headers-container"
       :style="checkMarginBottom"
       @dragover.prevent="dropDragElementHeaders"
-      @drop="changeElementOrders($event)"
+      @drop="changeHeadersOrders($event)"
     >
       <li
         v-for="header in headers"
@@ -124,11 +124,12 @@
     <!-- LINKS -->
     <transition-group
       tag="ul"
-      v-if="!thumbnail && !linkPage"
+      v-if="hasLinks"
       appear
       name="animated-headers"
       class="link-container-style links-container"
       @dragover.prevent="dropDragElementLinks"
+      @drop="changeLinksOrders2($event)"
     >
       <linksSection
         v-for="link in links"
@@ -141,12 +142,13 @@
         @set-thumbnail="openThumbnail"
       ></linksSection>
     </transition-group>
-    <transition name="animation-from-top">
+    <transition name="animation-opacity">
       <div
         v-if="checkedLinkPage && !linkPage"
         class="min-h-[69vh] w-full grid place-content-center"
       >
-        <h1>No links now</h1>
+        <LoadingSpinner v-if="isLoading" />
+        <h1 v-else>No links now</h1>
       </div>
     </transition>
   </section>
@@ -157,7 +159,7 @@ import { ref, computed, nextTick } from "vue";
 import { useStore } from "vuex";
 import linksSection from "@/components/admin/linksSection.vue";
 import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
-import { link } from "@/types/interfacesLink";
+import { Link } from "@/types/interfacesLink";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
 import AddThumbnail from "@/components/admin/AddThumbnail.vue";
 import AddLink from "@/components/admin/AddLink.vue";
@@ -171,7 +173,7 @@ const headers = computed<HeaderLinks[]>(() =>
   )
 );
 
-const links = computed<link[]>(() =>
+const links = computed<Link[]>(() =>
   store.getters["links/links"].sort(
     (a: { dataIndex: number }, b: { dataIndex: number }) =>
       a.dataIndex - b.dataIndex
@@ -184,15 +186,20 @@ const checkMarginBottom = computed<{ marginBottom: string }>(() => {
   return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };
 });
 
-// ADD LINK (PAGE)
-const linkPage = ref<boolean>(false);
+const hasLinks = computed(
+  () => !isLoading.value && !thumbnail.value && !linkPage.value
+);
 
+const linkPage = ref<boolean>(false);
+const id = ref<string>("");
+const thumbnail = ref<boolean>(false);
+const isLoading = ref<boolean>(false);
+
+// ADD LINK (PAGE)
 const openAddLinkPage = () => (linkPage.value = true);
 const closeAddLink = (close: boolean) => (linkPage.value = close);
 
 // BOXICONS & UPLOAD LOGOG LINK (PAGE)
-const id = ref<string>("");
-const thumbnail = ref<boolean>(false);
 const openThumbnail = ({ linkId, open }: { linkId: string; open: boolean }) => {
   thumbnail.value = open;
   id.value = linkId;
@@ -327,19 +334,46 @@ function getDragAfterElement(
 }
 
 // CHANGE ORDERS ELEMENT IN DRAG
-const changeElementOrders = async (e: DragEvent) => {
+// const changeElementOrders = async (e: DragEvent) => {
+//   const target = e.currentTarget as Element;
+//   const items = [...target.querySelectorAll("li")];
+//   const updatedHeaders = items.map((item, index) => ({
+//     ...headers.value.find((header) => header.id === item.id),
+//     dataIndex: index,
+//   }));
+
+//   try {
+//     await store.dispatch("links/updateHeaderOrder", updatedHeaders);
+//   } catch (err) {
+//     (err as Error).message;
+//   }
+// };
+
+const reorderElements = async (
+  e: DragEvent,
+  data: (HeaderLinks | Link)[],
+  updateAction: string
+) => {
   const target = e.currentTarget as Element;
   const items = [...target.querySelectorAll("li")];
-  const updatedHeaders = items.map((item, index) => ({
-    ...headers.value.find((header) => header.id === item.id),
+  const updatedItems = items.map((item, index) => ({
+    ...data.find((el: Link | HeaderLinks) => el.id === item.id),
     dataIndex: index,
   }));
 
   try {
-    await store.dispatch("links/updateHeaderOrder", updatedHeaders);
+    await store.dispatch(updateAction, updatedItems);
   } catch (err) {
     (err as Error).message;
   }
+};
+
+const changeHeadersOrders = async (e: DragEvent) => {
+  await reorderElements(e, headers.value, "links/updateHeaderOrder");
+};
+
+const changeLinksOrders2 = async (e: DragEvent) => {
+  await reorderElements(e, links.value, "links/updateLinksOrder");
 };
 
 // CREATE HEADER
@@ -363,6 +397,7 @@ const handledDeleteHeader = async (id: string) => {
 };
 
 const loadData = async () => {
+  isLoading.value = true;
   try {
     // LOAD HEADERS DATA
     await store.dispatch("links/featchHeaders");
@@ -370,6 +405,8 @@ const loadData = async () => {
     await store.dispatch("links/fetchLinks");
   } catch (err) {
     console.log((err as Error).message);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -427,4 +464,6 @@ li {
   ),
   null
 );
+
+@include setAnimation("animation-opacity", null, null, "opacity");
 </style>

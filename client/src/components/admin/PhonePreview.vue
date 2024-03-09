@@ -7,7 +7,7 @@
       class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
     >
       <!-- HEADERS -->
-      <ul class="space-y-4 text-center font-semibold">
+      <ul class="space-y-4 text-center font-semibold mb-2">
         <li v-for="header in sortedHeaders" :key="header.id">
           {{ header.title }}
         </li>
@@ -30,7 +30,7 @@
         </li>
       </ul>
       <img
-        src="../../assets/logo.png"
+        src="../../assets/logo.webp"
         class="w-[100px] absolute bottom-4 left-1/2 -translate-x-1/2"
         alt="logo"
       />

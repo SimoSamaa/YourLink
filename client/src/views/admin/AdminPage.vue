@@ -18,9 +18,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import useMediaQuery from "../../hooks/matchMedia";
-import NavigationAdmin from "../../components/layouts/NavigationAdmin.vue";
-import PhonePreview from "../../components/admin/PhonePreview.vue";
+import { useStore } from "vuex";
+import useMediaQuery from "@/hooks/matchMedia";
+import NavigationAdmin from "@/components/layouts/NavigationAdmin.vue";
+import PhonePreview from "@/components/admin/PhonePreview.vue";
+
+const store = useStore();
 
 const closeClass = ref<boolean>(true);
 const openNavMobile = ref<boolean>(false);
@@ -32,6 +35,17 @@ const handledToggleNav = () => {
 
 // const handledToggleNavMobile = () =>
 //   (openNavMobile.value = !openNavMobile.value);
+
+const loadHeaders = async () => {
+  try {
+    await store.dispatch("links/featchHeaders");
+    await store.dispatch("links/fetchLinks");
+  } catch (err) {
+    (err as Error).message;
+  }
+};
+
+loadHeaders();
 
 onMounted(() => {
   const storedValue = localStorage.getItem("nav-status");

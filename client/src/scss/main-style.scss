@@ -45,3 +45,50 @@
     }
   }
 }
+
+// AUTH PAGES
+.auth-page {
+  @apply grid min-h-screen;
+  grid-template-columns: 70% 30%;
+
+  h1 {
+    font-size: clamp(32px, 3vw, 50px);
+  }
+
+  .auth-form {
+    @apply grid gap-4 mx-auto w-[600px] max-w-full;
+
+    .auth-input {
+      @apply h-[55px] relative;
+
+      label {
+        @apply absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-border duration-150 ease-in-out cursor-text select-none;
+      }
+
+      input {
+        @apply w-full h-full px-4 border-border border rounded pt-3;
+      }
+
+      input:focus+label,
+      input:not(:placeholder-shown)+label {
+        @apply top-[8px] translate-y-0 text-[12px];
+      }
+
+      input::placeholder {
+        @apply text-transparent;
+      }
+
+      svg {
+        @apply absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer;
+      }
+    }
+  }
+
+  @include breakpoint("md") {
+    @apply block;
+
+    .bg-img {
+      @apply hidden;
+    }
+  }
+}

@@ -31,7 +31,11 @@ body {
     @apply text-xl text-left
   }
 
-  svg {
+  svg:not(.spinner) {
     @apply w-6 h-6 stroke-current stroke-[1.5px];
+  }
+
+  #logo {
+    @apply w-[125px]
   }
 }

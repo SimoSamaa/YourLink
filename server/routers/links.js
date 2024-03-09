@@ -69,6 +69,8 @@ router.put('/update-icon-link/:id',
   linkControllers.updateIcon
 );
 
+router.put('/update-links-orders', linkControllers.updateLinksOrders);
+
 router.delete('/delete-link/:id', linkControllers.deleteLink);
 
 module.exports = router;

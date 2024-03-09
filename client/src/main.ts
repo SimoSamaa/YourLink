@@ -10,10 +10,11 @@ const app = createApp(App);
 
 import AppIcons from '@/components/UI/AppIcons.vue';
 import baseButton from '@/components/UI/BaseButton.vue';
-import baseCard from '@/components/UI/baseCard.vue';
+import LoadingSpinner from '@/components/UI/LoadingSpinner.vue';
 
 app.component('appIcon', AppIcons);
 app.component('base-button', baseButton);
+app.component('LoadingSpinner', LoadingSpinner);
 // app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('box-');
 
 

@@ -1,5 +1,5 @@
 // LINK TYPE
-interface link {
+interface Link {
   id: string
   title: string;
   link: string,
@@ -28,4 +28,4 @@ type pageProps = {
   pageProps: PageProps;
 };
 
-export { link, pageProps, BoxIcons }
+export { Link, pageProps, BoxIcons }

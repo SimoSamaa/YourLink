@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 const header = require('./routers/header');
 const linsk = require('./routers/links');
+const auth = require('./routers/auth');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', header);
 app.use('/admin', linsk);
+app.use('/auth', auth);
 
 app.use((error, req, res, next) => {
   console.log(error);

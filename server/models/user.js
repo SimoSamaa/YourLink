@@ -17,7 +17,7 @@ const userSchema = new Schema({
   },
   status: {
     type: String,
-    required: true,
+    default: 'I am new!',
   },
   headers: [ { type: Schema.Types.ObjectId, ref: 'Header' } ],
   links: [ { type: Schema.Types.ObjectId, ref: 'Link' } ]

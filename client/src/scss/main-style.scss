@@ -61,12 +61,20 @@
     .auth-input {
       @apply h-[55px] relative;
 
+      &.input-checked-err input {
+        @apply bg-red-200 border-red-500 focus:outline-red-500;
+      }
+
+      &.input-checked-err label {
+        @apply text-red-500;
+      }
+
       label {
         @apply absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-border duration-150 ease-in-out cursor-text select-none;
       }
 
       input {
-        @apply w-full h-full px-4 border-border border rounded pt-3;
+        @apply w-full h-full px-4 border-border border rounded pt-3 duration-150 ease-out;
       }
 
       input:focus+label,
@@ -75,7 +83,7 @@
       }
 
       input::placeholder {
-        @apply text-transparent;
+        @apply text-transparent select-none;
       }
 
       svg {
@@ -89,6 +97,26 @@
 
     .bg-img {
       @apply hidden;
+    }
+  }
+
+  @include breakpoint("sm") {
+    @apply place-content-center;
+
+    &>div:nth-child(1) {
+      @apply p-4;
+    }
+
+    a:has(#logo) {
+      @apply block mx-auto w-fit;
+    }
+
+    .hero {
+      @apply my-4;
+
+      p {
+        @apply mt-2;
+      }
     }
   }
 }

@@ -5,8 +5,9 @@ const { body } = require('express-validator');
 const router = express.Router();
 
 const headerControllers = require('../controllers/header');
+const isAuth = require('../middleware/is-auth');
 
-router.get('/headers', headerControllers.getHeaders);
+router.get('/headers', isAuth, headerControllers.getHeaders);
 
 router.post('/header', headerControllers.createHeader);
 

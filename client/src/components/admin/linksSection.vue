@@ -218,9 +218,14 @@
                 <appIcon name="close" size="20px" />
               </base-button>
             </div>
-            <base-button mode="full err" @click="deleteLink(props.linkId)"
-              >delete link</base-button
+            <base-button
+              mode="full err"
+              :disabled="processing"
+              @click="deleteLink(props.linkId)"
             >
+              <p v-if="!processing">delete link</p>
+              <LoadingButton v-else />
+            </base-button>
           </div>
         </template>
       </transition>
@@ -262,6 +267,7 @@ const sectionActions = ref<HTMLElement>();
 const actionAct = ref<number | null>(null);
 const isDrag = ref<boolean>(false);
 const oldValue = ref<string>("");
+const processing = ref<boolean>(false);
 
 // OPEN EDIT LINK TITLE
 const openEditModeTitleLink = (value: string) => {
@@ -347,10 +353,13 @@ const chooseLayout = async (layout: string, id: string) => {
 
 // DELETE LINK
 const deleteLink = async (id: string) => {
+  processing.value = true;
   try {
     await store.dispatch("links/deleteLink", id);
   } catch (err) {
     (err as Error).message;
+  } finally {
+    processing.value = false;
   }
 };
 </script>

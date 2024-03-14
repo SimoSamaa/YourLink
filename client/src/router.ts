@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import store from '@/modules/index'
 
 import HomePage from '@/views/visitor/HomePage.vue';
 import loginPage from '@/views/auth/LoginPage.vue';
@@ -24,36 +25,44 @@ const router = createRouter({
     {
       path: '/auth/login',
       component: loginPage,
-      name: 'loginPage'
+      name: 'loginPage',
+      meta: { requiresUnauth: true },
     },
     {
       path: '/auth/signup',
       component: signupPage,
-      name: 'signupPage'
+      name: 'signupPage',
+      meta: { requiresUnauth: true },
     },
     {
       path: '/admin',
       component: AdminPage,
+      props: true,
+      meta: { requiresAuth: true },
       children: [
         {
           path: 'links',
           component: LinksPage,
-          name: 'linksPage'
+          name: 'linksPage',
+          meta: { requiresAuth: true },
         },
         {
           path: 'appearance',
           component: AppearancePage,
-          name: 'AppearancePage'
+          name: 'AppearancePage',
+          meta: { requiresAuth: true },
         },
         {
           path: 'account',
           component: AccountPage,
-          name: 'account'
+          name: 'account',
+          meta: { requiresAuth: true },
         },
         {
           path: 'preview',
           component: PreviewPage,
-          name: 'preview'
+          name: 'preview',
+          meta: { requiresAuth: true },
         }
       ],
       name: 'dashboard'
@@ -61,4 +70,15 @@ const router = createRouter({
   ] as RouteRecordRaw[]
 });
 
-export default router
+router.beforeEach(function (to, _from, next) {
+  const isAuthenticated = store.getters[ 'auth/isAuth' ];
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/auth/login')
+  } else if (to.meta.requiresUnauth && isAuthenticated) {
+    next('/admin/links')
+  } else {
+    next()
+  }
+});
+
+export default router;

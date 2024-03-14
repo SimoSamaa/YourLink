@@ -16,9 +16,14 @@
         v-model.trim="urlLink"
         @input="linkInput($event)"
       />
-      <base-button mode="full" :disabled="!checkUrlValidation" @click="addLink"
-        >add</base-button
+      <base-button
+        mode="full"
+        :disabled="!checkUrlValidation || processing"
+        @click="addLink"
       >
+        <p v-if="!processing">add</p>
+        <LoadingButton v-else class="scale-[0.6]" />
+      </base-button>
     </div>
   </div>
 </template>
@@ -33,6 +38,7 @@ const emit = defineEmits(["set-close-AddLink"]);
 const store = useStore();
 
 const urlLink = ref<string>("");
+const processing = ref<boolean>(false);
 const urlPattern =
   /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.(com|net|org|info)\b/i;
 
@@ -84,11 +90,15 @@ const addLink = async () => {
     icon: name,
   };
 
+  processing.value = true;
+
   try {
     await store.dispatch("links/addLink", link);
     closeAddLink();
   } catch (err) {
     (err as Error).message;
+  } finally {
+    processing.value = false;
   }
 };
 </script>

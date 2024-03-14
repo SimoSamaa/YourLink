@@ -94,7 +94,7 @@
             ></label>
             <base-button
               mode="err"
-              class="disabled:hidden"
+              class="delete-header"
               :disabled="header.isOpenDelete"
               @click="openDeleteHeader(header)"
             >
@@ -113,9 +113,14 @@
               <base-button mode="full" @click="header.isOpenDelete = false"
                 >cancel</base-button
               >
-              <base-button mode="err" @click="handledDeleteHeader(header.id)"
-                >delete</base-button
+              <base-button
+                mode="err"
+                :disabled="processing"
+                @click="handledDeleteHeader(header.id)"
               >
+                <p v-if="!processing">delete</p>
+                <LoadingButton v-else />
+              </base-button>
             </div>
           </div>
         </div>
@@ -155,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, PropType } from "vue";
 import { useStore } from "vuex";
 import linksSection from "@/components/admin/linksSection.vue";
 import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
@@ -165,6 +170,8 @@ import AddThumbnail from "@/components/admin/AddThumbnail.vue";
 import AddLink from "@/components/admin/AddLink.vue";
 
 const store = useStore();
+
+const props = defineProps({ isLoading: Boolean as PropType<boolean> });
 
 const headers = computed<HeaderLinks[]>(() =>
   store.getters["links/headers"].sort(
@@ -187,13 +194,13 @@ const checkMarginBottom = computed<{ marginBottom: string }>(() => {
 });
 
 const hasLinks = computed(
-  () => !isLoading.value && !thumbnail.value && !linkPage.value
+  () => !props.isLoading && !thumbnail.value && !linkPage.value
 );
 
 const linkPage = ref<boolean>(false);
 const id = ref<string>("");
 const thumbnail = ref<boolean>(false);
-const isLoading = ref<boolean>(false);
+const processing = ref<boolean>(false);
 
 // ADD LINK (PAGE)
 const openAddLinkPage = () => (linkPage.value = true);
@@ -393,24 +400,15 @@ const handledAddeHeader = async () => {
 
 // DELETE HEADER
 const handledDeleteHeader = async (id: string) => {
-  await store.dispatch("links/deleteHeaderLink", id);
-};
-
-const loadData = async () => {
-  isLoading.value = true;
+  processing.value = true;
   try {
-    // LOAD HEADERS DATA
-    await store.dispatch("links/featchHeaders");
-    // LOAD LINKS DATA
-    await store.dispatch("links/fetchLinks");
+    await store.dispatch("links/deleteHeaderLink", id);
   } catch (err) {
-    console.log((err as Error).message);
+    (err as Error).message;
   } finally {
-    isLoading.value = false;
+    processing.value = false;
   }
 };
-
-loadData();
 </script>
 
 <style scoped lang="scss">

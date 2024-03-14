@@ -18,4 +18,11 @@ function useInputType() {
   return [ showPass, checkInputType ]
 }
 
-export { useInputType }
+function serverError(req: Response, res: { message: string }, messErr: string) {
+  if (!req.ok) {
+    const error = new Error(messErr) || res.message || 'Unknown error';
+    throw error;
+  }
+};
+
+export { useInputType, serverError }

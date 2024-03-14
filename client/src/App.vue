@@ -7,10 +7,13 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 import NavigationVisitor from "@/components/layouts/NavigationVisitor.vue";
 
 const route = useRoute();
+const router = useRouter();
+const store = useStore();
 
 const removeNavVis = computed<boolean>(
   () =>
@@ -22,4 +25,10 @@ const removeNavVis = computed<boolean>(
     route.name === "loginPage" ||
     route.name === "signupPage"
 );
+
+const autoLogin = () => {
+  store.dispatch("auth/autoLogin");
+};
+
+autoLogin();
 </script>

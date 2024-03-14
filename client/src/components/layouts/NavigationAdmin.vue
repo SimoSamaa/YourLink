@@ -54,9 +54,9 @@
       </li>
     </ul>
     <div class="logout-container mt-auto grid p-4">
-      <base-button class="logout">
+      <base-button class="logout" @click="logout">
         <appIcon name="logout" />
-        <div>signout</div>
+        <div>logout</div>
       </base-button>
     </div>
   </nav>
@@ -64,13 +64,18 @@
 
 <script lang="ts" setup>
 import { ref, onUpdated, PropType } from "vue";
-import useMediaQuery from "../../hooks/matchMedia";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import useMediaQuery from "@/hooks/matchMedia";
 
 const emit = defineEmits(["setToggleNav", "setToggleNavMobile"]);
 
 defineProps({
   openNavMobile: Boolean as PropType<boolean>,
 });
+
+const store = useStore();
+const router = useRouter();
 
 const actLink = ref<HTMLElement | null>(null);
 const navLinks = ref<NodeList>();
@@ -88,6 +93,12 @@ const selectPage = (e: MouseEvent, num: number) => {
   if (select && e.currentTarget instanceof HTMLElement) {
     select.style.top = e.currentTarget.offsetTop + "px";
   }
+};
+
+// LOGOUT
+const logout = () => {
+  store.dispatch("auth/logout");
+  router.replace("/");
 };
 
 onUpdated(() => {

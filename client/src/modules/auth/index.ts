@@ -5,7 +5,11 @@ import authGetters from './getters';
 export default {
   namespaced: true,
   state() {
-    return {}
+    return {
+      token: null as string | null,
+      userId: null as string | null,
+      tokenExp: null as string | null
+    }
   },
   mutations: authMutations,
   actions: authActions,

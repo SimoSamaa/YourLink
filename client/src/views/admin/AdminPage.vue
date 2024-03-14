@@ -9,7 +9,7 @@
     />
     <main class="py-5 pl-5 grid overflow-auto">
       <!-- ADMIN PAGES -->
-      <router-view></router-view>
+      <router-view :isLoading></router-view>
       <!-- PHONE RESULT -->
       <PhonePreview class="max-[1000px]:hidden" />
     </main>
@@ -27,21 +27,22 @@ const store = useStore();
 
 const closeClass = ref<boolean>(true);
 const openNavMobile = ref<boolean>(false);
+const isLoading = ref<boolean>(false);
 
 const handledToggleNav = () => {
   closeClass.value = !closeClass.value;
   localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
 };
 
-// const handledToggleNavMobile = () =>
-//   (openNavMobile.value = !openNavMobile.value);
-
 const loadHeaders = async () => {
+  isLoading.value = true;
   try {
     await store.dispatch("links/featchHeaders");
     await store.dispatch("links/fetchLinks");
   } catch (err) {
     (err as Error).message;
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -55,7 +56,6 @@ onMounted(() => {
     () => {
       closeClass.value = false;
       openNavMobile.value = true;
-      // localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
     },
     () => {
       openNavMobile.value = true;

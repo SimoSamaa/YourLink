@@ -8,23 +8,35 @@
         <h1 class="font-bold">Welcome back</h1>
         <p class="text-text2 mt-4">Login to YourLink</p>
       </div>
-      <form @submit.prevent class="auth-form">
-        <div class="auth-input">
+      <form @submit.prevent="submitLogin" class="auth-form">
+        <div
+          class="auth-input"
+          :class="{ 'input-checked-err': !login.email.isValid }"
+        >
           <input
             type="text"
             id="email"
             placeholder="Email"
             autocomplete="off"
+            v-model="login.email.value"
           />
           <label for="email">Email</label>
+          <appIcon v-if="!login.email.isValid" name="error" />
         </div>
-        <div class="auth-input">
+        <p v-if="!login.email.isValid" class="text-red-500 text-sm -mt-4">
+          Please enter a valid email
+        </p>
+        <div
+          class="auth-input"
+          :class="{ 'input-checked-err': !login.password.isValid }"
+        >
           <input
             type="password"
             id="password"
             placeholder="password"
             autocomplete="off"
             ref="inputPass"
+            v-model="login.password.value"
           />
           <label for="password">password</label>
           <svg
@@ -43,9 +55,18 @@
             />
           </svg>
         </div>
-        <base-button mode="full" class="flex items-center h-[55px]">
-          login
+        <p v-if="!login.password.isValid" class="text-red-500 text-sm -mt-4">
+          please enter a password
+        </p>
+        <base-button
+          mode="full"
+          :disabled="processing"
+          class="flex items-center h-[55px]"
+        >
+          <p v-if="!processing">login</p>
+          <LoadingButton v-else />
         </base-button>
+        <p class="text-red-500 text-center">{{ errMess }}</p>
       </form>
       <div class="text-center mt-4">
         <p>OR</p>
@@ -62,15 +83,79 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useInputType } from "../../hooks/helpers";
-const inputPass = ref<HTMLInputElement | null>(null);
+import { reactive, ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { useInputType } from "@/hooks/helpers";
+import LoadingButton from "@/components/UI/LoadingButton.vue";
+import { Login } from "@/types/interfacesAuth";
+
+const store = useStore();
+const router = useRouter();
 
 const [showPass, checkInputType] = useInputType();
+
+const inputPass = ref<HTMLInputElement | null>(null);
+const errMess = ref<string>("");
+const processing = ref<boolean>(false);
+const login = reactive<Login>({
+  email: {
+    value: "",
+    isValid: true,
+  },
+  password: {
+    value: "",
+    isValid: true,
+  },
+});
+
+const loginFormValidation = ref<boolean>(true);
 
 const handledShowPass = () => {
   if (typeof checkInputType === "function")
     checkInputType(inputPass.value as HTMLInputElement);
+};
+
+const checkEmailValidation = () => {
+  const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  loginFormValidation.value = true;
+
+  if (!login.email.value.match(emailRegExp)) {
+    login.email.isValid = false;
+    loginFormValidation.value = false;
+  } else {
+    login.email.isValid = true;
+  }
+
+  if (!login.password.value) {
+    login.password.isValid = false;
+    loginFormValidation.value = false;
+  } else {
+    login.password.isValid = true;
+  }
+};
+
+const submitLogin = async () => {
+  checkEmailValidation();
+
+  if (!loginFormValidation.value) return;
+  loginFormValidation.value = true;
+
+  const loginData = {
+    email: login.email.value,
+    password: login.password.value,
+  };
+
+  processing.value = true;
+
+  try {
+    await store.dispatch("auth/login", loginData);
+    router.replace("/admin/links");
+  } catch (err) {
+    errMess.value = (err as Error).message;
+  } finally {
+    processing.value = false;
+  }
 };
 </script>
 

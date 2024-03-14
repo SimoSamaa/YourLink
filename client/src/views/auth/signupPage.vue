@@ -29,7 +29,7 @@
           v-if="!signup.email.isValid"
           class="text-red-500 text-sm -mt-4"
         >
-          Please enter a valid email
+          {{ errMess }}
         </p>
         <div
           class="auth-input"
@@ -91,15 +91,15 @@
               'bg-yellow-600': state === 'medium',
               'bg-green-600': state === 'strong',
             }"
-            class="block h-2 w-14 bg-white border-border border rounded-full"
+            class="block h-2 w-14 border-border border rounded-full"
           ></span>
         </div>
         <base-button
-          :disabled="isLoading"
+          :disabled="processing"
           mode="full"
           class="flex items-center h-[55px]"
         >
-          <div v-if="!isLoading">create account</div>
+          <div v-if="!processing">create account</div>
           <LoadingButton v-else />
         </base-button>
       </form>
@@ -121,8 +121,8 @@
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { useInputType } from "../../hooks/helpers";
-import AppIcons from "@/components/UI/AppIcons.vue";
+import { useInputType } from "@/hooks/helpers";
+import { Signup } from "@/types/interfacesAuth";
 
 const store = useStore();
 const router = useRouter();
@@ -130,24 +130,12 @@ const router = useRouter();
 const [showPass, checkInputType] = useInputType();
 
 const inputPass = ref<HTMLInputElement | null>(null);
-const isLoading = ref<boolean>(false);
+const processing = ref<boolean>(false);
+const formValidation = ref<boolean>(true);
+const actErrMess = ref<boolean>(false);
+const errMess = ref<string>("");
 
-interface Test {
-  email: {
-    value: string;
-    isValid: boolean;
-  };
-  username: {
-    value: string;
-    isValid: boolean;
-  };
-  password: {
-    value: string;
-    isValid: boolean;
-  };
-}
-
-const signup = reactive<Test>({
+const signup = reactive<Signup>({
   email: {
     value: "",
     isValid: true,
@@ -161,9 +149,6 @@ const signup = reactive<Test>({
     isValid: true,
   },
 });
-
-const formValidation = ref<boolean>(true);
-const actErrMess = ref<boolean>(false);
 
 const handledShowPass = () => {
   if (typeof checkInputType === "function")
@@ -197,13 +182,13 @@ const passwordValidation = computed<string[]>(() => {
 });
 
 const clearValidity = () => {
-  checkInputValue();
+  checkInputValidation();
   Object.values(signup).forEach((input) => {
     input.isValid = !input.isValid ? false : true;
   });
 };
 
-const checkInputValue = () => {
+const checkInputValidation = () => {
   const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   formValidation.value = true;
@@ -211,6 +196,7 @@ const checkInputValue = () => {
   if (!signup.email.value.match(emailRegExp)) {
     signup.email.isValid = false;
     formValidation.value = false;
+    errMess.value = "Please enter a valid email";
     actErrMess.value = true;
   } else {
     signup.email.isValid = true;
@@ -233,7 +219,7 @@ const checkInputValue = () => {
 };
 
 const submitSignup = async () => {
-  checkInputValue();
+  checkInputValidation();
 
   if (!formValidation.value) return;
 
@@ -245,10 +231,17 @@ const submitSignup = async () => {
     password: signup.password.value,
   };
 
-  isLoading.value = true;
-  await store.dispatch("auth/signup", signupData);
-  router.replace("/auth/login");
-  isLoading.value = false;
+  processing.value = true;
+  try {
+    await store.dispatch("auth/signup", signupData);
+    router.replace("/auth/login");
+  } catch (err) {
+    errMess.value = (err as Error).message;
+    actErrMess.value = true;
+    signup.email.isValid = false;
+  } finally {
+    processing.value = false;
+  }
 };
 </script>
 

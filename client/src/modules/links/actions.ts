@@ -1,15 +1,9 @@
 import { HeaderLinks, HeaderWithId } from '@/types/interfacesHeader';
+import { serverError } from '@/hooks/helpers';
 import { Link } from '@/types/interfacesLink';
 import { ActionContext } from 'vuex';
 
-const URL_SERVER = 'http://localhost:2024/admin/'
-
-function serverError(req: Response, res: { message: string }, messErr: string) {
-  if (!req.ok) {
-    const error = new Error(messErr) || res.message || 'Unknown error';
-    throw error;
-  }
-};
+const URL_SERVER = 'http://localhost:2024/admin/';
 
 export default {
   // HEADERS
@@ -34,9 +28,14 @@ export default {
 
     commit('setAddHeaderLink', { ...payload, id: id });
   },
-  async featchHeaders({ commit }: ActionContext<HeaderLinks, any>) {
-
-    const req = await fetch(`${ URL_SERVER }headers`);
+  async featchHeaders(context: ActionContext<HeaderLinks, any>) {
+    const token = context.rootGetters[ 'auth/token' ];
+    console.log('headers', token);
+    const req = await fetch(`${ URL_SERVER }headers`, {
+      headers: {
+        'Authorization': `Bearer ${ token }` // Include token in headers
+      },
+    });
     const res: { message: string, headers: Record<string, HeaderWithId & { _id: string }> } = await req.json();
     const resHeader: Record<string, HeaderWithId & { _id: string }> = res.headers;
     const headers: HeaderWithId[] = [];
@@ -54,7 +53,7 @@ export default {
       headers.unshift(headerData);
     }
 
-    commit('setFeatchHeaders', headers);
+    context.commit('setFeatchHeaders', headers);
   },
   async deleteHeaderLink({ commit }: ActionContext<HeaderLinks, any>, id: string) {
     const req = await fetch(`${ URL_SERVER }delete-header/${ id }`, {
@@ -124,8 +123,14 @@ export default {
 
     commit('setAddLink', { ...payload, id: id })
   },
-  async fetchLinks({ commit }: ActionContext<Link, any>) {
-    const req = await fetch(`${ URL_SERVER }links`)
+  async fetchLinks(context: ActionContext<Link, any>) {
+    const token = context.rootGetters[ 'auth/token' ];
+    console.log('links', token);
+    const req = await fetch(`${ URL_SERVER }links`, {
+      headers: {
+        'Authorization': `Bearer ${ token }` // Include token in headers
+      },
+    })
     const res = await req.json()
     const resLinks = res.links;
     const links = [];
@@ -146,7 +151,7 @@ export default {
       links.unshift(linksData);
     }
 
-    commit('setFetchLinks', links)
+    context.commit('setFetchLinks', links)
   },
   // UPDATE TITLE
   async updateLinkTitle({ commit }: ActionContext<Link, any>, payload: any) {

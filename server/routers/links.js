@@ -6,8 +6,10 @@ const validator = require('validator');
 const router = express.Router();
 
 const linkControllers = require('../controllers/links');
+const isAuth = require('../middleware/is-auth');
 
-router.get('/links', linkControllers.getLinks);
+
+router.get('/links', isAuth, linkControllers.getLinks);
 
 router.post('/link',
   [

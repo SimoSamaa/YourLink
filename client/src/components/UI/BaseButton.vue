@@ -1,11 +1,15 @@
 <template>
   <button
-    class="base-btn flex gap-4 capitalize justify-center bg-bg rounded-full py-2 px-4 border-border border text-text2 relative active:scale-90 outline-none font-semibold"
+    v-if="!link"
+    class="base-btn base-style"
     :class="mode"
     :disabled="disabled"
   >
     <slot></slot>
   </button>
+  <router-link v-else :to="to" class="base-style">
+    <slot></slot>
+  </router-link>
 </template>
 
 <script lang="ts" setup>
@@ -22,12 +26,24 @@ defineProps({
     required: false,
     default: false,
   },
+  link: {
+    type: Boolean as PropType<boolean>,
+    required: false,
+    default: false,
+  },
+  to: {
+    type: String,
+    required: false,
+    default: "/",
+  },
 });
 </script>
 
 <style scoped lang="scss">
-button {
-  transition: all 150ms ease-out;
+.base-style {
+  @apply flex gap-2 capitalize justify-center bg-bg rounded-full py-2 px-4
+  border-border border text-text2 relative active:scale-90
+  outline-none font-semibold transition-all duration-200 ease-out;
 
   &:is(:hover, :focus-visible) {
     @extend .white-btn;
@@ -36,7 +52,12 @@ button {
   &:disabled {
     @apply cursor-no-drop brightness-50;
   }
+
+  &.delete-header:disabled {
+    @apply hidden;
+  }
 }
+
 .nav-btn {
   @apply p-2;
 }

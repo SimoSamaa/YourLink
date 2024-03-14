@@ -69,6 +69,10 @@
         @apply text-red-500;
       }
 
+      &.input-checked-err svg {
+        @apply stroke-red-500;
+      }
+
       label {
         @apply absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-border duration-150 ease-in-out cursor-text select-none;
       }

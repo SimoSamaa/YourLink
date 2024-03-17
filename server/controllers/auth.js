@@ -86,7 +86,7 @@ exports.userLogin = (req, res, next) => {
         { expiresIn: '1h' });
       res
         .status(200)
-        .json({ token: token, userId: loadedUser._id.toString() });
+        .json({ token: token, userId: loadedUser._id.toString(), username: loadedUser.username });
     })
     .catch((err) => handleErrCatch(err, next));
 };

@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="absolute w-full h-[50vh] shadow z-10 bg-white rounded-xl p-4 min-[1000px]:w-[calc(100%-1rem)]"
-  >
+  <div class="base-card-style absolute w-full h-[50vh] shadow z-10">
     <div class="flex items-center justify-between">
       <h3>Enter URL</h3>
       <base-button mode="close" title="close" @click="closeAddLink()">

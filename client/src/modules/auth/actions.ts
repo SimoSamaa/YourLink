@@ -2,30 +2,31 @@ import { serverError } from '@/hooks/helpers';
 import { Signup, Login } from '@/types/interfacesAuth'
 import { ActionContext, Commit } from 'vuex';
 
-const URL_SERVER = 'http://localhost:2024/auth/'
+const URL_SERVER = 'http://localhost:2024/auth/';
 
 type CommitType = { commit: Commit };
-type resType = { message: string, token: string, userId: string };
+type ResType = { message: string, token: string, userId: string };
+
+
+async function handleRequest<T>(url: string, method: string, payload: any): Promise<[ Response, T ]> {
+  const req = await fetch(`${ URL_SERVER }${ url }`, {
+    method: method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  const res = await req.json();
+
+  return [ req, res ]
+}
 
 export default {
   async signup(_context: ActionContext<any, any>, payload: Signup) {
-    const req = await fetch(`${ URL_SERVER }signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const res: resType = await req.json();
+    const [ req, res ] = await handleRequest<ResType>('signup', 'POST', payload);
     serverError(req, res, 'E-mail address already exists');
   },
   async login({ commit }: CommitType, payload: Login) {
-    const req = await fetch(`${ URL_SERVER }login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const res: resType = await req.json();
+    const [ req, res ] = await handleRequest<ResType>('login', 'POST', payload);
     serverError(req, res, 'Invalid email or password');
 
     localStorage.setItem('token', res.token);

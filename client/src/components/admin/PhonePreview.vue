@@ -6,6 +6,24 @@
       ref="zaba"
       class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
     >
+      <!-- USER INFO -->
+      <div class="mb-4">
+        <div
+          class="mx-auto size-20 rounded-full overflow-hidden bg-black2 grid place-content-center text-white"
+        >
+          <img
+            v-if="user.userImg"
+            class="size-20 object-cover object-center"
+            :src="user.userImg"
+            alt="user-img"
+          />
+          <p v-else class="font-semibold text-3xl">
+            {{ (user.username as string)?.charAt(0) }}
+          </p>
+        </div>
+        <h3 class="text-center my-2">{{ user.username }}</h3>
+        <p class="text-center text-sm">{{ user.bio }}</p>
+      </div>
       <!-- HEADERS -->
       <ul class="space-y-4 text-center font-semibold mb-2">
         <li v-for="header in sortedHeaders" :key="header.id">
@@ -63,18 +81,20 @@ const links = computed<any>(() =>
     .sort((a: HeaderLinks, b: HeaderLinks) => a.dataIndex + b.dataIndex)
 );
 
-onMounted(() => {
-  window.addEventListener("resize", function () {
-    const height = zaba.value.offsetHeight;
-    const width = zaba.value.offsetWidth;
+//
+const user = computed(() => store.getters["user/user"]);
 
-    if (height < width) {
-      // zaba.value.style.width = height + "px";
-      // zaba.value.style.width = height - 100 + "px";
-    } else {
-      zaba.value.style.width = height / 2 + "px";
-    }
-  });
+onMounted(() => {
+  // window.addEventListener("resize", function () {
+  //   const height = zaba.value.offsetHeight;
+  //   const width = zaba.value.offsetWidth;
+  //   if (height < width) {
+  //     // zaba.value.style.width = height + "px";
+  //     // zaba.value.style.width = height - 100 + "px";
+  //   } else {
+  //     zaba.value.style.width = height / 2 + "px";
+  //   }
+  // });
 });
 </script>
 

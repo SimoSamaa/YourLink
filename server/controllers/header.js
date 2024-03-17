@@ -1,4 +1,5 @@
 const Header = require('../models/header');
+const User = require('../models/user');
 const {
   handleErrCatch,
   handleNotFound,
@@ -22,20 +23,31 @@ exports.getHeaders = (req, res, next) => {
 // CREATE HEADER
 exports.createHeader = (req, res, next) => {
   const { title, dataIndex, isDisable } = req.body;
+  let creator;
 
   const header = new Header({
     title: title,
     dataIndex: dataIndex,
-    isDisable: isDisable
+    isDisable: isDisable,
+    creator: req.userId,
   });
 
   header.save()
-    .then((header) => {
+    .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.headers.push(header);
+      return user.save();
+    })
+    .then(() => {
       res
         .status(201)
         .json({
           message: 'header create successfully!',
-          header: header
+          header: header,
+          creator: { _id: creator._id, username: creator.username }
         });
     })
     .catch((err) => handleErrCatch(err, next));
@@ -48,6 +60,11 @@ exports.deleteHeader = (req, res, next) => {
   Header.findById(headerId)
     .then((header) => {
       handleNotFound(header, 'header', next);
+      if(header.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!');
+        error.statusCode = 403;
+        throw error;
+      }
       return Header.findByIdAndDelete(headerId);
     })
     .then(() => {

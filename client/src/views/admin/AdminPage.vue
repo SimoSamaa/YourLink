@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import useMediaQuery from "@/hooks/matchMedia";
 import NavigationAdmin from "@/components/layouts/NavigationAdmin.vue";
@@ -34,11 +34,12 @@ const handledToggleNav = () => {
   localStorage.setItem("nav-status", JSON.stringify(closeClass.value));
 };
 
-const loadHeaders = async () => {
+const loadAdminData = async () => {
   isLoading.value = true;
   try {
     await store.dispatch("links/featchHeaders");
     await store.dispatch("links/fetchLinks");
+    await store.dispatch("user/fetchUser");
   } catch (err) {
     (err as Error).message;
   } finally {
@@ -46,9 +47,8 @@ const loadHeaders = async () => {
   }
 };
 
-loadHeaders();
-
 onMounted(() => {
+  loadAdminData();
   const storedValue = localStorage.getItem("nav-status");
   if (storedValue !== null) closeClass.value = JSON.parse(storedValue);
 

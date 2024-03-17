@@ -1,6 +1,6 @@
 <template>
   <div class="absolute w-full h-[89vh] z-10 bg-bg">
-    <div class="thumbnail-content-style flex items-center justify-between">
+    <div class="base-card-style flex items-center justify-between">
       <base-button
         title="back"
         mode="btn-icon"
@@ -14,13 +14,13 @@
         <appIcon name="close" size="20px" />
       </base-button>
     </div>
-    <div class="thumbnail-content-style mt-4">
+    <div class="base-card-style mt-4">
       <div class="space-y-4" v-if="actionIcons">
         <!-- UPLOAD IMG BUTTON -->
         <button class="choose-method-upload-img">
           <img
             class="rounded-lg"
-            src="../../assets/68048.234e19732c3d9860b519.webp"
+            src="@/assets/68048.234e19732c3d9860b519.webp"
             alt="upload-thumbnail"
           />
           <div class="mr-auto">
@@ -35,7 +35,7 @@
         <button class="choose-method-upload-img" @click="openListIcons">
           <img
             class="rounded-lg"
-            src="../../assets/99760.7140b8ce4fef09ee976f.webp"
+            src="@/assets/99760.7140b8ce4fef09ee976f.webp"
             alt="upload-thumbnail"
           />
           <div class="mr-auto">
@@ -152,13 +152,9 @@ async function getBoxIcon() {
 onMounted(() => getBoxIcon());
 </script>
 
-<style scoped lang="scss">
-.thumbnail-content-style {
-  @apply bg-white p-4 rounded-md shadow min-[1000px]:w-[calc(100%-1rem)];
-
-  .choose-method-upload-img {
-    @apply flex items-center justify-between gap-4 w-full p-2 border rounded-md
-    duration-300 ease-out transition-all hover:bg-purple-100;
-  }
+<style scoped>
+.choose-method-upload-img {
+  @apply flex items-center justify-between gap-4 w-full p-2 border rounded-md
+  duration-300 ease-out transition-all hover:bg-purple-100;
 }
 </style>

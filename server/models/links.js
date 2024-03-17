@@ -26,6 +26,11 @@ const linkSchema = new Schema({
   isDisable: {
     type: Boolean,
     required: true
+  },
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    require: true
   }
 }, { timestamps: true });
 

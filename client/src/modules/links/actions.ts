@@ -7,8 +7,8 @@ const URL_SERVER = 'http://localhost:2024/admin/';
 
 export default {
   // HEADERS
-  async addHeaderLink({ commit }: ActionContext<HeaderLinks, any>, payload: HeaderLinks) {
-
+  async addHeaderLink({ commit, rootGetters }: ActionContext<HeaderLinks, any>, payload: HeaderLinks) {
+    const token = rootGetters[ 'auth/token' ];
     const header = {
       title: payload.title,
       isDisable: payload.isDisable,
@@ -17,7 +17,10 @@ export default {
 
     const req = await fetch(`${ URL_SERVER }header`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ token }`
+      },
       body: JSON.stringify(header)
     });
 
@@ -30,11 +33,8 @@ export default {
   },
   async featchHeaders(context: ActionContext<HeaderLinks, any>) {
     const token = context.rootGetters[ 'auth/token' ];
-    console.log('headers', token);
     const req = await fetch(`${ URL_SERVER }headers`, {
-      headers: {
-        'Authorization': `Bearer ${ token }` // Include token in headers
-      },
+      headers: { 'Authorization': `Bearer ${ token }` },
     });
     const res: { message: string, headers: Record<string, HeaderWithId & { _id: string }> } = await req.json();
     const resHeader: Record<string, HeaderWithId & { _id: string }> = res.headers;
@@ -55,11 +55,13 @@ export default {
 
     context.commit('setFeatchHeaders', headers);
   },
-  async deleteHeaderLink({ commit }: ActionContext<HeaderLinks, any>, id: string) {
+  async deleteHeaderLink({ commit, rootGetters }: ActionContext<HeaderLinks, any>, id: string) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }delete-header/${ id }`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ token }`
       },
     });
 
@@ -69,10 +71,14 @@ export default {
 
     commit('setDeleteHeaderLink', id);
   },
-  async updateHeader(_context: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
+  async updateHeader({ rootGetters }: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-header/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ token }`
+      },
       body: JSON.stringify(payload)
     });
 
@@ -80,10 +86,14 @@ export default {
 
     serverError(req, res, 'failed to update header');
   },
-  async updateHideHeader(_context: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
+  async updateHideHeader({ rootGetters }: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-header-checkbox/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ token }`
+      },
       body: JSON.stringify(payload)
     });
 
@@ -91,13 +101,14 @@ export default {
 
     serverError(req, res, 'failed to change state')
   },
-  async updateHeaderOrder({ state }: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
+  async updateHeaderOrder({ state, rootGetters }: ActionContext<HeaderLinks, any>, payload: HeaderWithId) {
     state.headerLinks = payload
-
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-headers-orders`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ token }`
       },
       body: JSON.stringify(payload)
     });
@@ -108,11 +119,14 @@ export default {
   },
   // LINKS
   // ADD LINK
-  async addLink({ commit }: ActionContext<Link, any>, payload: any) {
-
+  async addLink({ commit, rootGetters }: ActionContext<Link, any>, payload: any) {
+    const token = rootGetters[ 'auth/token' ]
     const req = await fetch(`${ URL_SERVER }link`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ token }`
+      },
       body: JSON.stringify(payload)
     })
 
@@ -125,11 +139,8 @@ export default {
   },
   async fetchLinks(context: ActionContext<Link, any>) {
     const token = context.rootGetters[ 'auth/token' ];
-    console.log('links', token);
     const req = await fetch(`${ URL_SERVER }links`, {
-      headers: {
-        'Authorization': `Bearer ${ token }` // Include token in headers
-      },
+      headers: { 'Authorization': `Bearer ${ token }` },
     })
     const res = await req.json()
     const resLinks = res.links;
@@ -154,10 +165,11 @@ export default {
     context.commit('setFetchLinks', links)
   },
   // UPDATE TITLE
-  async updateLinkTitle({ commit }: ActionContext<Link, any>, payload: any) {
+  async updateLinkTitle({ commit, rootGetters }: ActionContext<Link, any>, payload: any) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-title-link/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
       body: JSON.stringify(payload)
     });
 
@@ -166,10 +178,11 @@ export default {
 
     commit('setUpdateLinkTitle', payload);
   },
-  async updateLink({ commit }: ActionContext<Link, any>, payload: any) {
+  async updateLink({ commit, rootGetters }: ActionContext<Link, any>, payload: any) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-url-link/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
       body: JSON.stringify(payload)
     });
 
@@ -178,10 +191,11 @@ export default {
 
     commit('setUpdateLink', payload);
   },
-  async updateHideLink({ commit }: ActionContext<Link, any>, payload: any) {
+  async updateHideLink({ commit, rootGetters }: ActionContext<Link, any>, payload: any) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-hidden-link/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
       body: JSON.stringify(payload)
     });
 
@@ -191,10 +205,11 @@ export default {
     commit('setUpdateHideLink', payload);
   },
   // LAYOUT
-  async updateLayout({ commit }: ActionContext<Link, any>, payload: any) {
+  async updateLayout({ commit, rootGetters }: ActionContext<Link, any>, payload: any) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-layout-link/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
       body: JSON.stringify(payload)
     });
 
@@ -203,10 +218,11 @@ export default {
     commit('setUpdateLayout', payload);
   },
   // BOXICONS
-  async updateChooseBoxicon({ commit }: ActionContext<Link, any>, payload: any) {
+  async updateChooseBoxicon({ commit, rootGetters }: ActionContext<Link, any>, payload: any) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-icon-link/${ payload.id }`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
       body: JSON.stringify(payload)
     });
 
@@ -216,10 +232,11 @@ export default {
     commit('setUpdateChooseBoxicon', payload);
   },
   // DELETE TITLE
-  async deleteLink({ commit }: ActionContext<Link, any>, id: string) {
+  async deleteLink({ commit, rootGetters }: ActionContext<Link, any>, id: string) {
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }delete-link/${ id }`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
     });
 
     const res: { message: string } = await req.json();
@@ -228,12 +245,12 @@ export default {
 
     commit('setDeleteLink', id);
   },
-  async updateLinksOrder({ state }: ActionContext<{ links: Link }, any>, payload: Link) {
+  async updateLinksOrder({ state, rootGetters }: ActionContext<{ links: Link }, any>, payload: Link) {
     state.links = payload
-
+    const token = rootGetters[ 'auth/token' ];
     const req = await fetch(`${ URL_SERVER }update-links-orders`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ token }` },
       body: JSON.stringify(payload)
     });
 

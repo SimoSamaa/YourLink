@@ -1,126 +1,137 @@
 @use './helpers/reset' as *;
 @use './helpers/mixins' as *;
 
-.admin-page {
-  @apply pr-4 z-20;
+@layer components {
+  .admin-page {
+    @apply pr-4 z-20;
 
-  @include breakpoint("md") {
-    @apply p-0;
-  }
+    @include breakpoint("md") {
+      @apply p-0;
+    }
 
-  header {
-    @apply mt-4;
-  }
+    header {
+      @apply mt-4;
+    }
 
-  // CONTAINER
-  .link-container-style {
-    @apply relative grid gap-4;
+    // CONTAINER
+    .link-container-style {
+      @apply relative grid gap-4;
 
-    // CONTENT
-    .link-content-style {
-      @apply bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full;
+      // CONTENT
+      .link-content-style {
+        @apply bg-white space-y-2 p-4 rounded-xl border-border border shadow-sm w-full;
 
-      // CUSTOM CHECKBOX
-      .checkbox-style {
-        label {
-          @apply relative block w-10 h-5 rounded-full bg-gray-200 shadow;
+        // CUSTOM CHECKBOX
+        .checkbox-style {
+          label {
+            @apply relative block w-10 h-5 rounded-full bg-gray-200 shadow;
 
-          &:before {
-            @apply content-[''] w-5 h-5 rounded-full cursor-pointer top-0 left-0 absolute transition-[left] duration-300 ease-out bg-white border-gray-200 border-2;
+            &:before {
+              @apply content-[''] w-5 h-5 rounded-full cursor-pointer top-0 left-0 absolute transition-[left] duration-300 ease-out bg-white border-gray-200 border-2;
+            }
           }
-        }
 
-        input:checked~label {
-          @apply bg-purple-500;
-        }
+          input:checked~label {
+            @apply bg-purple-500;
+          }
 
-        input:checked~label::before {
-          @apply left-5 border-purple-500;
-        }
+          input:checked~label::before {
+            @apply left-5 border-purple-500;
+          }
 
-        input:disabled~ :is(label::before, label) {
-          @apply cursor-no-drop bg-opacity-50;
+          input:disabled~ :is(label::before, label) {
+            @apply cursor-no-drop bg-opacity-50;
+          }
         }
       }
     }
   }
 }
 
-// AUTH PAGES
-.auth-page {
-  @apply grid min-h-screen;
-  grid-template-columns: 70% 30%;
+@layer components {
 
-  h1 {
-    font-size: clamp(32px, 3vw, 50px);
-  }
+  // AUTH PAGES
+  .auth-page {
+    @apply grid min-h-screen;
+    grid-template-columns: 70% 30%;
 
-  .auth-form {
-    @apply grid gap-4 mx-auto w-[600px] max-w-full;
+    h1 {
+      font-size: clamp(32px, 3vw, 50px);
+    }
 
-    .auth-input {
-      @apply h-[55px] relative;
+    .auth-form {
+      @apply grid gap-4 mx-auto w-[600px] max-w-full;
 
-      &.input-checked-err input {
-        @apply bg-red-200 border-red-500 focus:outline-red-500;
+      .auth-input {
+        @apply h-[55px] relative;
+
+        &.input-checked-err input {
+          @apply bg-red-200 border-red-500 focus:outline-red-500;
+        }
+
+        &.input-checked-err label {
+          @apply text-red-500;
+        }
+
+        &.input-checked-err svg {
+          @apply stroke-red-500;
+        }
+
+        label {
+          @apply absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-border duration-150 ease-in-out cursor-text select-none;
+        }
+
+        input {
+          @apply w-full h-full px-4 border-border border rounded pt-3 duration-150 ease-out;
+        }
+
+        input:focus+label,
+        input:not(:placeholder-shown)+label {
+          @apply top-[8px] translate-y-0 text-[12px];
+        }
+
+        input::placeholder {
+          @apply text-transparent select-none;
+        }
+
+        svg {
+          @apply absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer;
+        }
+      }
+    }
+
+    @include breakpoint("md") {
+      @apply block;
+
+      .bg-img {
+        @apply hidden;
+      }
+    }
+
+    @include breakpoint("sm") {
+      @apply place-content-center;
+
+      &>div:nth-child(1) {
+        @apply p-4;
       }
 
-      &.input-checked-err label {
-        @apply text-red-500;
+      a:has(#logo) {
+        @apply block mx-auto w-fit;
       }
 
-      &.input-checked-err svg {
-        @apply stroke-red-500;
-      }
+      .hero {
+        @apply my-4;
 
-      label {
-        @apply absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-border duration-150 ease-in-out cursor-text select-none;
-      }
-
-      input {
-        @apply w-full h-full px-4 border-border border rounded pt-3 duration-150 ease-out;
-      }
-
-      input:focus+label,
-      input:not(:placeholder-shown)+label {
-        @apply top-[8px] translate-y-0 text-[12px];
-      }
-
-      input::placeholder {
-        @apply text-transparent select-none;
-      }
-
-      svg {
-        @apply absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer;
+        p {
+          @apply mt-2;
+        }
       }
     }
   }
+}
 
-  @include breakpoint("md") {
-    @apply block;
-
-    .bg-img {
-      @apply hidden;
-    }
-  }
-
-  @include breakpoint("sm") {
-    @apply place-content-center;
-
-    &>div:nth-child(1) {
-      @apply p-4;
-    }
-
-    a:has(#logo) {
-      @apply block mx-auto w-fit;
-    }
-
-    .hero {
-      @apply my-4;
-
-      p {
-        @apply mt-2;
-      }
-    }
+@layer utilities {
+  .base-card-style {
+    @apply bg-white p-4 rounded-xl shadow min-[1000px]:w-[calc(100%-1rem)];
   }
 }

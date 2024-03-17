@@ -162,12 +162,12 @@
 <script lang="ts" setup>
 import { ref, computed, nextTick, PropType } from "vue";
 import { useStore } from "vuex";
-import linksSection from "@/components/admin/linksSection.vue";
+import linksSection from "@/components/admin/link/linksSection.vue";
 import { HeaderLinks, Header, HeaderWithId } from "@/types/interfacesHeader";
 import { Link } from "@/types/interfacesLink";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
-import AddThumbnail from "@/components/admin/AddThumbnail.vue";
-import AddLink from "@/components/admin/AddLink.vue";
+import AddThumbnail from "@/components/admin/link/AddThumbnail.vue";
+import AddLink from "@/components/admin/link/AddLink.vue";
 
 const store = useStore();
 
@@ -188,6 +188,8 @@ const links = computed<Link[]>(() =>
 );
 
 const checkedLinkPage = computed(() => store.getters["links/checkedLinkPage"]);
+
+const isAuth = computed<boolean>(() => store.getters["auth/isAuth"]);
 
 const checkMarginBottom = computed<{ marginBottom: string }>(() => {
   return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };

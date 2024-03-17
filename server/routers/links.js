@@ -17,8 +17,10 @@ router.post('/link',
       .trim()
       .notEmpty()
       .isURL({ require_protocol: true })
-  ]
-  , linkControllers.createLink);
+  ],
+  isAuth,
+  linkControllers.createLink
+);
 
 router.put('/update-title-link/:id',
   [
@@ -26,7 +28,10 @@ router.put('/update-title-link/:id',
       .trim()
       .isLength({ max: 15 })
   ]
-  , linkControllers.updateTitleLink);
+  ,
+  isAuth,
+  linkControllers.updateTitleLink
+);
 
 router.put('/update-url-link/:id',
   [
@@ -42,6 +47,7 @@ router.put('/update-url-link/:id',
         ) return true;
       })
   ],
+  isAuth,
   linkControllers.updateUrlLink
 );
 
@@ -50,6 +56,7 @@ router.put('/update-hidden-link/:id',
     body('isDisable')
       .isBoolean()
   ],
+  isAuth,
   linkControllers.updateHiddenLink
 );
 
@@ -59,6 +66,7 @@ router.put('/update-layout-link/:id',
       .notEmpty()
       .isString()
   ],
+  isAuth,
   linkControllers.updateLayout
 );
 
@@ -68,11 +76,12 @@ router.put('/update-icon-link/:id',
       .notEmpty()
       .isString()
   ],
+  isAuth,
   linkControllers.updateIcon
 );
 
-router.put('/update-links-orders', linkControllers.updateLinksOrders);
+router.put('/update-links-orders', isAuth, linkControllers.updateLinksOrders);
 
-router.delete('/delete-link/:id', linkControllers.deleteLink);
+router.delete('/delete-link/:id', isAuth, linkControllers.deleteLink);
 
 module.exports = router;

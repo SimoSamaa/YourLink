@@ -5,7 +5,7 @@ const User = require('../models/user');
 const {
   handleErrCatch,
   handleNotFound,
-  handleValidationErrors
+  handleValidationErrors,
 } = require('../util/helper');
 
 // GET LOGIN USER DATA
@@ -13,12 +13,14 @@ exports.getUser = (req, res, next) => {
   const userId = req.params.id;
 
   User.findById(userId)
+    .populate('headers')
     .then((user) => {
       handleNotFound(user, 'user', next);
-      res.status(200).json({
-        message: 'User data retrieved successfully!',
-        user: user
-      });
+      res.status(200)
+        .json({
+          message: 'User data retrieved successfully!',
+          user: user
+        });
     })
     .catch((err) => handleErrCatch(err, next));
 };
@@ -43,7 +45,7 @@ exports.updateProfile = (req, res, next) => {
 
       // Update username and bio if provided
       if(username) user.username = username;
-      if(bio) user.bio = bio;
+      user.bio = bio;
       if(imgUrl) user.userImg = imgUrl;
       return user.save();
     })
@@ -74,4 +76,29 @@ const clearImage = (filePath) => {
   if(!filePath) return;
   filePath = path.join(__dirname, '..', filePath);
   fs.unlink(filePath, err => console.log(err));
+};
+
+exports.profilePage = (req, res, next) => {
+  const name = req.params.username;
+  User.findOne({ username: name })
+    .populate('links')
+    .populate('headers')
+    .then((user) => {
+      handleNotFound(user, 'user', next);
+
+      const profileData = {
+        username: user.username,
+        bio: user.bio,
+        userImg: user.userImg,
+        headers: user.headers,
+        links: user.links
+      };
+
+      res.status(200)
+        .json({
+          message: 'Profile data retrieved successfully!',
+          user: profileData
+        });
+    })
+    .catch((err) => handleErrCatch(err, next));
 };

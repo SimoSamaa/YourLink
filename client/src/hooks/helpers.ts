@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+const URL_SERVER = 'http://localhost:2024/';
 
 function useInputType() {
   const showPass = ref<boolean>(false);
@@ -25,4 +26,37 @@ function serverError(req: Response, res: { message: string }, messErr: string) {
   }
 };
 
-export { useInputType, serverError }
+async function handleRequest<T>
+  (
+    url: string | null = 'GET',
+    method: string | null = null,
+    token: string | null = null,
+    payload: any,
+    ContentType: string | null = 'json'
+  ): Promise<[ Response, T ]> {
+
+  const fetchOptions: RequestInit = {
+    method: method !== null ? method : 'GET',
+    headers: {},
+  };
+
+  if (token !== null) {
+    if (!fetchOptions.headers) fetchOptions.headers = {};
+
+    (fetchOptions.headers as Record<string, string>)[ 'Authorization' ] = `Bearer ${ token }`;
+  }
+
+  if (payload !== null && ContentType === 'json') {
+    (fetchOptions.headers as Record<string, string>)[ 'Content-Type' ] = 'application/json';
+    fetchOptions.body = JSON.stringify(payload)
+  }
+
+  if (payload !== null && ContentType === 'html') fetchOptions.body = payload;
+
+  const req = await fetch(`${ URL_SERVER }${ url }`, fetchOptions);
+  const res = await req.json();
+
+  return [ req, res ];
+}
+
+export { useInputType, serverError, handleRequest }

@@ -25,4 +25,17 @@ const handleValidationErrors = (req) => {
   }
 };
 
-module.exports = { handleErrCatch, handleNotFound, handleValidationErrors };
+const authorized = (obj, req) => {
+  if(obj.creator.toString() !== req.userId) {
+    const error = new Error('Not authorized!');
+    error.statusCode = 403;
+    throw error;
+  }
+};
+
+module.exports = {
+  handleErrCatch,
+  handleNotFound,
+  handleValidationErrors,
+  authorized
+};

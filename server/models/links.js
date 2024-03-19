@@ -31,7 +31,7 @@ const linkSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     require: true
-  }
+  },
 }, { timestamps: true });
 
-module.exports = mongoose.model('link', linkSchema);
+module.exports = mongoose.model('Link', linkSchema);

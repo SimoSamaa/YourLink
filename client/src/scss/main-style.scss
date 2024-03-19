@@ -128,6 +128,49 @@
       }
     }
   }
+
+  @layer link-layout {
+    .links {
+      @apply grid gap-4;
+
+      .classic {
+        @apply rounded-full;
+
+        a {
+          @apply flex justify-between;
+
+          div:nth-child(1) {
+            @apply grid place-content-center;
+          }
+        }
+      }
+
+      // FEATURED LAYOUT
+      .featured {
+        @apply rounded-lg;
+
+        a {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(3, 1fr);
+
+          div:nth-child(1) {
+            grid-column: span 3;
+            grid-row: span 2;
+            // display: block;
+          }
+
+          div:nth-child(2) {
+            grid-column: span 2;
+          }
+
+          div:nth-child(3) {
+            margin-left: auto;
+          }
+        }
+      }
+    }
+  }
 }
 
 @layer utilities {

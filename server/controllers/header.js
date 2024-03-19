@@ -3,12 +3,13 @@ const User = require('../models/user');
 const {
   handleErrCatch,
   handleNotFound,
-  handleValidationErrors
+  handleValidationErrors,
+  authorized,
 } = require('../util/helper');
 
 // LOAD HEADERS
 exports.getHeaders = (req, res, next) => {
-  Header.find()
+  Header.find({ creator: req.userId })
     .then((headers) => {
       res
         .status(200)
@@ -60,11 +61,7 @@ exports.deleteHeader = (req, res, next) => {
   Header.findById(headerId)
     .then((header) => {
       handleNotFound(header, 'header', next);
-      if(header.creator.toString() !== req.userId) {
-        const error = new Error('Not authorized!');
-        error.statusCode = 403;
-        throw error;
-      }
+      authorized(header, req);
       return Header.findByIdAndDelete(headerId);
     })
     .then(() => {
@@ -86,7 +83,7 @@ exports.updateHeader = (req, res, next) => {
   Header.findById(headerId)
     .then((header) => {
       handleNotFound(header, 'header', next);
-
+      authorized(header, req);
       if(header.title === title) {
         const error =
           new Error("the header already exist");
@@ -119,6 +116,7 @@ exports.updateHeaderCheckbox = (req, res, next) => {
   Header.findById(headerId)
     .then((header) => {
       handleNotFound(header, 'header', next);
+      authorized(header, req);
       header.isDisable = isDisable;
       return header.save();
     })
@@ -133,7 +131,6 @@ exports.updateHeaderCheckbox = (req, res, next) => {
 // UPDATE ORDER
 exports.updateHeadersOrders = (req, res, next) => {
   const updatedHeaders = req.body;
-
   Promise.all(
     updatedHeaders.map((header) => {
       return Header.findByIdAndUpdate(header.id, { dataIndex: header.dataIndex });

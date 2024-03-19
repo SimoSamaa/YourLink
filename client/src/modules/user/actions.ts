@@ -1,57 +1,15 @@
-import { serverError } from '@/hooks/helpers'
-const URL_SERVER = 'http://localhost:2024/';
+import { ActionContext } from 'vuex';
+import { serverError, handleRequest } from '@/hooks/helpers';
+import { User } from '@/types/interfacesAuth';
 
-async function handleRequest<T>
-  (
-    url: string | null = null,
-    method: string | null = null,
-    token: string | null = null,
-    payload: any,
-    ContentType: string | null = null
-  ): Promise<[ Response, T ]> {
-
-  const fetchOptions: RequestInit = {
-    method: method !== null ? method : 'GET',
-    headers: {},
-  };
-
-  if (token !== null) {
-    if (!fetchOptions.headers) fetchOptions.headers = {};
-
-    (fetchOptions.headers as Record<string, string>)[ 'Authorization' ] = `Bearer ${ token }`;
-  }
-
-  if (payload !== null && ContentType === 'json') {
-    (fetchOptions.headers as Record<string, string>)[ 'Content-Type' ] = 'application/json';
-    fetchOptions.body = JSON.stringify(payload)
-  }
-
-  if (payload !== null && ContentType === 'html') fetchOptions.body = payload;
-
-
-
-  const req = await fetch(`${ URL_SERVER }${ url }`, fetchOptions);
-  const res = await req.json();
-
-  return [ req, res ];
-}
-
-interface User {
-  email: string;
-  username: string;
-  bio: string
-  userImg: string
-}
-type resType = {
-  message: string, user: User
-}
+type resType = { message: string, user: User };
 
 export default {
-  async fetchUser(context: any) {
+  async fetchUser(context: ActionContext<{ user: User }, any>) {
     const token = context.rootGetters[ 'auth/token' ];
     const userId = context.rootGetters[ 'auth/userId' ];
 
-    const [ req, res ] = await handleRequest<resType>(`user/${ userId }`, null, token, null, null);
+    const [ req, res ] = await handleRequest<resType>(`user/${ userId }`, null, token, null);
 
     serverError(req, res, res.message);
 
@@ -65,7 +23,7 @@ export default {
 
     context.commit('setUser', user);
   },
-  async updateProfil(context: any, payload: any) {
+  async updateProfil(context: ActionContext<{ user: User }, any>, payload: User) {
     const userId = context.rootGetters[ 'auth/userId' ];
     const token = context.rootGetters[ 'auth/token' ];
 
@@ -77,18 +35,56 @@ export default {
     const [ req, res ] = await handleRequest<resType>(`update-profile/${ userId }`, 'PUT', token, formData, 'html');
 
     serverError(req, res, res.message);
-
-    context.commit('setUpdateProfil', { ...payload, userImg: 'http://localhost:2024/' + res.user.userImg });
+    const userImg = !res.user.userImg ? res.user.userImg : "http://localhost:2024/" + res.user.userImg
+    context.commit('setUpdateProfil', { ...payload, userImg: userImg });
   },
-  async removeImgUser(context: any,) {
+  async removeImgUser(context: ActionContext<{ user: User }, any>) {
     const userId = context.rootGetters[ 'auth/userId' ];
     const token = context.rootGetters[ 'auth/token' ];
 
-    const req = await fetch(URL_SERVER + 'remove-image/' + userId, {
-      headers: { 'Authorization': `Bearer ${ token }` },
-      method: 'DELETE'
-    })
+    const [ req, res ] = await handleRequest<resType>(`remove-image/${ userId }`, 'DELETE', token, null);
 
-    context.commit('setRemoveImgUser')
+    serverError(req, res, res.message);
+
+    context.commit('setRemoveImgUser');
+  },
+  async fetchUserProfile({ commit }: any, payload: any) {
+    const [ req, res ] = await handleRequest<any>(payload, null, null, null);
+    serverError(req, res, res.message);
+    const info = {
+      username: res.user.username,
+      userImg: res.user.userImg,
+      bio: res.user.bio,
+    }
+
+    const linkData = res.user.links;
+    const links: any = []
+    for (const key in linkData) {
+      const data = {
+        id: linkData[ key ]._id,
+        title: linkData[ key ].title,
+        link: linkData[ key ].link,
+        layout: linkData[ key ].layout,
+        icon: linkData[ key ].icon,
+        dataIndex: linkData[ key ].dataIndex,
+        isDisable: linkData[ key ].isDisable
+      }
+      links.unshift(data)
+    }
+
+    const headerData = res.user.headers;
+    const headers: any = []
+    for (const key in headerData) {
+      const data = {
+        id: headerData[ key ]._id,
+        title: headerData[ key ].title,
+        dataIndex: headerData[ key ].dataIndex,
+        isDisable: headerData[ key ].isDisable
+      }
+
+      headers.unshift(data)
+    }
+
+    commit('SetFetchUserProfile', { info, links, headers });
   }
-}
+};

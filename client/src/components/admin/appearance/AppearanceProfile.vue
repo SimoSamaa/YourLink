@@ -39,6 +39,12 @@
           </base-button>
         </div>
         <p class="text-text2 mt-2 ml-2">Allowed JPG, or PNG. Max size of 1MB</p>
+        <p
+          v-if="!userProfile.userimg.isValid"
+          class="ml-2 text-sm text-red-500"
+        >
+          Image size is too large. Please select an image smaller.
+        </p>
       </div>
     </div>
     <div class="auth-input">
@@ -78,6 +84,7 @@
 <script lang="ts" setup>
 import { ref, computed, reactive, watch } from "vue";
 import { useStore } from "vuex";
+import { UserProfile } from "@/types/interfacesAuth";
 
 const store = useStore();
 
@@ -87,22 +94,7 @@ const imageFile = ref<File | null>(null);
 
 const user = computed(() => store.getters["user/user"]);
 
-interface User {
-  userimg: {
-    value: string;
-    isValid: boolean;
-  };
-  username: {
-    value: string;
-    isValid: boolean;
-  };
-  userbio: {
-    value: string;
-    isValid: boolean;
-  };
-}
-
-const userProfile = reactive<User>({
+const userProfile = reactive<UserProfile>({
   userimg: {
     value: user.value.userImg,
     isValid: true,
@@ -127,8 +119,7 @@ const uploadImgUser = (e: Event) => {
     const imgSize = inputFile.size / 1024; // size in KB
 
     if (imgSize > 1024) {
-      // If image size is greater than 1MB (1024KB)
-      console.log("Image size is too large. Please select an image smaller.");
+      userProfile.userimg.isValid = false;
       return;
     }
 
@@ -147,7 +138,7 @@ const removeImgUser = async () => {
 };
 
 const submitProfileUser = async () => {
-  const data = {
+  const userProfileData = {
     userImg: imageFile.value,
     username: userProfile.username.value,
     bio: userProfile.userbio.value,
@@ -155,7 +146,7 @@ const submitProfileUser = async () => {
 
   processing.value = true;
   try {
-    await store.dispatch("user/updateProfil", data);
+    await store.dispatch("user/updateProfil", userProfileData);
   } catch (err) {
     (err as Error).message;
   } finally {

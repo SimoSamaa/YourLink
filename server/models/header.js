@@ -22,4 +22,4 @@ const headerSchema = new Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model('header', headerSchema);
+module.exports = mongoose.model('Header', headerSchema);

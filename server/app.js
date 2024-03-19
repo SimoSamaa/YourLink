@@ -11,7 +11,6 @@ const auth = require('./routers/auth');
 const user = require('./routers/user');
 
 const app = express();
-
 const MONGO_DB = 'mongodb+srv://simo:ZXyrGnYr1ht2HqAv@cluster0.1epo1j2.mongodb.net/yourLink?retryWrites=true&w=majority';
 
 const fileStorage = multer.diskStorage({
@@ -24,9 +23,10 @@ const fileStorage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if(file.mimetype === 'image/png'
-    || file.mimetype === 'image/jpeg'
-    || file.mimetype === 'image/jpg'
+  if(
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'image/jpg'
   ) {
     cb(null, true);
   } else {
@@ -36,7 +36,18 @@ const fileFilter = (req, file, cb) => {
 
 
 app.use(bodyParser.json());
-app.use(multer({ storage: fileStorage, filter: fileFilter }).single('userImg'));
+app.use
+  (
+    multer
+      (
+        {
+          storage: fileStorage,
+          filter: fileFilter,
+          limits: { fileSize: 1024 * 1024 }
+        }
+      )
+      .single('userImg')
+  );
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {

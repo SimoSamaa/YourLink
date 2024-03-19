@@ -8,6 +8,7 @@ const userControllers = require('../controllers/user');
 const isAuth = require('../middleware/is-auth');
 
 router.get('/user/:id', isAuth, userControllers.getUser);
+router.get('/:username', userControllers.profilePage);
 
 router.put('/update-profile/:id',
   [
@@ -18,7 +19,7 @@ router.put('/update-profile/:id',
     body('bio')
       .trim()
       .isString()
-      .isLength({ max: 80 }),
+      .isLength({ min: 0, max: 80 }),
   ], isAuth, userControllers.updateProfile);
 
 router.delete('/remove-image/:id', isAuth, userControllers.removeUserImg);

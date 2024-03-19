@@ -1,13 +1,15 @@
 const Link = require('../models/links');
+const User = require('../models/user');
 const {
   handleErrCatch,
   handleNotFound,
-  handleValidationErrors
+  handleValidationErrors,
+  authorized
 } = require('../util/helper');
 
 // GET ALL LINKS
 exports.getLinks = (req, res, next) => {
-  Link.find()
+  Link.find({ creator: req.userId })
     .then((links) => {
       res
         .status(200)
@@ -24,6 +26,7 @@ exports.createLink = (req, res, next) => {
   handleValidationErrors(req);
 
   const { title, link, dataIndex, isDisable, layout, icon } = req.body;
+  let creator;
 
   const myLink = new Link({
     title: title,
@@ -31,15 +34,25 @@ exports.createLink = (req, res, next) => {
     dataIndex: dataIndex,
     isDisable: isDisable,
     layout: layout,
-    icon: icon
+    icon: icon,
+    creator: req.userId,
   });
 
   myLink.save()
-    .then((link) => {
+    .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.links.push(myLink);
+      return user.save();
+    })
+    .then(() => {
       res
         .status(201)
         .json({
-          link: link,
+          link: myLink,
+          creator: { _id: creator._id, username: creator.username },
           message: 'link create successfully!',
         });
     })
@@ -53,6 +66,7 @@ exports.deleteLink = (req, res, next) => {
   Link.findById(deletedLinkId)
     .then((link) => {
       handleNotFound(link, 'link', next);
+      authorized(link, req);
       return Link.findByIdAndDelete(deletedLinkId);
     })
     .then(() => {
@@ -73,6 +87,7 @@ exports.updateTitleLink = (req, res, next) => {
   Link.findById(updatedTitileId)
     .then((link) => {
       handleNotFound(link, 'link', next);
+      authorized(link, req);
       link.title = updatedTitile;
       return link.save();
     })
@@ -94,6 +109,7 @@ exports.updateUrlLink = (req, res, next) => {
   Link.findById(updatedUrlId)
     .then((link) => {
       handleNotFound(link, 'link', next);
+      authorized(link, req);
       link.link = updatedTUrl;
       return link.save();
     })
@@ -119,6 +135,7 @@ exports.updateHiddenLink = (req, res, next) => {
   Link.findById(updatedHiddenId)
     .then((link) => {
       handleNotFound(link, 'link', next);
+      authorized(link, req);
       link.isDisable = isDisable;
       return link.save();
     })
@@ -138,6 +155,7 @@ exports.updateLayout = (req, res, next) => {
   Link.findById(updatedLayoutId)
     .then((link) => {
       handleNotFound(link, 'link', next);
+      authorized(link, req);
       link.layout = updatedLayout;
       return link.save();
     })
@@ -157,6 +175,7 @@ exports.updateIcon = (req, res, next) => {
   Link.findById(updatedIconId)
     .then((link) => {
       handleNotFound(link, 'link', next);
+      authorized(link, req);
       link.icon = updatedIcon;
       return link.save();
     })

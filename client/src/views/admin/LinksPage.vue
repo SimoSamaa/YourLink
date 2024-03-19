@@ -1,5 +1,24 @@
 <template>
   <section class="admin-page relative">
+    <div
+      v-if="!thumbnail && !linkPage"
+      class="flex text-sm items-center gap-4 justify-between bg-blue-100 p-4 rounded-xl border-blue-500 border"
+    >
+      <div>
+        <strong>Your Linktree is live: </strong>
+        <router-link
+          class="underline decoration-1 underline-offset-2"
+          :to="`/${user.username}`"
+          target="_blank"
+          >/{{ user.username }}</router-link
+        >
+      </div>
+
+      <div class="flex items-center gap-4">
+        <p>Share YourLink to your socials</p>
+        <base-button mode="white-btn" @click="copyLink">copy link</base-button>
+      </div>
+    </div>
     <!-- ADD LINK -->
     <transition name="animation-from-top">
       <AddLink v-if="linkPage" @set-close-AddLink="closeAddLink" />
@@ -12,7 +31,6 @@
         @set-close-Thumbnail="closeThumbnail"
       />
     </transition>
-    <h1>Links</h1>
     <header class="flex justify-between pb-4 border-b-[1px] border-border mb-4">
       <base-button mode="white-btn" @click="handledAddeHeader">
         <appIcon name="header" />
@@ -189,7 +207,7 @@ const links = computed<Link[]>(() =>
 
 const checkedLinkPage = computed(() => store.getters["links/checkedLinkPage"]);
 
-const isAuth = computed<boolean>(() => store.getters["auth/isAuth"]);
+const user = computed(() => store.getters["user/user"]);
 
 const checkMarginBottom = computed<{ marginBottom: string }>(() => {
   return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };
@@ -203,6 +221,19 @@ const linkPage = ref<boolean>(false);
 const id = ref<string>("");
 const thumbnail = ref<boolean>(false);
 const processing = ref<boolean>(false);
+
+// FUNCTION TO COPY LINK USER PROFILE
+const copyLink = () => {
+  const username = user.value.username;
+  const url = `${window.location.origin}/${username}`;
+  const input = document.createElement("input");
+  input.setAttribute("value", url);
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  document.body.removeChild(input);
+  alert("Link copied to clipboard!");
+};
 
 // ADD LINK (PAGE)
 const openAddLinkPage = () => (linkPage.value = true);
@@ -341,22 +372,6 @@ function getDragAfterElement(
 
   return foundElement;
 }
-
-// CHANGE ORDERS ELEMENT IN DRAG
-// const changeElementOrders = async (e: DragEvent) => {
-//   const target = e.currentTarget as Element;
-//   const items = [...target.querySelectorAll("li")];
-//   const updatedHeaders = items.map((item, index) => ({
-//     ...headers.value.find((header) => header.id === item.id),
-//     dataIndex: index,
-//   }));
-
-//   try {
-//     await store.dispatch("links/updateHeaderOrder", updatedHeaders);
-//   } catch (err) {
-//     (err as Error).message;
-//   }
-// };
 
 const reorderElements = async (
   e: DragEvent,

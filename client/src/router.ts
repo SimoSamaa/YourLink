@@ -9,6 +9,7 @@ import LinksPage from '@/views/admin/LinksPage.vue';
 import AppearancePage from '@/views/admin/AppearancePage.vue';
 import AccountPage from '@/views/admin/AccountPage.vue';
 import PreviewPage from '@/views/admin/PreviewPage.vue';
+import UserProfile from '@/views/visitor/UserProfile.vue';
 
 
 const router = createRouter({
@@ -21,6 +22,12 @@ const router = createRouter({
     {
       path: '',
       component: HomePage
+    },
+    {
+      props: true,
+      path: '/:username',
+      component: UserProfile,
+      name: 'userProfile'
     },
     {
       path: '/auth/login',

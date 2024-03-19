@@ -17,6 +17,28 @@ interface Login {
   };
 }
 
+interface User {
+  email: string;
+  username: string;
+  bio: string
+  userImg: string
+}
+
+interface UserProfile {
+  userimg: {
+    value: string;
+    isValid: boolean;
+  };
+  username: {
+    value: string;
+    isValid: boolean;
+  };
+  userbio: {
+    value: string;
+    isValid: boolean;
+  };
+}
+
 type Signup = UserName & Login
 
-export { Login, Signup }
+export { Login, Signup, User, UserProfile }

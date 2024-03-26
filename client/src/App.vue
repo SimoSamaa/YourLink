@@ -5,7 +5,10 @@
   </section>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -24,7 +27,8 @@ const removeNavVis = computed<boolean>(
     route.name === "preview" ||
     route.name === "loginPage" ||
     route.name === "signupPage" ||
-    route.name === "userProfile"
+    route.name === "userProfile" ||
+    route.name === "notFound"
 );
 
 const autoLogin = () => {

@@ -2,13 +2,20 @@
   <section class="auth-page">
     <div class="px-10 py-8">
       <router-link to="/">
-        <img src="../../assets/logo.webp" alt="logo" id="logo" />
+        <img
+          src="../../assets/logo.webp"
+          alt="logo"
+          id="logo"
+        />
       </router-link>
       <div class="hero my-10 text-center">
         <h1 class="font-bold">Welcome back</h1>
         <p class="text-text2 mt-4">Login to YourLink</p>
       </div>
-      <form @submit.prevent="submitLogin" class="auth-form">
+      <form
+        @submit.prevent="submitLogin"
+        class="auth-form"
+      >
         <div
           class="auth-input"
           :class="{ 'input-checked-err': !login.email.isValid }"
@@ -21,9 +28,15 @@
             v-model="login.email.value"
           />
           <label for="email">Email</label>
-          <appIcon v-if="!login.email.isValid" name="error" />
+          <appIcon
+            v-if="!login.email.isValid"
+            name="error"
+          />
         </div>
-        <p v-if="!login.email.isValid" class="text-red-500 text-sm -mt-4">
+        <p
+          v-if="!login.email.isValid"
+          class="text-red-500 text-sm -mt-4"
+        >
           Please enter a valid email
         </p>
         <div
@@ -55,7 +68,10 @@
             />
           </svg>
         </div>
-        <p v-if="!login.password.isValid" class="text-red-500 text-sm -mt-4">
+        <p
+          v-if="!login.password.isValid"
+          class="text-red-500 text-sm -mt-4"
+        >
           please enter a password
         </p>
         <base-button
@@ -72,17 +88,26 @@
         <p>OR</p>
         <p>
           Don't have an account?
-          <router-link to="/auth/signup" class="text-blue-500 underline">
+          <router-link
+            to="/auth/signup"
+            class="text-blue-500 underline"
+          >
             signup
           </router-link>
         </p>
       </div>
     </div>
-    <div class="bg-img"></div>
+    <div
+      class="bg-img relative"
+      :class="{ 'loading': loading }"
+    ></div>
   </section>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -93,7 +118,7 @@ import { Login } from "@/types/interfacesAuth";
 const store = useStore();
 const router = useRouter();
 
-const [showPass, checkInputType] = useInputType();
+const [ showPass, checkInputType ] = useInputType();
 
 const inputPass = ref<HTMLInputElement | null>(null);
 const errMess = ref<string>("");
@@ -110,6 +135,11 @@ const login = reactive<Login>({
 });
 
 const loginFormValidation = ref<boolean>(true);
+const loading = ref(true);
+
+const bgImg = new Image();
+bgImg.onload = () => loading.value = false;
+bgImg.src = require('@/assets/login.png');
 
 const handledShowPass = () => {
   if (typeof checkInputType === "function")
@@ -161,6 +191,6 @@ const submitLogin = async () => {
 
 <style scoped>
 .bg-img {
-  background: url("../../assets/login.png") center / cover;
+  background: url("@/assets/login.png") center / cover;
 }
 </style>

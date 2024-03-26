@@ -18,7 +18,10 @@
   </svg>
 </template>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 $offset: 187;
 $duration: 1.4s;
 
@@ -30,6 +33,7 @@ $duration: 1.4s;
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(270deg);
   }
@@ -46,10 +50,12 @@ $duration: 1.4s;
   0% {
     stroke-dashoffset: $offset;
   }
+
   50% {
     stroke-dashoffset: $offset/4;
     transform: rotate(135deg);
   }
+
   100% {
     stroke-dashoffset: $offset;
     transform: rotate(450deg);

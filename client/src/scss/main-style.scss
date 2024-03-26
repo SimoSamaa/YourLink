@@ -59,6 +59,10 @@
       font-size: clamp(32px, 3vw, 50px);
     }
 
+    .loading::before {
+      @apply content-[''] inset-0 absolute animate-pulse bg-border;
+    }
+
     .auth-form {
       @apply grid gap-4 mx-auto w-[600px] max-w-full;
 
@@ -109,7 +113,7 @@
     }
 
     @include breakpoint("sm") {
-      @apply place-content-center;
+      @apply min-h-0 pt-8;
 
       &>div:nth-child(1) {
         @apply p-4;

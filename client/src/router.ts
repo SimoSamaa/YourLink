@@ -10,6 +10,7 @@ import AppearancePage from '@/views/admin/AppearancePage.vue';
 import AccountPage from '@/views/admin/AccountPage.vue';
 import PreviewPage from '@/views/admin/PreviewPage.vue';
 import UserProfile from '@/views/visitor/UserProfile.vue';
+import notFoundpage from '@/views/notFoundpage.vue';
 
 
 const router = createRouter({
@@ -21,7 +22,8 @@ const router = createRouter({
     },
     {
       path: '',
-      component: HomePage
+      component: HomePage,
+      name: 'home'
     },
     {
       props: true,
@@ -40,6 +42,11 @@ const router = createRouter({
       component: signupPage,
       name: 'signupPage',
       meta: { requiresUnauth: true },
+    },
+    {
+      path: '/:not(.*)',
+      component: notFoundpage,
+      name: 'notFound',
     },
     {
       path: '/admin',

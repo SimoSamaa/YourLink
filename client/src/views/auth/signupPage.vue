@@ -2,13 +2,20 @@
   <section class="auth-page">
     <div class="px-10 py-8">
       <router-link to="/">
-        <img src="../../assets/logo.webp" alt="logo" id="logo" />
+        <img
+          src="../../assets/logo.webp"
+          alt="logo"
+          id="logo"
+        />
       </router-link>
       <div class="hero my-10 text-center">
         <h1 class="font-bold">Join YourLink</h1>
         <p class="text-text2 mt-4">Sign up now!</p>
       </div>
-      <form @submit.prevent="submitSignup" class="auth-form">
+      <form
+        @submit.prevent="submitSignup"
+        class="auth-form"
+      >
         <div
           class="auth-input"
           :class="{ 'input-checked-err': !signup.email.isValid }"
@@ -22,7 +29,10 @@
             v-model.trim="signup.email.value"
           />
           <label for="email">Email</label>
-          <appIcons v-if="!signup.email.isValid" name="error" />
+          <appIcons
+            v-if="!signup.email.isValid"
+            name="error"
+          />
         </div>
         <p
           v-show="actErrMess"
@@ -44,7 +54,10 @@
             @blur="clearValidity()"
           />
           <label for="username">username</label>
-          <appIcons v-if="!signup.username.isValid" name="error" />
+          <appIcons
+            v-if="!signup.username.isValid"
+            name="error"
+          />
         </div>
         <p
           v-show="actErrMess"
@@ -87,10 +100,10 @@
             v-for="(state, index) in passwordValidation"
             :key="index"
             :class="{
-              'bg-red-600': state === 'weak',
-              'bg-yellow-600': state === 'medium',
-              'bg-green-600': state === 'strong',
-            }"
+          'bg-red-600': state === 'weak',
+          'bg-yellow-600': state === 'medium',
+          'bg-green-600': state === 'strong',
+        }"
             class="block h-2 w-14 border-border border rounded-full"
           ></span>
         </div>
@@ -107,17 +120,27 @@
         <p>OR</p>
         <p>
           Already have an account?
-          <router-link to="/auth/login" class="text-blue-500 underline">
+          <router-link
+            to="/auth/login"
+            class="text-blue-500 underline"
+          >
             Login
           </router-link>
         </p>
       </div>
     </div>
-    <div class="bg-img"></div>
+
+    <div
+      class="bg-img relative"
+      :class="{ 'loading': loading }"
+    ></div>
   </section>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -127,13 +150,14 @@ import { Signup } from "@/types/interfacesAuth";
 const store = useStore();
 const router = useRouter();
 
-const [showPass, checkInputType] = useInputType();
+const [ showPass, checkInputType ] = useInputType();
 
 const inputPass = ref<HTMLInputElement | null>(null);
 const processing = ref<boolean>(false);
 const formValidation = ref<boolean>(true);
 const actErrMess = ref<boolean>(false);
 const errMess = ref<string>("");
+const loading = ref(true);
 
 const signup = reactive<Signup>({
   email: {
@@ -149,6 +173,10 @@ const signup = reactive<Signup>({
     isValid: true,
   },
 });
+
+const bgImg = new Image();
+bgImg.onload = () => loading.value = false;
+bgImg.src = require('@/assets/login.png');
 
 const handledShowPass = () => {
   if (typeof checkInputType === "function")
@@ -167,15 +195,15 @@ const passwordValidation = computed<string[]>(() => {
   const strongMatch = value.match(regExpStrong);
 
   if (weakMatch && mediumMatch && strongMatch && value.length > 8) {
-    return ["weak", "medium", "strong"];
+    return [ "weak", "medium", "strong" ];
   } else if (
     (weakMatch && mediumMatch) ||
     (weakMatch && strongMatch) ||
     (mediumMatch && strongMatch)
   ) {
-    return ["weak", "medium"];
+    return [ "weak", "medium" ];
   } else if (weakMatch || mediumMatch || strongMatch) {
-    return ["weak"];
+    return [ "weak" ];
   } else {
     return [];
   }

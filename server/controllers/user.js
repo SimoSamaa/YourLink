@@ -2,11 +2,19 @@ const fs = require('fs');
 const path = require('path');
 
 const User = require('../models/user');
+const Header = require('../models/header');
+const Link = require('../models/links');
 const {
   handleErrCatch,
   handleNotFound,
   handleValidationErrors,
 } = require('../util/helper');
+
+const clearImage = (filePath) => {
+  if(!filePath) return;
+  filePath = path.join(__dirname, '..', filePath);
+  fs.unlink(filePath, err => console.log(err));
+};
 
 // GET LOGIN USER DATA
 exports.getUser = (req, res, next) => {
@@ -72,12 +80,6 @@ exports.removeUserImg = (req, res, next) => {
     .catch((err) => handleErrCatch(err, next));
 };
 
-const clearImage = (filePath) => {
-  if(!filePath) return;
-  filePath = path.join(__dirname, '..', filePath);
-  fs.unlink(filePath, err => console.log(err));
-};
-
 exports.profilePage = (req, res, next) => {
   const name = req.params.username;
   User.findOne({ username: name })
@@ -101,4 +103,29 @@ exports.profilePage = (req, res, next) => {
         });
     })
     .catch((err) => handleErrCatch(err, next));
+};
+
+// DELETE ACCOUNT
+exports.deleteAccount = (req, res, next) => {
+  const deletedUserId = req.params.id;
+
+  User.findById(deletedUserId)
+    .then(user => {
+      handleNotFound(user, 'user', next);
+      clearImage(user.userImg);
+      Promise.all([
+        Link.deleteMany({ creator: deletedUserId }),
+        Header.deleteMany({ creator: deletedUserId })
+      ])
+        .then(() => {
+          return User.findByIdAndDelete(deletedUserId);
+        })
+        .then(() => {
+          res
+            .status(200)
+            .json({ message: 'User account deleted successfully!' });
+        })
+        .catch(err => handleErrCatch(err, next));
+    })
+    .catch(err => handleErrCatch(err, next));
 };

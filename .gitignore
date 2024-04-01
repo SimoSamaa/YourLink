@@ -12,6 +12,7 @@ client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
 client/pnpm-debug.log*
+client/.vercel
 
 # Editor directories and files
 client/.idea
@@ -24,5 +25,8 @@ client/*.sw?
 
 # Backend
 server/node_modules
+server/.env
+server/.vercel
 
 .vscode
+.vercel

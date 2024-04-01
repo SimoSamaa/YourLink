@@ -23,4 +23,5 @@ router.put('/update-profile/:id',
   ], isAuth, userControllers.updateProfile);
 
 router.delete('/remove-image/:id', isAuth, userControllers.removeUserImg);
+router.delete('/delete-account/:id', isAuth, userControllers.deleteAccount);
 module.exports = router;

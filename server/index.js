@@ -11,7 +11,9 @@ const auth = require('./routers/auth');
 const user = require('./routers/user');
 
 const app = express();
-const MONGO_DB = 'mongodb+srv://simo:ZXyrGnYr1ht2HqAv@cluster0.1epo1j2.mongodb.net/yourLink?retryWrites=true&w=majority';
+
+const MONGO_DB =
+  `mongodb+srv://${ process.env.MONGO_DB_USER }:${ process.env.MONGO__DB_PASS }@cluster0.1epo1j2.mongodb.net/${ process.env.MONGO_DB_NAME }?retryWrites=true&w=majority`;
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -76,7 +78,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGO_DB)
   .then(() => {
-    app.listen(2024);
+    app.listen(process.env.PORT || 2024);
   })
   .catch((err) => {
     console.log('YOUR-LINK', err);

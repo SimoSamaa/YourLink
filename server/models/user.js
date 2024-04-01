@@ -33,6 +33,6 @@ const userSchema = new Schema({
   },
   headers: [ { type: Schema.Types.ObjectId, ref: 'Header' } ],
   links: [ { type: Schema.Types.ObjectId, ref: 'Link' } ]
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('user', userSchema);

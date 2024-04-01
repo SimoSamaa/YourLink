@@ -2,7 +2,7 @@
   <header class="p-4 bg-white border-b border-border flex items-center justify-between">
     <router-link to="/">
       <img
-        src="../../assets/logo.webp"
+        src="@/assets/logo.webp"
         alt="logo"
         id="logo"
       />

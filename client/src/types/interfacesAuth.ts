@@ -21,7 +21,8 @@ interface User {
   email: string;
   username: string;
   bio: string
-  userImg: string
+  userImg: string,
+  createdAt: string
 }
 
 interface UserProfile {

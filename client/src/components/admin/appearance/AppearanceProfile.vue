@@ -13,15 +13,20 @@
           :src="userProfile.userimg.value"
           alt="user-img"
         />
-        <p v-else class="font-semibold text-4xl">
+        <p
+          v-else
+          class="font-semibold text-4xl"
+        >
           {{ (user.username as string)?.charAt(0) }}
         </p>
       </div>
-      <div class="w-full">
-        <div class="flex gap-4">
-          <base-button mode="full" type="button" @click="activeInputFile"
-            >upload image</base-button
-          >
+      <div class="upload-actions w-full">
+        <div class="flex gap-2 zaba">
+          <base-button
+            mode="full"
+            type="button"
+            @click="activeInputFile"
+          >upload image</base-button>
           <input
             type="file"
             accept="image/png, image/jpeg, image/jpg"
@@ -66,12 +71,12 @@
         v-model.trim="userProfile.userbio.value"
         maxlength="80"
       ></textarea>
-      <label class="absolute left-4 top-2 text-text2 font-semibold" for="bio"
-        >Profile Title</label
-      >
+      <label
+        class="absolute left-4 top-2 text-text2 font-semibold"
+        for="bio"
+      >Profile Title</label>
       <span class="text-sm absolute right-0 -bottom-4">
-        {{ userProfile.userbio.value?.length }}/80</span
-      >
+        {{ userProfile.userbio.value?.length }}/80</span>
     </div>
 
     <base-button :disabled="processing">
@@ -81,7 +86,10 @@
   </form>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, computed, reactive, watch } from "vue";
 import { useStore } from "vuex";
 import { UserProfile } from "@/types/interfacesAuth";
@@ -92,7 +100,7 @@ const inputFile = ref<HTMLElement | null>(null);
 const processing = ref<boolean>(false);
 const imageFile = ref<File | null>(null);
 
-const user = computed(() => store.getters["user/user"]);
+const user = computed(() => store.getters[ "user/user" ]);
 
 const userProfile = reactive<UserProfile>({
   userimg: {
@@ -114,7 +122,7 @@ const activeInputFile = () => (inputFile.value as HTMLInputElement).click();
 const uploadImgUser = (e: Event) => {
   const input = e.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
-    const inputFile = input.files[0];
+    const inputFile = input.files[ 0 ];
     imageFile.value = inputFile;
     const imgSize = inputFile.size / 1024; // size in KB
 
@@ -164,7 +172,13 @@ watch(
 );
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
+@import '@/scss/helpers/mixins';
+
+
 .auth-input {
   @apply h-[55px] relative;
 
@@ -176,13 +190,25 @@ watch(
     @apply w-full h-full px-4 border-border border rounded pt-3 duration-150 ease-out;
   }
 
-  input:focus + label,
-  input:not(:placeholder-shown) + label {
+  input:focus+label,
+  input:not(:placeholder-shown)+label {
     @apply top-[8px] translate-y-0 text-[12px];
   }
 
   input::placeholder {
     @apply text-transparent select-none;
+  }
+}
+
+@include breakpoint('sm') {
+  .upload-actions {
+    div:nth-child(1) {
+      @apply flex-col gap-2;
+    }
+
+    p {
+      @apply text-[12px]
+    }
   }
 }
 </style>

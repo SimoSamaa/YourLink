@@ -8,10 +8,16 @@
     @dragend="endDragElement()"
   >
     <section class="sec-one grid items-center">
-      <div class="drager cursor-grab" title="move">
-        <appIcon name="dotes" size="20px" />
+      <div
+        class="drager cursor-grab"
+        title="move"
+      >
+        <appIcon
+          name="dotes"
+          size="20px"
+        />
       </div>
-      <div class="ml-8">
+      <div class="ml-8 max-[650px]:m-2">
         <!-- TITLE LINK -->
         <div>
           <div
@@ -19,20 +25,26 @@
             class="flex font-semibold gap-2 items-center"
           >
             <p v-if="linkTitle">{{ props.linkTitle }}</p>
-            <p v-else class="text-border">Title</p>
+            <p
+              v-else
+              class="text-border"
+            >Title</p>
             <div
               @click="openEditModeTitleLink(props.linkTitle)"
               class="mb-1 cursor-pointer"
             >
-              <appIcon name="edit" size="20px" />
+              <appIcon
+                name="edit"
+                size="20px"
+              />
             </div>
           </div>
           <input
             v-else
             @blur="handledInputLinkTitleBlur($event, props.linkId)"
             @keydown.enter.prevent="
-              handledInputLinkTitleBlur($event, props.linkId)
-            "
+      handledInputLinkTitleBlur($event, props.linkId)
+      "
             type="text"
             :value="props.linkTitle"
             ref="inputTitleLink"
@@ -42,19 +54,28 @@
         </div>
         <!-- LINK -->
         <div>
-          <div v-if="!isEditModeLink" class="flex gap-2 items-center">
+          <div
+            v-if="!isEditModeLink"
+            class="flex gap-2 items-center"
+          >
             <p
               v-if="link"
-              class="text-ellipsis text-nowrap overflow-hidden max-w-[400px]"
+              class="text-ellipsis text-nowrap overflow-hidden max-w-[300px] max-[650px]:max-w-[200px]"
             >
               {{ props.link }}
             </p>
-            <p v-else class="text-border font-semibold">URL</p>
+            <p
+              v-else
+              class="text-border font-semibold"
+            >URL</p>
             <div
               @click="openEditModeLink(props.link)"
               class="mb-1 cursor-pointer"
             >
-              <appIcon name="edit" size="20px" />
+              <appIcon
+                name="edit"
+                size="20px"
+              />
             </div>
           </div>
           <input
@@ -72,28 +93,40 @@
             :class="{ 'action-act': actionAct === 1 }"
             @click="activateAction(1)"
           >
-            <appIcon name="appearance" size="20px" />
+            <appIcon
+              name="appearance"
+              size="20px"
+            />
             <BaseActionHover title="layout" />
           </div>
           <div
             :class="{ 'action-act': actionAct === 2 }"
             @click="activateAction(2)"
           >
-            <appIcon name="image" size="20px" />
+            <appIcon
+              name="image"
+              size="20px"
+            />
             <BaseActionHover title="thumbnail" />
           </div>
           <div
             :class="{ 'action-act': actionAct === 3 }"
             @click="activateAction(3)"
           >
-            <appIcon name="share" size="20px" />
+            <appIcon
+              name="share"
+              size="20px"
+            />
             <BaseActionHover title="share" />
           </div>
           <div
             :class="{ 'action-act': actionAct === 4 }"
             @click="activateAction(4)"
           >
-            <appIcon name="delete" size="20px" />
+            <appIcon
+              name="delete"
+              size="20px"
+            />
             <BaseActionHover title="delete" />
           </div>
         </ol>
@@ -117,14 +150,23 @@
       class="sec-two grid"
       :class="{ 'open-sec-func': actionAct }"
     >
-      <transition name="opacity-animated" mode="out-in">
+      <transition
+        name="opacity-animated"
+        mode="out-in"
+      >
         <!-- LAYOUT -->
         <template v-if="actionAct === 1">
           <div class="layout space-y-3">
             <div class="flex justify-between items-center">
               <h3>LAYOUT</h3>
-              <base-button mode="close" @click="closeActions">
-                <appIcon name="close" size="20px" />
+              <base-button
+                mode="close"
+                @click="closeActions"
+              >
+                <appIcon
+                  name="close"
+                  size="20px"
+                />
               </base-button>
             </div>
             <p class="text-text2">Choose a layout for your link</p>
@@ -149,7 +191,11 @@
                 class="h-8 w-[150px] max-[650px]:w-full bg-purple-500 rounded-full flex items-center justify-between p-2"
               >
                 <div class="size-5 bg-white rounded-full"></div>
-                <appIcon name="more" size="20px" class="text-white" />
+                <appIcon
+                  name="more"
+                  size="20px"
+                  class="text-white"
+                />
               </div>
             </label>
             <label
@@ -171,15 +217,14 @@
                   display.
                 </p>
               </div>
-              <div
-                class="bg-purple-500 flex flex-col justify-between rounded-lg w-[150px] max-[650px]:w-full h-20 p-2"
-              >
+              <div class="bg-purple-500 flex flex-col justify-between rounded-lg w-[150px] max-[650px]:w-full h-20 p-2">
                 <div class="size-5 bg-white rounded-full"></div>
-                <div
-                  class="flex items-center justify-between text-white text-[10px]"
-                >
+                <div class="flex items-center justify-between text-white text-[10px]">
                   <p>this is your link</p>
-                  <appIcon name="more" size="20px" />
+                  <appIcon
+                    name="more"
+                    size="20px"
+                  />
                 </div>
               </div>
             </label>
@@ -190,22 +235,35 @@
           <div>
             <div class="flex justify-between items-center mb-2">
               <h3>THUMBNAIL</h3>
-              <base-button mode="close" @click="closeActions">
-                <appIcon name="close" size="20px" />
+              <base-button
+                mode="close"
+                @click="closeActions"
+              >
+                <appIcon
+                  name="close"
+                  size="20px"
+                />
               </base-button>
             </div>
             <p class="text-text2 mb-4">Add a Thumbnail or Icon to this Link.</p>
-            <base-button @click="setThumbnail(props.linkId)" mode="full"
-              >set Thumbnail</base-button
-            >
+            <base-button
+              @click="setThumbnail(props.linkId)"
+              mode="full"
+            >set Thumbnail</base-button>
           </div>
         </template>
         <!-- SHARE -->
         <template v-else-if="actionAct === 3">
           <div class="flex justify-between items-center mb-2">
             <h3>SHARE</h3>
-            <base-button mode="close" @click="closeActions">
-              <appIcon name="close" size="20px" />
+            <base-button
+              mode="close"
+              @click="closeActions"
+            >
+              <appIcon
+                name="close"
+                size="20px"
+              />
             </base-button>
           </div>
         </template>
@@ -214,8 +272,14 @@
           <div>
             <div class="flex justify-between items-center mb-2">
               <h3>DELETE</h3>
-              <base-button mode="close" @click="closeActions">
-                <appIcon name="close" size="20px" />
+              <base-button
+                mode="close"
+                @click="closeActions"
+              >
+                <appIcon
+                  name="close"
+                  size="20px"
+                />
               </base-button>
             </div>
             <base-button
@@ -233,7 +297,10 @@
   </li>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, PropType, nextTick } from "vue";
 import { useStore } from "vuex";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
@@ -255,7 +322,7 @@ const props = defineProps({
   linkLayout: String as PropType<string>,
 });
 
-const emit = defineEmits(["set-thumbnail", "zaba-zaba"]);
+const emit = defineEmits([ "set-thumbnail", "zaba-zaba" ]);
 
 const store = useStore();
 
@@ -286,7 +353,7 @@ const handledInputLinkTitleBlur = async (e: Event, id: string) => {
       id: id,
       title: linkTitle,
     });
-  } catch (err) {}
+  } catch (err) { }
 };
 // END
 
@@ -307,7 +374,7 @@ const handledInputLinkBlur = async (e: Event, id: string) => {
       id: id,
       link: link,
     });
-  } catch (err) {}
+  } catch (err) { }
 };
 // END
 
@@ -364,24 +431,30 @@ const deleteLink = async (id: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@/scss/helpers/mixins";
 
 li {
   section {
     margin-top: 0 !important;
   }
+
   .sec-one {
     grid-template-columns: 30px 1fr auto;
+
     .links-actions div {
-      @apply cursor-pointer transition-all
-    duration-300 ease-out p-1 rounded-md relative text-text2;
+      @apply cursor-pointer transition-all duration-300 ease-out p-1 rounded-md relative text-text2;
 
       &:hover {
         @apply bg-bg;
       }
+
       &.action-act {
         @apply bg-purple-500 text-white;
+
         &:hover #title-hover {
           @apply hidden;
         }
@@ -392,6 +465,7 @@ li {
   .sec-two {
     grid-template-rows: 0fr;
     transition: grid-template-rows ease-out 300ms;
+
     &.open-sec-func {
       grid-template-rows: 1fr;
       margin-top: 1rem !important;
@@ -404,8 +478,7 @@ li {
 
     .layout {
       label {
-        @apply cursor-pointer flex gap-4 items-center justify-between p-4
-        rounded-xl border-border border duration-300 transition-all ease-out hover:bg-purple-100;
+        @apply cursor-pointer flex gap-4 items-center justify-between p-4 rounded-xl border-border border duration-300 transition-all ease-out hover:bg-purple-100;
 
         &.checked-layout {
           @apply border-purple-500 border bg-purple-100;
@@ -420,11 +493,10 @@ li {
         }
 
         span {
-          @apply min-w-[30px] max-w-[30px] h-[30px] border-purple-500 border-2 relative
-          rounded-full grid place-items-center max-[650px]:hidden;
+          @apply min-w-[30px] max-w-[30px] h-[30px] border-purple-500 border-2 relative rounded-full grid place-items-center max-[650px]:hidden;
 
           &::before {
-            @apply content-[''] absolute size-4 rounded-full  bg-purple-500;
+            @apply content-[''] absolute size-4 rounded-full bg-purple-500;
             transform: scale(0);
             transition: transform 300ms ease;
           }

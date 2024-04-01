@@ -2,7 +2,7 @@
   <section class="admin-page relative">
     <div
       v-if="!thumbnail && !linkPage"
-      class="flex text-sm items-center gap-4 justify-between bg-blue-100 p-4 rounded-xl border-blue-500 border"
+      class="flex text-sm items-center gap-4 justify-between bg-blue-100 p-4 rounded-xl border-blue-500 border max-[650px]:block"
     >
       <div>
         <strong>Your Linktree is live: </strong>
@@ -10,18 +10,24 @@
           class="underline decoration-1 underline-offset-2"
           :to="`/${user.username}`"
           target="_blank"
-          >/{{ user.username }}</router-link
-        >
+        >/{{ user.username }}</router-link>
       </div>
 
       <div class="flex items-center gap-4">
         <p>Share YourLink to your socials</p>
-        <base-button mode="white-btn" @click="copyLink">copy link</base-button>
+        <base-button
+          mode="white-btn"
+          @click="copyLink"
+          class="max-[650px]:flex-1"
+        >copy link</base-button>
       </div>
     </div>
     <!-- ADD LINK -->
     <transition name="animation-from-top">
-      <AddLink v-if="linkPage" @set-close-AddLink="closeAddLink" />
+      <AddLink
+        v-if="linkPage"
+        @set-close-AddLink="closeAddLink"
+      />
     </transition>
     <!-- ADD ICON || IMG TO LINKS -->
     <transition name="animation-from-top">
@@ -32,11 +38,17 @@
       />
     </transition>
     <header class="flex justify-between pb-4 border-b-[1px] border-border mb-4">
-      <base-button mode="white-btn" @click="handledAddeHeader">
+      <base-button
+        mode="white-btn"
+        @click="handledAddeHeader"
+      >
         <appIcon name="header" />
         add headers
       </base-button>
-      <base-button mode="white-btn" @click="openAddLinkPage">
+      <base-button
+        mode="white-btn"
+        @click="openAddLinkPage"
+      >
         <appIcon name="add" />
         add link
       </base-button>
@@ -64,18 +76,28 @@
         @dragend="endDragElement(header)"
       >
         <div class="flex justify-between items-center gap-2 relative">
-          <span v-if="header.isEdit" class="absolute bottom-1 left-8 text-sm">
+          <span
+            v-if="header.isEdit"
+            class="absolute bottom-1 left-8 text-sm"
+          >
             {{ header.title.length }}/20
           </span>
-          <div class="drager cursor-grab" title="move">
-            <appIcon name="dotes" size="20px" />
+          <div
+            class="drager cursor-grab"
+            title="move"
+          >
+            <appIcon
+              name="dotes"
+              size="20px"
+            />
           </div>
           <div class="flex gap-2 font-semibold text-xl">
             <div v-if="!header.isEdit">
               {{ header.title }}
-              <span v-if="!header.title" class="text-border"
-                >Headline title</span
-              >
+              <span
+                v-if="!header.title"
+                class="text-border"
+              >Headline title</span>
             </div>
             <input
               v-else
@@ -84,8 +106,8 @@
               class="input-header text-center outline-none w-full"
               @keydown.enter.prevent="handledUpdateHeaderKey($event, header)"
               @blur.prevent="
-                handledUpdateHeaderBlur($event, header, header.oldTitle)
-              "
+        handledUpdateHeaderBlur($event, header, header.oldTitle)
+        "
               @input="InputValue($event, header)"
               maxlength="20"
             />
@@ -117,7 +139,10 @@
               @click="openDeleteHeader(header)"
             >
               <BaseActionHover title="delete" />
-              <appIcon name="delete" size="20px" />
+              <appIcon
+                name="delete"
+                size="20px"
+              />
             </base-button>
           </div>
         </div>
@@ -128,9 +153,10 @@
           <div>
             <h3 class="text-center">Delete this forever?</h3>
             <div class="columns-2 gap-4 mt-4 [&_button]:w-full">
-              <base-button mode="full" @click="header.isOpenDelete = false"
-                >cancel</base-button
-              >
+              <base-button
+                mode="full"
+                @click="header.isOpenDelete = false"
+              >cancel</base-button>
               <base-button
                 mode="err"
                 :disabled="processing"
@@ -168,7 +194,7 @@
     <transition name="animation-opacity">
       <div
         v-if="checkedLinkPage && !linkPage"
-        class="min-h-[69vh] w-full grid place-content-center"
+        class="min-h-[64vh] w-full grid place-content-center"
       >
         <LoadingSpinner v-if="isLoading" />
         <h1 v-else>No links now</h1>
@@ -177,7 +203,10 @@
   </section>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, computed, nextTick, PropType } from "vue";
 import { useStore } from "vuex";
 import linksSection from "@/components/admin/link/linksSection.vue";
@@ -192,22 +221,22 @@ const store = useStore();
 const props = defineProps({ isLoading: Boolean as PropType<boolean> });
 
 const headers = computed<HeaderLinks[]>(() =>
-  store.getters["links/headers"].sort(
+  store.getters[ "links/headers" ].sort(
     (a: { dataIndex: number }, b: { dataIndex: number }) =>
       a.dataIndex - b.dataIndex
   )
 );
 
 const links = computed<Link[]>(() =>
-  store.getters["links/links"].sort(
+  store.getters[ "links/links" ].sort(
     (a: { dataIndex: number }, b: { dataIndex: number }) =>
       a.dataIndex - b.dataIndex
   )
 );
 
-const checkedLinkPage = computed(() => store.getters["links/checkedLinkPage"]);
+const checkedLinkPage = computed(() => store.getters[ "links/checkedLinkPage" ]);
 
-const user = computed(() => store.getters["user/user"]);
+const user = computed(() => store.getters[ "user/user" ]);
 
 const checkMarginBottom = computed<{ marginBottom: string }>(() => {
   return { marginBottom: `${headers.value.length === 0 ? "0" : "1rem"}` };
@@ -379,7 +408,7 @@ const reorderElements = async (
   updateAction: string
 ) => {
   const target = e.currentTarget as Element;
-  const items = [...target.querySelectorAll("li")];
+  const items = [ ...target.querySelectorAll("li") ];
   const updatedItems = items.map((item, index) => ({
     ...data.find((el: Link | HeaderLinks) => el.id === item.id),
     dataIndex: index,
@@ -428,11 +457,15 @@ const handledDeleteHeader = async (id: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@/scss/helpers/mixins";
 
 li {
   transition: opacity 300ms ease, border 300ms ease-in;
+
   &.dragging {
     opacity: 0;
     border: 3px solid var(--text2) !important;
@@ -454,31 +487,23 @@ li {
   }
 }
 
-@include setAnimation(
-  "animated-headers",
-  (
-    transform: scaleY(0.6) translateX(-200px),
+@include setAnimation("animated-headers",
+  (transform: scaleY(0.6) translateX(-200px),
     opacity: 0,
   ),
-  (
-    opacity: 1,
+  (opacity: 1,
     transform: scaleY(1) translateX(0),
   ),
-  null
-);
+  null);
 
-@include setAnimation(
-  "animation-from-top",
-  (
-    transform: translateY(-200px),
+@include setAnimation("animation-from-top",
+  (transform: translateY(-200px),
     opacity: 0,
   ),
-  (
-    opacity: 1,
+  (opacity: 1,
     transform: translateX(0),
   ),
-  null
-);
+  null);
 
 @include setAnimation("animation-opacity", null, null, "opacity");
 </style>

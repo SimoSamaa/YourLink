@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-const URL_SERVER = 'http://localhost:2024/';
+const URL_SERVER = process.env.VUE_APP_URL;
 
 function useInputType() {
   const showPass = ref<boolean>(false);
@@ -43,7 +43,7 @@ async function handleRequest<T>
   if (token !== null) {
     if (!fetchOptions.headers) fetchOptions.headers = {};
 
-    (fetchOptions.headers as Record<string, string>)[ 'Authorization' ] = `Bearer ${ token }`;
+    (fetchOptions.headers as Record<string, string>)[ 'Authorization' ] = `Bearer ${token}`;
   }
 
   if (payload !== null && ContentType === 'json') {
@@ -53,7 +53,7 @@ async function handleRequest<T>
 
   if (payload !== null && ContentType === 'html') fetchOptions.body = payload;
 
-  const req = await fetch(`${ URL_SERVER }${ url }`, fetchOptions);
+  const req = await fetch(`${URL_SERVER}${url}`, fetchOptions);
   const res = await req.json();
 
   return [ req, res ];

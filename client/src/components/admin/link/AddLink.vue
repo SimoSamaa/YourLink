@@ -2,7 +2,11 @@
   <div class="base-card-style absolute w-full h-[50vh] shadow z-10">
     <div class="flex items-center justify-between">
       <h3>Enter URL</h3>
-      <base-button mode="close" title="close" @click="closeAddLink()">
+      <base-button
+        mode="close"
+        title="close"
+        @click="closeAddLink()"
+      >
         <appIcon name="close" />
       </base-button>
     </div>
@@ -20,25 +24,31 @@
         @click="addLink"
       >
         <p v-if="!processing">add</p>
-        <LoadingButton v-else class="scale-[0.6]" />
+        <LoadingButton
+          v-else
+          class="scale-[0.6]"
+        />
       </base-button>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { Link } from "@/types/interfacesLink";
 
-const emit = defineEmits(["set-close-AddLink"]);
+const emit = defineEmits([ "set-close-AddLink" ]);
 
 const store = useStore();
 
 const urlLink = ref<string>("");
 const processing = ref<boolean>(false);
 const urlPattern =
-  /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.(com|net|org|info)\b/i;
+  /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.(com|net|org|info|io)\b/i;
 
 const checkUrlValidation = computed(() =>
   Boolean(urlLink.value.match(urlPattern)) ? true : false
@@ -59,18 +69,18 @@ function extractDomainName(url: string): string {
   let domain;
 
   if (url.indexOf("://") > -1) {
-    domain = url.split("/")[2];
+    domain = url.split("/")[ 2 ];
   } else {
-    domain = url.split("/")[0];
+    domain = url.split("/")[ 0 ];
   }
 
-  domain = domain.split(":")[0];
-  domain = domain.split("?")[0];
+  domain = domain.split(":")[ 0 ];
+  domain = domain.split("?")[ 0 ];
 
   if (url.includes("www.")) {
-    return domain.replace(/\./g, " ").split(" ")[1];
+    return domain.replace(/\./g, " ").split(" ")[ 1 ];
   } else {
-    return domain.replace(/\./, " ").split(" ")[0];
+    return domain.replace(/\./, " ").split(" ")[ 0 ];
   }
 }
 
@@ -101,7 +111,10 @@ const addLink = async () => {
 };
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@/scss/helpers/mixins";
 
 .add-link-conatiner {

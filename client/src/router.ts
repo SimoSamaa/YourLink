@@ -55,6 +55,10 @@ const router = createRouter({
       meta: { requiresAuth: true },
       children: [
         {
+          path: '/admin',
+          redirect: '/admin/links'
+        },
+        {
           path: 'links',
           component: LinksPage,
           name: 'linksPage',
@@ -77,7 +81,7 @@ const router = createRouter({
           component: PreviewPage,
           name: 'preview',
           meta: { requiresAuth: true },
-        }
+        },
       ],
       name: 'dashboard'
     },

@@ -3,7 +3,23 @@
     v-if="profileInfo"
     class="p-8 max-w-lg mx-auto"
   >
-    <div class="text-center mb-8 grid place-items-center">
+    <!-- PLACE HOLDER LOADING -->
+    <div
+      v-if="!isLoading"
+      class="text-center mb-8 grid place-items-center"
+    >
+      <PlaceholderLoading class="size-[150px]" />
+      <PlaceholderLoading class="mt-4 w-32 h-8" />
+      <div class="max-w-[350px] w-[90%] mt-2 space-y-2">
+        <PlaceholderLoading class="w-full h-4" />
+        <PlaceholderLoading class="w-2/3 mx-auto h-4" />
+      </div>
+    </div>
+    <!-- END -->
+    <div
+      v-else
+      class="text-center mb-8 grid place-items-center"
+    >
       <div
         :class="!profileInfo.userImg ? 'bg-black2' : 'bg-transparent'"
         class="border-border border-2 rounded-full text-white overflow-hidden grid place-content-center size-[150px]"
@@ -22,7 +38,10 @@
         </p>
       </div>
       <h1 class="mt-4">{{ profileInfo.username }}</h1>
-      <div class="max-w-sm mt-2">{{ profileInfo.bio }}</div>
+      <div
+        class="max-w-sm mt-2"
+        style="word-wrap: break-word;"
+      >{{ profileInfo.bio }}</div>
     </div>
     <ul class="space-y-1 text-center font-semibold mb-2">
       <li
@@ -79,16 +98,21 @@ const props = defineProps({
   username: String as PropType<string>,
 });
 
+const isLoading = ref(false);
+
 const profileInfo = computed(() => store.getters[ "user/profileInfo" ]);
 const profileLinks = computed(() => store.getters[ "user/profileLinks" ]);
 const profileHeaders = computed(() => store.getters[ "user/profileHeaders" ]);
 
 const fetchUserProfile = async (username: string | undefined) => {
+  isLoading.value = true;
   try {
     await store.dispatch("user/fetchUserProfile", username);
   } catch (err) {
     console.error((err as Error).message);
     router.push({ name: 'home' })
+  } finally {
+    isLoading.value = false;
   }
 };
 

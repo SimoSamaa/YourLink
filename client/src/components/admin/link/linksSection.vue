@@ -188,7 +188,7 @@
                 <p class="text-text2">Efficient, direct and compact.</p>
               </div>
               <div
-                class="h-8 w-[150px] max-[650px]:w-full bg-purple-500 rounded-full flex items-center justify-between p-2"
+                class="h-8 w-[150px] max-[650px]:w-full bg-seconder rounded-full flex items-center justify-between p-2"
               >
                 <div class="size-5 bg-white rounded-full"></div>
                 <appIcon
@@ -217,7 +217,7 @@
                   display.
                 </p>
               </div>
-              <div class="bg-purple-500 flex flex-col justify-between rounded-lg w-[150px] max-[650px]:w-full h-20 p-2">
+              <div class="bg-seconder flex flex-col justify-between rounded-lg w-[150px] max-[650px]:w-full h-20 p-2">
                 <div class="size-5 bg-white rounded-full"></div>
                 <div class="flex items-center justify-between text-white text-[10px]">
                   <p>this is your link</p>
@@ -453,7 +453,7 @@ li {
       }
 
       &.action-act {
-        @apply bg-purple-500 text-white;
+        @apply bg-seconder text-white;
 
         &:hover #title-hover {
           @apply hidden;
@@ -478,10 +478,10 @@ li {
 
     .layout {
       label {
-        @apply cursor-pointer flex gap-4 items-center justify-between p-4 rounded-xl border-border border duration-300 transition-all ease-out hover:bg-purple-100;
+        @apply cursor-pointer flex gap-4 items-center justify-between p-4 rounded-xl border-border border duration-300 transition-all ease-out hover:bg-lightSeconder;
 
         &.checked-layout {
-          @apply border-purple-500 border bg-purple-100;
+          @apply border-seconder border bg-lightSeconder;
         }
 
         @include breakpoint("sm") {
@@ -493,10 +493,10 @@ li {
         }
 
         span {
-          @apply min-w-[30px] max-w-[30px] h-[30px] border-purple-500 border-2 relative rounded-full grid place-items-center max-[650px]:hidden;
+          @apply min-w-[30px] max-w-[30px] h-[30px] border-seconder border-2 relative rounded-full grid place-items-center max-[650px]:hidden;
 
           &::before {
-            @apply content-[''] absolute size-4 rounded-full bg-purple-500;
+            @apply content-[''] absolute size-4 rounded-full bg-seconder;
             transform: scale(0);
             transition: transform 300ms ease;
           }

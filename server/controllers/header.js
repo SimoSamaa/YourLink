@@ -65,6 +65,13 @@ exports.deleteHeader = (req, res, next) => {
       return Header.findByIdAndDelete(headerId);
     })
     .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.headers.pull(headerId);
+      return user.save();
+    })
+    .then(() => {
       res
         .status(200)
         .json({ message: 'header deleted successfully!' });

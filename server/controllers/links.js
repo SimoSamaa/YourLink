@@ -1,10 +1,12 @@
 const Link = require('../models/links');
 const User = require('../models/user');
+
 const {
   handleErrCatch,
   handleNotFound,
   handleValidationErrors,
-  authorized
+  authorized,
+  clearImage
 } = require('../util/helper');
 
 // GET ALL LINKS
@@ -67,7 +69,15 @@ exports.deleteLink = (req, res, next) => {
     .then((link) => {
       handleNotFound(link, 'link', next);
       authorized(link, req);
+      clearImage(link.icon);
       return Link.findByIdAndDelete(deletedLinkId);
+    })
+    .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.links.pull(deletedLinkId);
+      return user.save();
     })
     .then(() => {
       res
@@ -176,6 +186,7 @@ exports.updateIcon = (req, res, next) => {
     .then((link) => {
       handleNotFound(link, 'link', next);
       authorized(link, req);
+      if(link.icon.includes('icons')) clearImage(link.icon);
       link.icon = updatedIcon;
       return link.save();
     })
@@ -183,6 +194,32 @@ exports.updateIcon = (req, res, next) => {
       res
         .status(200)
         .json({ message: 'icon updated successfully!' });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};
+
+// UPLOAD ICON LINK
+exports.uploadLinkImg = (req, res, next) => {
+  const linkId = req.params.id;
+  let imgUrl;
+  handleValidationErrors(req);
+  if(req.file) imgUrl = req.file.path.replace("\\", "/");
+
+  Link.findById(linkId)
+    .then((link) => {
+      handleNotFound(link, 'link', next);
+      authorized(link, req);
+      if(imgUrl !== link.icon) {
+        if(link.icon.includes('icons')) {
+          clearImage(link.icon);
+        }
+      }
+
+      link.icon = imgUrl;
+      return link.save();
+    })
+    .then(() => {
+      res.status(200).json({ message: 'link icon uploaded successfully!!' });
     })
     .catch((err) => handleErrCatch(err, next));
 };

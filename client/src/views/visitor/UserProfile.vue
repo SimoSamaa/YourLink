@@ -5,7 +5,7 @@
   >
     <!-- PLACE HOLDER LOADING -->
     <div
-      v-if="!isLoading"
+      v-if="isLoading"
       class="text-center mb-8 grid place-items-center"
     >
       <PlaceholderLoading class="size-[150px]" />

@@ -4,6 +4,13 @@
       ref="zaba"
       class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
     >
+
+      <div
+        v-if="isLoading"
+        class="inset-0 absolute grid place-content-center rounded-2xl bg-white"
+      >
+        <LoadingSpinner />
+      </div>
       <div>
         <div class="h-[400px] overflow-auto overflow-x-hidden">
           <!-- USER INFO -->
@@ -31,7 +38,7 @@
           <!-- HEADERS -->
           <ul class="space-y-1 text-center font-semibold mb-2">
             <li
-              v-for="header in sortedHeaders"
+              v-for="header in headers"
               :key="header.id"
             >
               {{ header.title }}
@@ -84,28 +91,26 @@
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import { HeaderLinks } from "@/types/interfacesHeader";
+import { Link } from "@/types/interfacesLink";
 
 const store = useStore();
 
 const zaba = ref<HTMLElement | null>(null);
 
-const headers = computed<HeaderLinks[]>(() => store.getters[ "links/headers" ]);
+defineProps<{ isLoading: boolean }>();
 
-// Filter out headers with empty title
-const sortedHeaders = computed<HeaderLinks[]>(() =>
-  headers.value
+const headers = computed<HeaderLinks[]>(() =>
+  store.getters[ "links/headers" ]
     .filter((header: HeaderLinks) => header.isDisable !== false) //
     .sort((a: HeaderLinks, b: HeaderLinks) => a.dataIndex + b.dataIndex)
 );
 
-// LINKS
-const links = computed<any>(() =>
+const links = computed<Link[]>(() =>
   store.getters[ "links/links" ]
-    .filter((link: any) => link.isDisable !== false)
-    .sort((a: HeaderLinks, b: HeaderLinks) => a.dataIndex + b.dataIndex)
+    .filter((link: Link) => link.isDisable !== false)
+    .sort((a: Link, b: Link) => a.dataIndex + b.dataIndex)
 );
 
-//
 const user = computed(() => store.getters[ "user/user" ]);
 
 onMounted(() => {
@@ -132,7 +137,7 @@ onMounted(() => {
     height: min(500px, 90%);
 
     &:before {
-      @apply content-[''] absolute left-1/2 -top-1 -translate-x-1/2 bg-black2 w-32 h-5 rounded-bl-lg rounded-br-lg;
+      @apply content-[''] absolute left-1/2 -top-1 -translate-x-1/2 bg-black2 w-32 h-5 rounded-bl-lg rounded-br-lg z-20;
     }
   }
 }

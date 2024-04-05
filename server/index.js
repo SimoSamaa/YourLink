@@ -1,7 +1,5 @@
 const express = require('express');
-const multer = require('multer');
 const path = require('path');
-const id = require('uuid').v4();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
@@ -15,42 +13,9 @@ const app = express();
 const MONGO_DB =
   `mongodb+srv://${ process.env.MONGO_DB_USER }:${ process.env.MONGO__DB_PASS }@cluster0.1epo1j2.mongodb.net/${ process.env.MONGO_DB_NAME }?retryWrites=true&w=majority`;
 
-const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'images');
-  },
-  filename: (req, file, cb) => {
-    cb(null, id + '-' + file.originalname);
-  }
-});
-
-const fileFilter = (req, file, cb) => {
-  if(
-    file.mimetype === 'image/png' ||
-    file.mimetype === 'image/jpeg' ||
-    file.mimetype === 'image/jpg'
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-
 app.use(bodyParser.json());
-app.use
-  (
-    multer
-      (
-        {
-          storage: fileStorage,
-          filter: fileFilter,
-          limits: { fileSize: 1024 * 1024 }
-        }
-      )
-      .single('userImg')
-  );
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/icons', express.static(path.join(__dirname, 'icons')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

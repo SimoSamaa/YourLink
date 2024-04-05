@@ -190,8 +190,8 @@ watch(
     @apply w-full h-full px-4 border-border border rounded pt-3 duration-150 ease-out;
   }
 
-  input:focus+label,
-  input:not(:placeholder-shown)+label {
+  input:focus + label,
+  input:not(:placeholder-shown) + label {
     @apply top-[8px] translate-y-0 text-[12px];
   }
 

@@ -7,6 +7,7 @@ const router = express.Router();
 
 const linkControllers = require('../controllers/links');
 const isAuth = require('../middleware/is-auth');
+const { uploadIconLink } = require('../upload/multer-config');
 
 
 router.get('/links', isAuth, linkControllers.getLinks);
@@ -78,6 +79,22 @@ router.put('/update-icon-link/:id',
   ],
   isAuth,
   linkControllers.updateIcon
+);
+
+router.put('/update-icon-link/:id',
+  [
+    body('icon')
+      .notEmpty()
+      .isString()
+  ],
+  isAuth,
+  linkControllers.updateIcon
+);
+
+router.put('/upload-link-img/:id',
+  uploadIconLink.single('icon'),
+  isAuth,
+  linkControllers.uploadLinkImg
 );
 
 router.put('/update-links-orders', isAuth, linkControllers.updateLinksOrders);

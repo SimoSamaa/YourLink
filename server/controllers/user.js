@@ -1,6 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
 const User = require('../models/user');
 const Header = require('../models/header');
 const Link = require('../models/links');
@@ -8,13 +5,8 @@ const {
   handleErrCatch,
   handleNotFound,
   handleValidationErrors,
+  clearImage,
 } = require('../util/helper');
-
-const clearImage = (filePath) => {
-  if(!filePath) return;
-  filePath = path.join(__dirname, '..', filePath);
-  fs.unlink(filePath, err => console.log(err));
-};
 
 // GET LOGIN USER DATA
 exports.getUser = (req, res, next) => {
@@ -43,13 +35,14 @@ exports.updateProfile = (req, res, next) => {
 
   // Check if a new image is provided
   if(req.file) imgUrl = req.file.path.replace("\\", "/");
+  // console.log(imgUrl);
 
   User.findById(userId)
     .then((user) => {
       handleNotFound(user, 'user', next);
 
       // If a new image is provided and different, delete the old image
-      if(imgUrl && imgUrl !== user.userImg) clearImage(user.userImg);
+      if(imgUrl !== user.userImg) clearImage(user.userImg);
 
       // Update username and bio if provided
       if(username) user.username = username;
@@ -113,10 +106,17 @@ exports.deleteAccount = (req, res, next) => {
     .then(user => {
       handleNotFound(user, 'user', next);
       clearImage(user.userImg);
-      Promise.all([
-        Link.deleteMany({ creator: deletedUserId }),
-        Header.deleteMany({ creator: deletedUserId })
-      ])
+
+      Link.find({ creator: deletedUserId })
+        .then(links => {
+          links = links.map(link => {
+            clearImage(link.icon);
+          });
+          return Promise.all([
+            Header.deleteMany({ creator: deletedUserId }),
+            Link.deleteMany({ creator: deletedUserId })
+          ]);
+        })
         .then(() => {
           return User.findByIdAndDelete(deletedUserId);
         })

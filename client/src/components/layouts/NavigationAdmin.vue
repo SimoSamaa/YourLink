@@ -4,14 +4,19 @@
     class="bg-white capitalize border-r border-border flex flex-col"
   >
     <div class="nav-head flex gap-2 px-4 py-8 items-center">
-      <base-button mode="nav-btn" @click="toggleNave">
+      <base-button
+        mode="nav-btn"
+        @click="toggleNave"
+      >
         <appIcon name="bar" />
       </base-button>
-      <img class="min-w-10" src="../../assets/logo.webp" alt="logo" />
+      <img
+        class="min-w-10"
+        src="@/assets/logo.webp"
+        alt="logo"
+      />
     </div>
-    <ul
-      class="list-container grid gap-8 pl-4 relative max-[1000px]:divide-x-[1px] divide-border"
-    >
+    <ul class="list-container grid gap-8 pl-4 relative max-[1000px]:divide-x-[1px] divide-border">
       <span
         ref="actLink"
         class="active-link absolute rounded-tl-full rounded-bl-full h-[56px] left-4 bg-bg transition-all duration-300 ease-out"
@@ -36,7 +41,12 @@
           <div>appearance</div>
         </router-link>
       </li>
-      <li class="hidden max-[1000px]:block">
+      <li
+        @click="selectPage($event, 3)"
+        data-num-selected="3"
+        :class="{ act: activeClass === 3 }"
+        class="hidden max-[1000px]:block"
+      >
         <router-link to="/admin/preview">
           <appIcon name="eye" />
           <div>preview</div>
@@ -54,7 +64,10 @@
       </li>
     </ul>
     <div class="logout-container mt-auto grid p-4">
-      <base-button class="logout" @click="logout">
+      <base-button
+        class="logout"
+        @click="logout"
+      >
         <appIcon name="logout" />
         <div>logout</div>
       </base-button>
@@ -62,13 +75,16 @@
   </nav>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, onUpdated, PropType } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import useMediaQuery from "@/hooks/matchMedia";
 
-const emit = defineEmits(["setToggleNav", "setToggleNavMobile"]);
+const emit = defineEmits([ "setToggleNav", "setToggleNavMobile" ]);
 
 defineProps({
   openNavMobile: Boolean as PropType<boolean>,
@@ -105,8 +121,8 @@ onUpdated(() => {
   const links = (navLinks.value = document.querySelectorAll("ul li a"));
   const lists = (listLinks.value =
     document.querySelectorAll(".list-container li"));
-  const listContainer = lists[0].closest("ul") as HTMLElement;
-  let oldTab = lists[0] as HTMLElement;
+  const listContainer = lists[ 0 ].closest("ul") as HTMLElement;
+  let oldTab = lists[ 0 ] as HTMLElement;
 
   function handleClickNavMobile(event: Event) {
     const newTab = event.currentTarget as HTMLElement;
@@ -184,10 +200,14 @@ onUpdated(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@/scss/helpers/mixins";
 
 .close-nav nav {
+
   .nav-head img,
   ul :is(li div, li a div) {
     @apply scale-0;
@@ -210,6 +230,7 @@ onUpdated(() => {
   .logout {
     padding-inline: 0;
   }
+
   .logout div {
     display: none;
   }
@@ -281,8 +302,8 @@ nav {
   }
 
   @include breakpoint("md") {
-    @apply fixed left-0 bottom-0 w-full border-t-[1px]
-    border-border shadow-xl z-30;
+    @apply fixed left-0 bottom-0 w-full border-t-[1px] border-border shadow-xl z-30;
+
     :is(.nav-head, .active-link, .logout-container) {
       @apply hidden;
     }
@@ -300,7 +321,7 @@ nav {
         scale: var(--width, 0.25) 1;
         translate: var(--left, 0) 0;
         transform-origin: left;
-        background-color: var(--clr-textPrimary);
+        background-color: var(--clr-seconder);
         transition: scale 200ms, translate 200ms;
         z-index: 40;
       }

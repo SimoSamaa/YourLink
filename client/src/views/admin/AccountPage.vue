@@ -3,18 +3,30 @@
     <div class="info base-card-style leading-[2] divide-y divide-border">
       <div>
         <span>name</span>
-        <h3>{{ userInfo.username }}</h3>
+        <PlaceholderLoading
+          v-if="isLoading"
+          class="w-[100px] h-[28px]"
+        />
+        <h3 v-else>{{ userInfo.username }}</h3>
       </div>
       <div>
         <span>email</span>
-        <h3>{{ userInfo.email }}</h3>
+        <PlaceholderLoading
+          v-if="isLoading"
+          class="w-[220px] h-[28px]"
+        />
+        <h3 v-else>{{ userInfo.email }}</h3>
       </div>
       <div>
         <span>Created at</span>
-        <h3> {{
-          new Date(userInfo.createdAt)
-            .toLocaleDateString('en-us')
-        }}</h3>
+        <PlaceholderLoading
+          v-if="isLoading"
+          class="w-[89.31px] h-[28px]"
+        />
+        <h3 v-else> {{
+            new Date(userInfo.createdAt)
+              .toLocaleDateString('en-us')
+          }}</h3>
       </div>
     </div>
     <div class="base-card-style grid gap-2">
@@ -36,9 +48,12 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { User } from '@/types/interfacesAuth';
+import PlaceholderLoading from '@/components/UI/PlaceholderLoading.vue';
 
 const store = useStore();
 const router = useRouter();
+
+defineProps<{ isLoading: boolean }>();
 
 const userInfo = computed<User>(() => store.getters[ 'user/user' ]);
 
@@ -62,7 +77,7 @@ const deleteAccount = async () => {
   lang="scss"
 >
 .info {
-  &>* {
+  & > * {
     @apply px-4 py-2;
   }
 

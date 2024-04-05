@@ -1,9 +1,3 @@
 <template>
-  <div class="zaba"></div>
+  <div class="animate-pulse bg-border rounded-full"></div>
 </template>
-
-<style scoped>
-.zaba {
-  @apply animate-pulse bg-border rounded-full;
-}
-</style>

@@ -33,12 +33,15 @@
             name="error"
           />
         </div>
-        <p
-          v-if="!login.email.isValid"
-          class="text-red-500 text-sm -mt-4"
-        >
-          Please enter a valid email
-        </p>
+        <transition name="input-mess">
+          <p
+            v-show="actErrMess"
+            v-if="!login.email.isValid"
+            class="text-red-500 text-sm -mt-4"
+          >
+            Please enter a valid email
+          </p>
+        </transition>
         <div
           class="auth-input"
           :class="{ 'input-checked-err': !login.password.isValid }"
@@ -68,12 +71,15 @@
             />
           </svg>
         </div>
-        <p
-          v-if="!login.password.isValid"
-          class="text-red-500 text-sm -mt-4"
-        >
-          please enter a password
-        </p>
+        <transition name="input-mess">
+          <p
+            v-show="actErrMess"
+            v-if="!login.password.isValid"
+            class="text-red-500 text-sm -mt-4"
+          >
+            please enter a password
+          </p>
+        </transition>
         <base-button
           mode="full"
           :disabled="processing"
@@ -135,7 +141,8 @@ const login = reactive<Login>({
 });
 
 const loginFormValidation = ref<boolean>(true);
-const loading = ref(true);
+const actErrMess = ref<boolean>(false)
+const loading = ref<boolean>(true);
 
 const bgImg = new Image();
 bgImg.onload = () => loading.value = false;
@@ -146,6 +153,7 @@ const handledShowPass = () => {
     checkInputType(inputPass.value as HTMLInputElement);
 };
 
+let timeoutId: number;
 const checkEmailValidation = () => {
   const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   loginFormValidation.value = true;
@@ -153,6 +161,7 @@ const checkEmailValidation = () => {
   if (!login.email.value.match(emailRegExp)) {
     login.email.isValid = false;
     loginFormValidation.value = false;
+    actErrMess.value = true;
   } else {
     login.email.isValid = true;
   }
@@ -160,9 +169,13 @@ const checkEmailValidation = () => {
   if (!login.password.value) {
     login.password.isValid = false;
     loginFormValidation.value = false;
+    actErrMess.value = true;
   } else {
     login.password.isValid = true;
   }
+
+  clearTimeout(timeoutId)
+  timeoutId = setTimeout(() => (actErrMess.value = false), 5000);
 };
 
 const submitLogin = async () => {
@@ -189,8 +202,15 @@ const submitLogin = async () => {
 };
 </script>
 
-<style scoped>
+<style
+  scoped
+  lang="scss"
+>
+@import '@/scss/helpers/mixins';
+
 .bg-img {
   background: url("@/assets/login.png") center / cover;
 }
+
+@include setAnimation("input-mess", null, null, "opacity");
 </style>

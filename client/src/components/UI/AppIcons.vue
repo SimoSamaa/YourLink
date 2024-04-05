@@ -259,7 +259,10 @@
       fill="none"
       stroke-linecap="round"
     >
-      <path stroke="none" d="M0 0h24v24H0z" />
+      <path
+        stroke="none"
+        d="M0 0h24v24H0z"
+      />
       <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
       <path d="M6 21v-2a4 4 0 0 1 4 -4h2.5" />
       <path d="M19.001 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
@@ -270,10 +273,27 @@
       <path d="M15.97 17.25l1.3 .75" />
       <path d="M20.733 20l1.3 .75" />
     </svg>
+    <!--  -->
+    <svg
+      v-if="name === 'upload'"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      style="width: 50px; height: 50px; stroke-width: 1;"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m0-3-3-3m0 0-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75"
+      />
+    </svg>
   </section>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { PropType } from "vue";
 
 const props = defineProps({

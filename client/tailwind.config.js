@@ -10,7 +10,9 @@ module.exports = {
         bg: 'var(--clr-bg)',
         border: 'var(--clr-border)',
         black2: 'var(--clr-textPrimary)',
-        text2: 'var(--clr-textSecondary)'
+        text2: 'var(--clr-textSecondary)',
+        seconder: 'var(--clr-seconder)',
+        lightSeconder: 'var(--clr-lightSeconder)'
       }
     },
   },

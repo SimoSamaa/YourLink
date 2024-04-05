@@ -76,7 +76,7 @@ defineProps({
   transition-property: background-color;
 
   &:is(:hover, :focus-visible) {
-    @apply text-white bg-purple-500 shadow-none;
+    @apply text-white bg-seconder shadow-none;
   }
 
   &.err:is(:hover, :focus-visible) {
@@ -98,6 +98,6 @@ defineProps({
 }
 
 .full {
-  @apply w-full text-white bg-purple-500;
+  @apply w-full text-white bg-seconder;
 }
 </style>

@@ -11,12 +11,18 @@
       <!-- ADMIN PAGES -->
       <router-view :isLoading></router-view>
       <!-- PHONE RESULT -->
-      <PhonePreview class="max-[1000px]:hidden" />
+      <PhonePreview
+        class="max-[1000px]:hidden"
+        :isLoading
+      />
     </main>
   </section>
 </template>
 
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import useMediaQuery from "@/hooks/matchMedia";
@@ -67,7 +73,10 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style
+  scoped
+  lang="scss"
+>
 @import "@/scss/helpers/mixins";
 
 .admin-body {
@@ -96,6 +105,7 @@ onMounted(() => {
     header {
       @apply block sticky top-0;
     }
+
     .backdrop {
       @apply block;
     }

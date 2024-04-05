@@ -1,6 +1,7 @@
 const express = require('express');
 
 const { body } = require('express-validator');
+const { uploadImgProfile } = require('../upload/multer-config');
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.get('/user/:id', isAuth, userControllers.getUser);
 router.get('/:username', userControllers.profilePage);
 
 router.put('/update-profile/:id',
+  uploadImgProfile.single('userImg'),
   [
     body('username')
       .trim()

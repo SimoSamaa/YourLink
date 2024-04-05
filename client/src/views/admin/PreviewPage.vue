@@ -1,8 +1,11 @@
 <template>
-  <PhonePreview />
+  <PhonePreview isLoading />
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import useMediaQuery from "@/hooks/matchMedia";

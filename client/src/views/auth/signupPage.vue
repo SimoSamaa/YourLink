@@ -34,13 +34,15 @@
             name="error"
           />
         </div>
-        <p
-          v-show="actErrMess"
-          v-if="!signup.email.isValid"
-          class="text-red-500 text-sm -mt-4"
-        >
-          {{ errMess }}
-        </p>
+        <transition name="input-mess">
+          <p
+            v-show="actErrMess"
+            v-if="!signup.email.isValid"
+            class="text-red-500 text-sm -mt-4"
+          >
+            {{ errMess }}
+          </p>
+        </transition>
         <div
           class="auth-input"
           :class="{ 'input-checked-err': !signup.username.isValid }"
@@ -59,13 +61,15 @@
             name="error"
           />
         </div>
-        <p
-          v-show="actErrMess"
-          v-if="!signup.username.isValid"
-          class="text-red-500 text-sm -mt-4"
-        >
-          username must be min 5 max 10 characters
-        </p>
+        <transition name="input-mess">
+          <p
+            v-show="actErrMess"
+            v-if="!signup.username.isValid"
+            class="text-red-500 text-sm -mt-4"
+          >
+            username must be min 5 max 10 characters
+          </p>
+        </transition>
         <div class="auth-input">
           <input
             type="password"
@@ -92,25 +96,16 @@
             />
           </svg>
         </div>
-        <div
-          class="flex gap-2"
-          v-show="passwordValidation.length === 0 ? false : true"
-        >
-          <span
-            v-for="(state, index) in passwordValidation"
-            :key="index"
-            :class="{
-          'bg-red-600': state === 'weak',
-          'bg-yellow-600': state === 'medium',
-          'bg-green-600': state === 'strong',
-        }"
-            class="block h-2 w-14 border-border border rounded-full"
-          ></span>
+        <div class="pass-val flex gap-2 w-fit ml-auto">
+          <span :class="{ 'weak': weakPassword }"></span>
+          <span :class="{ 'medium': mediumPassword }"></span>
+          <span :class="{ 'strong': strongPassword }"></span>
         </div>
         <base-button
           :disabled="processing"
           mode="full"
           class="flex items-center h-[55px]"
+          @click="stopErrorMessageRemoval()"
         >
           <div v-if="!processing">create account</div>
           <LoadingButton v-else />
@@ -209,6 +204,10 @@ const passwordValidation = computed<string[]>(() => {
   }
 });
 
+const weakPassword = computed(() => passwordValidation.value.includes('weak') ? 'weak' : '');
+const mediumPassword = computed(() => passwordValidation.value.includes('medium') ? 'medium' : '');
+const strongPassword = computed(() => passwordValidation.value.includes('strong') ? 'strong' : '');
+
 const clearValidity = () => {
   checkInputValidation();
   Object.values(signup).forEach((input) => {
@@ -216,6 +215,7 @@ const clearValidity = () => {
   });
 };
 
+let timeoutId: number;
 const checkInputValidation = () => {
   const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -243,7 +243,8 @@ const checkInputValidation = () => {
     formValidation.value = false;
   }
 
-  setTimeout(() => (actErrMess.value = false), 3000);
+  clearTimeout(timeoutId)
+  timeoutId = setTimeout(() => (actErrMess.value = false), 5000);
 };
 
 const submitSignup = async () => {
@@ -271,10 +272,43 @@ const submitSignup = async () => {
     processing.value = false;
   }
 };
+
+const stopErrorMessageRemoval = () => clearTimeout(timeoutId);
 </script>
 
-<style scoped>
+<style
+  scoped
+  lang="scss"
+>
+@import '@/scss/helpers/mixins';
+
 .bg-img {
-  background: url("../../assets/signup.png") center / cover;
+  background: url("@/assets/signup.png") center / cover;
 }
+
+.pass-val {
+  span {
+    @apply block h-2 w-14 border-border border rounded-full bg-white duration-300 ease-out transition-all;
+    background-size: 0 auto;
+
+    $passStrength: (
+      "weak": 'colors.red.500',
+      "medium": 'colors.yellow.500',
+      "strong": 'colors.green.500',
+    );
+
+  @each $Strength, $clr in $passStrength {
+    &.#{$Strength} {
+      background:
+        linear-gradient(to right,
+          theme($clr) 100%,
+          transparent);
+      background-size: 100% auto;
+      background-repeat: no-repeat;
+    }
+  }
+}
+}
+
+@include setAnimation("input-mess", null, null, "opacity");
 </style>

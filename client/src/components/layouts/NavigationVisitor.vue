@@ -18,7 +18,7 @@
         Login
       </router-link>
       <router-link
-        class="btn-auth bg-black2 text-white"
+        class="btn-auth bg-seconder text-white"
         to="/auth/signup"
       >
         Signup

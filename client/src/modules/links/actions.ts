@@ -257,5 +257,19 @@ export default {
     const res: { message: string } = await req.json();
 
     serverError(req, res, 'Update Orders fails!!');
+  },
+  async uploadLinkImg({ rootGetters }: ActionContext<{ links: Link }, any>, payload: { data: File, id: string }) {
+    const formData = new FormData();
+    formData.append('icon', payload.data)
+
+    const token = rootGetters[ 'auth/token' ];
+    const req = await fetch(`${URL_SERVER}upload-link-img/${payload.id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+
+    const res: { message: string } = await req.json();
+    serverError(req, res, 'Upload link icon fails!!');
   }
 };

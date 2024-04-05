@@ -1,4 +1,12 @@
 const { validationResult } = require('express-validator');
+const path = require('path');
+const fs = require('fs');
+
+const clearImage = (filePath) => {
+  if(!filePath) return;
+  filePath = path.join(__dirname, '..', filePath);
+  fs.unlink(filePath, err => console.log(err));
+};
 
 const handleErrCatch = (err, next, statusCode = 500) => {
   if(!err.statusCode) {
@@ -37,5 +45,6 @@ module.exports = {
   handleErrCatch,
   handleNotFound,
   handleValidationErrors,
-  authorized
+  authorized,
+  clearImage
 };

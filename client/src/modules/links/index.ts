@@ -10,7 +10,14 @@ export default {
   state() {
     return {
       headerLinks: [] as HeaderLinks[],
-      links: [] as Link[]
+      links: [] as Link[],
+      uploadProgress: {
+        id: '',
+        progress: 0
+      } as {
+        id: string,
+        progress: number
+      },
     }
   },
   mutations: linksMutations,

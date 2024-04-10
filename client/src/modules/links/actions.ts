@@ -258,18 +258,30 @@ export default {
 
     serverError(req, res, 'Update Orders fails!!');
   },
-  async uploadLinkImg({ rootGetters }: ActionContext<{ links: Link }, any>, payload: { data: File, id: string }) {
+  async uploadLinkImg(context: ActionContext<{ links: Link, uploadProgress: { id: string, progress: number } }, any>, payload: { data: File, id: string }) {
     const formData = new FormData();
     formData.append('icon', payload.data)
 
-    const token = rootGetters[ 'auth/token' ];
-    const req = await fetch(`${URL_SERVER}upload-link-img/${payload.id}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
-    });
+    const token = context.rootGetters[ 'auth/token' ];
 
-    const res: { message: string } = await req.json();
-    serverError(req, res, 'Upload link icon fails!!');
+    const req = new XMLHttpRequest();
+    req.open('PUT', `${URL_SERVER}upload-link-img/${payload.id}`);
+    req.setRequestHeader('Authorization', `Bearer ${token}`);
+    req.upload.addEventListener('progress', (e: any) => {
+      const percentComplete = parseInt((e.loaded / e.total * 100).toString());
+      context.state.uploadProgress.progress = percentComplete;
+      context.state.uploadProgress.id = payload.id;
+    });
+    req.send(formData);
+
+    req.onload = function () {
+      if (req.status >= 200 && req.status < 300) {
+        const res: { icon: string } = JSON.parse(req.responseText);
+        context.commit('setUploadLinkImg', { icon: res.icon, id: payload.id });
+      }
+    };
+  },
+  async deleteUploadedImg(context: ActionContext<null, null>, payload: { id: string, title: string }) {
+    context.commit('setDeleteUploadedImg', payload);
   }
 };

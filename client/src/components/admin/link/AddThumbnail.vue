@@ -67,35 +67,59 @@
       <!-- UPLOAD IMAGE -->
       <div v-if="actionUpload">
         <input
-          type="file"
-          id="upload-img-link"
-          accept="image/*"
-          class="hidden"
+          v-if="checkUploadProgress"
           @input="uploadImgFile($event)"
+          :id="linkId"
+          type="file"
+          accept="image/xml+s, image/jpg, image/jpeg, image/png"
+          class="hidden"
         >
         <label
+          v-if="checkUploadProgress"
           @dragover.prevent="startDragFile()"
           @dragleave="endDragFile()"
-          @drop.prevent="dopImgFile($event)"
+          @drop.prevent="dropImgFile($event)"
           :class="isDrop === true ? 'outline-double  bg-lightSeconder' : ''"
-          for="upload-img-link"
+          :for="linkId"
           class="outline-2 outline-dashed outline-seconder duration-300 ease-out transition-all p-4 rounded-xl aspect-video mb-4 grid place-content-center cursor-pointer hover:bg-lightSeconder hover:outline"
         >
-          <div
-            class="pointer-events-none"
-            v-if="!isUploading"
-          >
-            <div class="w-fit mx-auto mb-4">
-              <appIcon name="upload" />
+          <div>
+            <div
+              class="pointer-events-none"
+              v-if="!isUploading"
+            >
+              <div class="w-fit mx-auto mb-4">
+                <appIcon name="upload" />
+              </div>
+              <div class="max-w-[300px] text-center">Select file to upload, or drag-and-drop file, allow png
+                jpg svg</div>
             </div>
-            <div class="max-w-[300px] text-center">Select file to upload, or drag-and-drop file, allow png
-              jpg svg</div>
-          </div>
-          <div v-else>
-            <h1>{{ uploadTime }}%</h1>
+            <div
+              v-else
+              class="flex items-center font-semibold gap-2"
+            >
+              <progress
+                :value="uploadProgress"
+                max="100"
+              ></progress>
+              <div>{{ uploadProgress }}%</div>
+            </div>
           </div>
         </label>
-        <base-button mode="full err">remove</base-button>
+        <div
+          class="max-w-sm"
+          v-else
+        >
+          <img
+            :src="APP_URL + link.icon"
+            alt=""
+          >
+        </div>
+        <base-button
+          v-if="!checkUploadProgress"
+          @click="deleteUploadedImg(linkId)"
+          mode="full err"
+        >remove</base-button>
       </div>
       <!-- CHOOSE IMAGE -->
       <div v-if="actionIcons">
@@ -141,29 +165,25 @@
   </div>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import { pageProps, BoxIcons } from "@/types/interfacesLink";
 import { useStore } from "vuex";
+import { Link } from '@/types/interfacesLink';
 
 const emit = defineEmits([ "set-close-Thumbnail" ]);
 
-const props = defineProps({
-  linkId: String,
-});
+const props = defineProps<{ linkId: string }>();
 
 const store = useStore();
 
 const actionIcons = ref<boolean>(false);
-const actionUpload = ref<boolean>(true);
+const actionUpload = ref<boolean>(false);
 const isDrop = ref<boolean>(false);
 const searchIcons = ref<string>("");
 const boxIcons = ref<BoxIcons[]>([]);
 const isUploading = ref<boolean>(false);
-const uploadTime = ref<number>(0);
+const APP_URL = ref(process.env.VUE_APP_URL)
 
 const closeThumbnail = () => emit("set-close-Thumbnail");
 const openListIcons = () => (actionIcons.value = true);
@@ -174,8 +194,15 @@ const backToChooseBtn = () => {
   actionUpload.value = false;
 };
 
-
-const iconNotFound = computed(() => icons.value && icons.value.length === 0);
+const iconNotFound = computed<boolean>(() => icons.value && icons.value.length === 0);
+const uploadProgress = computed<number>(() => store.getters[ 'links/uploadProgress' ]);
+const link = computed<Link>(() => {
+  return store.getters[ 'links/links' ].find((link: Link) => link.id === props.linkId)
+});
+const checkUploadProgress = computed<boolean>(() => {
+  const uploadProgressFunc = store.getters[ 'links/checkUploadProgress' ];
+  return uploadProgressFunc(props.linkId) && !link.value.icon.includes('icons/');
+});
 
 const icons = computed(() => {
   if (boxIcons.value) {
@@ -198,19 +225,27 @@ const uploadImgFile = (e: Event) => {
   }
 };
 
-const dopImgFile = (e: DragEvent) => {
-  const dropImgFile = e.dataTransfer?.files[ 0 ];
-  if (dropImgFile) submitUploadFile(dropImgFile);
+const dropImgFile = (e: DragEvent) => {
+  if (!checkUploadProgress.value) return
+  const imgFile = e.dataTransfer?.files[ 0 ];
+  if (imgFile) submitUploadFile(imgFile);
 };
 
 const submitUploadFile = async (data: File) => {
-  isUploading.value = true;
   try {
+    isUploading.value = true;
     await store.dispatch('links/uploadLinkImg', { data: data, id: props.linkId });
   } catch (err) {
-    console.log("zaba", (err as Error).message);
-  } finally {
+    console.log((err as Error).message);
     isUploading.value = false;
+  }
+};
+
+const deleteUploadedImg = async (id: string) => {
+  try {
+    await store.dispatch('links/deleteUploadedImg', { id: id, title: link.value.title })
+  } catch (err) {
+    console.log((err as Error).message);
   }
 };
 
@@ -242,5 +277,22 @@ onMounted(() => getBoxIcon());
 <style scoped>
 .choose-method-upload-img {
   @apply flex items-center justify-between gap-4 w-full p-2 border rounded-md duration-300 ease-out transition-all hover:bg-lightSeconder;
+}
+
+progress {
+  -webkit-appearance: none;
+  @apply bg-bg h-2 w-[300px] max-[1000px]:w-[200px] border border-border rounded-full;
+}
+
+progress::-webkit-progress-bar {
+  @apply bg-bg rounded-full;
+}
+
+progress::-webkit-progress-value {
+  @apply bg-seconder rounded-full;
+}
+
+progress::-moz-progress-bar {
+  @apply bg-seconder rounded-full;
 }
 </style>

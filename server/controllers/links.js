@@ -209,17 +209,17 @@ exports.uploadLinkImg = (req, res, next) => {
     .then((link) => {
       handleNotFound(link, 'link', next);
       authorized(link, req);
-      if(imgUrl !== link.icon) {
+      if(imgUrl !== link.icon && imgUrl) {
         if(link.icon.includes('icons')) {
           clearImage(link.icon);
         }
       }
 
-      link.icon = imgUrl;
+      if(imgUrl) link.icon = imgUrl;
       return link.save();
     })
-    .then(() => {
-      res.status(200).json({ message: 'link icon uploaded successfully!!' });
+    .then((link) => {
+      res.status(200).json({ message: 'link icon uploaded successfully!!', icon: link.icon });
     })
     .catch((err) => handleErrCatch(err, next));
 };

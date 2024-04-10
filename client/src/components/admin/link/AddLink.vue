@@ -33,10 +33,7 @@
   </div>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { Link } from "@/types/interfacesLink";
@@ -111,10 +108,7 @@ const addLink = async () => {
 };
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import "@/scss/helpers/mixins";
 
 .add-link-conatiner {

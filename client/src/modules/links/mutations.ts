@@ -58,5 +58,11 @@ export default {
   // DELETE LINK
   setDeleteLink(state: { links: Link[] }, payload: string) {
     state.links = state.links.filter((link) => link.id !== payload)
+  },
+  setUploadLinkImg(state: any, payload: any) {
+    updateLinkProperty(state, { id: payload.id, property: 'icon', value: payload.icon });
+  },
+  setDeleteUploadedImg(state: { links: Link[] }, payload: { id: string, title: string }) {
+    updateLinkProperty(state, { id: payload.id, property: 'icon', value: payload.title });
   }
 };

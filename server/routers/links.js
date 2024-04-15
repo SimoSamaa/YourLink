@@ -97,6 +97,11 @@ router.put('/upload-link-img/:id',
   linkControllers.uploadLinkImg
 );
 
+router.delete('/delete-img-link/:id',
+  isAuth,
+  linkControllers.deleteLinkImg
+);
+
 router.put('/update-links-orders', isAuth, linkControllers.updateLinksOrders);
 
 router.delete('/delete-link/:id', isAuth, linkControllers.deleteLink);

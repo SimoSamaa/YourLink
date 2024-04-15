@@ -224,6 +224,25 @@ exports.uploadLinkImg = (req, res, next) => {
     .catch((err) => handleErrCatch(err, next));
 };
 
+// DELETE LINK IMAGE
+exports.deleteLinkImg = (req, res, next) => {
+  const deletedLinkId = req.params.id;
+  Link.findById(deletedLinkId)
+    .then((link) => {
+      handleNotFound(link, 'link', next);
+      authorized(link, req);
+      clearImage(link.icon);
+      link.icon = '';
+      link.save();
+    })
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: 'delete link image successfully!!' });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};
+
 exports.updateLinksOrders = (req, res, next) => {
   const updateOrders = req.body;
 

@@ -62,7 +62,7 @@ export default {
   setUploadLinkImg(state: any, payload: any) {
     updateLinkProperty(state, { id: payload.id, property: 'icon', value: payload.icon });
   },
-  setDeleteUploadedImg(state: { links: Link[] }, payload: { id: string, title: string }) {
-    updateLinkProperty(state, { id: payload.id, property: 'icon', value: payload.title });
+  setDeleteUploadedImg(state: { links: Link[] }, payload: string) {
+    updateLinkProperty(state, { id: payload, property: 'icon', value: '' });
   }
 };

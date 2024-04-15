@@ -75,10 +75,7 @@
   </nav>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, onUpdated, PropType } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -124,6 +121,16 @@ onUpdated(() => {
   const listContainer = lists[ 0 ].closest("ul") as HTMLElement;
   let oldTab = lists[ 0 ] as HTMLElement;
 
+  // function getPositionLink() {
+  //   if (window.sessionStorage.getItem('nav-link-pos')) {
+  //     const pos = JSON.parse(sessionStorage[ 'nav-link-pos' ]);
+  //     listContainer.style.setProperty("--left", pos.left + "px");
+  //     listContainer.style.setProperty("--width", pos.width);
+  //   }
+  // }
+
+  // getPositionLink();
+
   function handleClickNavMobile(event: Event) {
     const newTab = event.currentTarget as HTMLElement;
 
@@ -134,17 +141,30 @@ onUpdated(() => {
     oldTab = newTab;
   }
 
+  function handleResNavMobile(list: Element) {
+    console.log('resize');
+
+    const actLinkRes = (list.firstChild as HTMLLinkElement).classList.contains('router-link-active');
+    if (list instanceof HTMLElement) {
+      if (actLinkRes) {
+        listContainer.style.setProperty("--left", list.offsetLeft + 'px');
+      }
+    }
+  };
+
   function addListeners() {
     lists.forEach((list: Element) => {
       list.addEventListener("click", handleClickNavMobile);
+      window.addEventListener('resize', () => handleResNavMobile(list));
     });
-  }
+    window.addEventListener('load', () => router.push({ name: 'links' }));
+  };
 
   function removeListeners() {
     lists.forEach((list: Element) => {
       list.removeEventListener("click", handleClickNavMobile);
     });
-  }
+  };
 
   function lineActiveAnimation(oldTab: HTMLElement, newTab: HTMLElement) {
     const newTabPosition = oldTab.compareDocumentPosition(newTab);
@@ -200,10 +220,7 @@ onUpdated(() => {
 });
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import "@/scss/helpers/mixins";
 
 .close-nav nav {

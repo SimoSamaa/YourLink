@@ -45,7 +45,7 @@
     </div>
     <ul class="space-y-1 text-center font-semibold mb-2">
       <li
-        v-for=" header  in  profileHeaders "
+        v-for=" header in profileHeaders "
         :key="header.id"
         class="text-lg"
       >
@@ -56,7 +56,7 @@
       <li
         class="bg-[#ddd] duration-150 transition-transform hover:scale-105 ease-out"
         :class="link.layout"
-        v-for=" link  in  profileLinks "
+        v-for=" link in profileLinks "
         :key="link.id"
       >
         <a
@@ -66,9 +66,16 @@
         >
           <div>
             <box-icon
+              v-if="!link.icon.includes('icons/')"
               type="logo"
               :name="link.icon"
             ></box-icon>
+            <img
+              v-else
+              :src="APP_URL + link.icon"
+              alt="link-icon"
+              class="w-6 h-6 rounded-full object-cover object-center"
+            >
           </div>
           <div class="text-sm">{{ link.title }}</div>
           <div>
@@ -83,10 +90,7 @@
   </section>
 </template>
 
-<script
-  setup
-  lang="ts"
->
+<script setup lang="ts">
 import { ref, computed, onMounted, PropType } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -99,6 +103,7 @@ const props = defineProps({
 });
 
 const isLoading = ref(false);
+const APP_URL = ref(process.env.VUE_APP_URL);
 
 const profileInfo = computed(() => store.getters[ "user/profileInfo" ]);
 const profileLinks = computed(() => store.getters[ "user/profileLinks" ]);

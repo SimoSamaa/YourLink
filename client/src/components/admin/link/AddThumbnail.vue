@@ -35,7 +35,7 @@
           @click="openUploadImg()"
         >
           <img
-            class="rounded-lg"
+            class="rounded-lg max-[650px]:hidden"
             src="@/assets/68048.234e19732c3d9860b519.webp"
             alt="upload-thumbnail"
           />
@@ -53,7 +53,7 @@
           @click="openListIcons"
         >
           <img
-            class="rounded-lg"
+            class="rounded-lg max-[650px]:hidden"
             src="@/assets/99760.7140b8ce4fef09ee976f.webp"
             alt="upload-thumbnail"
           />
@@ -81,7 +81,7 @@
           @drop.prevent="dropImgFile($event)"
           :class="isDrop === true ? 'outline-double  bg-lightSeconder' : ''"
           :for="linkId"
-          class="outline-2 outline-dashed outline-seconder duration-300 ease-out transition-all p-4 rounded-xl aspect-video mb-4 grid place-content-center cursor-pointer hover:bg-lightSeconder hover:outline"
+          class="outline-2 outline-dashed outline-seconder duration-300 ease-out transition-all p-4 rounded-xl aspect-video grid place-content-center cursor-pointer hover:bg-lightSeconder hover:outline"
         >
           <div>
             <div
@@ -107,19 +107,26 @@
           </div>
         </label>
         <div
-          class="max-w-sm"
+          class="aspect-video grid place-items-center border-seconder border-2 rounded-xl bg-lightSeconder p-4"
           v-else
         >
           <img
+            class="max-w-md w-[90%]"
             :src="APP_URL + link.icon"
-            alt=""
+            loading="lazy"
+            alt="link-icon"
           >
         </div>
         <base-button
           v-if="!checkUploadProgress"
           @click="deleteUploadedImg(linkId)"
+          :disabled="processing"
           mode="full err"
-        >remove</base-button>
+          class="mt-4"
+        >
+          <p v-if="!processing">remove</p>
+          <LoadingButton v-else />
+        </base-button>
       </div>
       <!-- CHOOSE IMAGE -->
       <div v-if="actionIcons">
@@ -183,6 +190,7 @@ const isDrop = ref<boolean>(false);
 const searchIcons = ref<string>("");
 const boxIcons = ref<BoxIcons[]>([]);
 const isUploading = ref<boolean>(false);
+const processing = ref<boolean>(false);
 const APP_URL = ref(process.env.VUE_APP_URL)
 
 const closeThumbnail = () => emit("set-close-Thumbnail");
@@ -242,10 +250,13 @@ const submitUploadFile = async (data: File) => {
 };
 
 const deleteUploadedImg = async (id: string) => {
+  processing.value = true;
   try {
-    await store.dispatch('links/deleteUploadedImg', { id: id, title: link.value.title })
+    await store.dispatch('links/deleteUploadedImg', id);
   } catch (err) {
     console.log((err as Error).message);
+  } finally {
+    processing.value = false;
   }
 };
 

@@ -110,10 +110,7 @@
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -202,10 +199,7 @@ const submitLogin = async () => {
 };
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import '@/scss/helpers/mixins';
 
 .bg-img {

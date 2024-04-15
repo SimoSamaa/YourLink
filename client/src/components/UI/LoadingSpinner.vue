@@ -18,10 +18,7 @@
   </svg>
 </template>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 $offset: 187;
 $duration: 1.4s;
 

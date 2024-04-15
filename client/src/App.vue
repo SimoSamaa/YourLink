@@ -5,10 +5,7 @@
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -31,9 +28,6 @@ const removeNavVis = computed<boolean>(
     route.name === "notFound"
 );
 
-const autoLogin = () => {
-  store.dispatch("auth/autoLogin");
-};
-
+const autoLogin = () => store.dispatch("auth/autoLogin");
 autoLogin();
 </script>

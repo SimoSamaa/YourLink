@@ -1,5 +1,5 @@
 import { HeaderLinks, HeaderWithId } from '@/types/interfacesHeader';
-import { serverError } from '@/hooks/helpers';
+import { serverError, handleRequest } from '@/hooks/helpers';
 import { Link } from '@/types/interfacesLink';
 import { ActionContext } from 'vuex';
 
@@ -281,7 +281,10 @@ export default {
       }
     };
   },
-  async deleteUploadedImg(context: ActionContext<null, null>, payload: { id: string, title: string }) {
+  async deleteUploadedImg(context: ActionContext<null, null>, payload: string) {
+    const token: string = context.rootGetters[ 'auth/token' ];
+    const [ req, res ] = await handleRequest<{ message: string }>(`admin/delete-img-link/${payload}`, 'DELETE', token, null);
+    serverError(req, res, res.message);
     context.commit('setDeleteUploadedImg', payload);
   }
 };

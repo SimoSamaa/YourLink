@@ -56,7 +56,8 @@ const router = createRouter({
       children: [
         {
           path: '/admin',
-          redirect: '/admin/links'
+          redirect: '/admin/links',
+          name: 'links'
         },
         {
           path: 'links',

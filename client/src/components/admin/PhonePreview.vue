@@ -1,9 +1,6 @@
 <template>
   <section class="phone-containe border-l-[1px] border-border p-4 flex justify-center max-[1000px]:p-0">
-    <div
-      ref="zaba"
-      class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8"
-    >
+    <div class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8">
 
       <div
         v-if="isLoading"
@@ -59,9 +56,16 @@
               >
                 <div>
                   <box-icon
+                    v-if="!link.icon.includes('icons/')"
                     type="logo"
                     :name="link.icon"
                   ></box-icon>
+                  <img
+                    v-else
+                    :src="APP_URL + link.icon"
+                    alt="link-icon"
+                    class="w-6 h-6 rounded-full object-cover object-center"
+                  >
                 </div>
                 <div class="text-sm">{{ link.title }}</div>
                 <div>
@@ -76,7 +80,7 @@
         </div>
       </div>
       <img
-        src="../../assets/logo.webp"
+        src="@/assets/logo.webp"
         class="w-[100px] absolute bottom-4 left-1/2 -translate-x-1/2"
         alt="logo"
       />
@@ -84,18 +88,15 @@
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
-import { ref, onMounted, computed } from "vue";
+<script lang="ts" setup>
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { HeaderLinks } from "@/types/interfacesHeader";
 import { Link } from "@/types/interfacesLink";
 
 const store = useStore();
 
-const zaba = ref<HTMLElement | null>(null);
+const APP_URL = ref(process.env.VUE_APP_URL);
 
 defineProps<{ isLoading: boolean }>();
 
@@ -112,25 +113,9 @@ const links = computed<Link[]>(() =>
 );
 
 const user = computed(() => store.getters[ "user/user" ]);
-
-onMounted(() => {
-  // window.addEventListener("resize", function () {
-  //   const height = zaba.value.offsetHeight;
-  //   const width = zaba.value.offsetWidth;
-  //   if (height < width) {
-  //     // zaba.value.style.width = height + "px";
-  //     // zaba.value.style.width = height - 100 + "px";
-  //   } else {
-  //     zaba.value.style.width = height / 2 + "px";
-  //   }
-  // });
-});
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 .phone-containe {
   .phone {
     width: 250px;

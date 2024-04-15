@@ -1,7 +1,7 @@
 <template>
   <section>
     <NavigationVisitor v-if="!removeNavVis" />
-    <router-view></router-view>
+    <RouterView />
   </section>
 </template>
 

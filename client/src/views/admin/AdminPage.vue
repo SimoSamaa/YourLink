@@ -9,7 +9,18 @@
     />
     <main class="py-5 pl-5 grid overflow-auto z-20">
       <!-- ADMIN PAGES -->
-      <router-view :isLoading></router-view>
+      <!-- <router-view :isLoading></router-view> -->
+      <router-view
+        v-slot="slotProps"
+        :isLoading
+      >
+        <transition
+          name="admin-animation-page"
+          mode="out-in"
+        >
+          <component :is="slotProps.Component"></component>
+        </transition>
+      </router-view>
       <!-- PHONE RESULT -->
       <PhonePreview
         class="max-[1000px]:hidden"
@@ -19,10 +30,7 @@
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import useMediaQuery from "@/hooks/matchMedia";
@@ -73,10 +81,7 @@ onMounted(() => {
 });
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import "@/scss/helpers/mixins";
 
 .admin-body {
@@ -111,4 +116,6 @@ onMounted(() => {
     }
   }
 }
+
+@include setAnimation("admin-animation-page", null, null, "opacity");
 </style>

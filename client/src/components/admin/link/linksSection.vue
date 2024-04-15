@@ -43,8 +43,8 @@
             v-else
             @blur="handledInputLinkTitleBlur($event, props.linkId)"
             @keydown.enter.prevent="
-      handledInputLinkTitleBlur($event, props.linkId)
-      "
+              handledInputLinkTitleBlur($event, props.linkId)
+              "
             type="text"
             :value="props.linkTitle"
             ref="inputTitleLink"
@@ -297,10 +297,7 @@
   </li>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, PropType, nextTick } from "vue";
 import { useStore } from "vuex";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
@@ -431,10 +428,7 @@ const deleteLink = async (id: string) => {
 };
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import "@/scss/helpers/mixins";
 
 li {

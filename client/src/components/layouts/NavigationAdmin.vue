@@ -121,16 +121,6 @@ onUpdated(() => {
   const listContainer = lists[ 0 ].closest("ul") as HTMLElement;
   let oldTab = lists[ 0 ] as HTMLElement;
 
-  // function getPositionLink() {
-  //   if (window.sessionStorage.getItem('nav-link-pos')) {
-  //     const pos = JSON.parse(sessionStorage[ 'nav-link-pos' ]);
-  //     listContainer.style.setProperty("--left", pos.left + "px");
-  //     listContainer.style.setProperty("--width", pos.width);
-  //   }
-  // }
-
-  // getPositionLink();
-
   function handleClickNavMobile(event: Event) {
     const newTab = event.currentTarget as HTMLElement;
 
@@ -139,11 +129,9 @@ onUpdated(() => {
     }
 
     oldTab = newTab;
-  }
+  };
 
   function handleResNavMobile(list: Element) {
-    console.log('resize');
-
     const actLinkRes = (list.firstChild as HTMLLinkElement).classList.contains('router-link-active');
     if (list instanceof HTMLElement) {
       if (actLinkRes) {
@@ -262,13 +250,8 @@ nav {
       &::before,
       &::after {
         --radius-size: 1rem;
-
-        content: "";
-        position: absolute;
-        right: 0;
-        width: var(--radius-size);
         aspect-ratio: 1;
-        border-radius: 50%;
+        @apply content-[''] absolute right-0 rounded-full w-[var(--radius-size)]
       }
 
       &::before {
@@ -299,16 +282,10 @@ nav {
     }
 
     .act::before {
-      content: "";
-      position: absolute;
-      right: -2px;
-      top: 0;
-      background: var(--clr-bg);
-      width: 5px;
-      height: 100%;
+      @apply content-[''] absolute right-[-2px] top-0 bg-bg w-[5px] h-full;
 
       @include breakpoint("md") {
-        display: none;
+        @apply hidden;
       }
     }
 
@@ -329,25 +306,18 @@ nav {
       @apply flex p-0 gap-0;
 
       &::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 4px;
+        @apply content-[''] bg-black2 z-40 h-[4px] inset-0 absolute;
         scale: var(--width, 0.25) 1;
         translate: var(--left, 0) 0;
         transform-origin: left;
-        background-color: var(--clr-seconder);
         transition: scale 200ms, translate 200ms;
-        z-index: 40;
       }
 
       li {
         width: calc(100% / 4);
 
         a {
-          justify-content: center;
+          @apply justify-center;
         }
       }
     }

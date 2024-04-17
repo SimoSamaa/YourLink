@@ -1,5 +1,17 @@
 <template>
   <section class="space-y-4">
+    <base-modal
+      statuse="border-l-orange-500"
+      :showing="toggleModal"
+      :actions="true"
+      mess="are you sure want to delete your account"
+      @set-close-modal="closeModal()"
+    >
+      <span
+        @click="deleteAccount()"
+        class="text-red-500 underline ml-2 cursor-pointer"
+      >delete</span>
+    </base-modal>
     <div class="info base-card-style leading-[2] divide-y divide-border">
       <div>
         <span>name</span>
@@ -24,27 +36,25 @@
           class="w-[89.31px] h-[28px]"
         />
         <h3 v-else> {{
-            new Date(userInfo.createdAt)
-              .toLocaleDateString('en-us')
-          }}</h3>
+          new Date(userInfo.createdAt)
+            .toLocaleDateString('en-us')
+        }}</h3>
       </div>
     </div>
     <div class="base-card-style grid gap-2">
       <base-button>reset password</base-button>
       <base-button @click="accountLogout()">logout</base-button>
       <base-button
-        @click="deleteAccount()"
+        @click="toggleDeleteAccount()"
+        :disabled="toggleModal"
         mode=err
       >delete acount</base-button>
     </div>
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
-import { computed } from 'vue';
+<script lang="ts" setup>
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { User } from '@/types/interfacesAuth';
@@ -55,12 +65,18 @@ const router = useRouter();
 
 defineProps<{ isLoading: boolean }>();
 
+const toggleModal = ref<boolean>(false)
+
 const userInfo = computed<User>(() => store.getters[ 'user/user' ]);
 
 const accountLogout = () => {
   store.dispatch("auth/logout");
   router.replace({ name: 'home' });
 };
+
+const closeModal = () => toggleModal.value = false;
+
+const toggleDeleteAccount = () => toggleModal.value = true;
 
 const deleteAccount = async () => {
   try {
@@ -72,10 +88,7 @@ const deleteAccount = async () => {
 };
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 .info {
   & > * {
     @apply px-4 py-2;

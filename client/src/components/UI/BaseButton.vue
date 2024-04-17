@@ -16,10 +16,7 @@
   </router-link>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { PropType } from "vue";
 
 defineProps({
@@ -46,10 +43,7 @@ defineProps({
 });
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 .base-style {
   @apply flex gap-2 capitalize justify-center bg-bg rounded-full py-2 px-4 border-border border text-text2 relative active:scale-90 outline-none font-semibold transition-all duration-200 ease-out;
 
@@ -85,7 +79,7 @@ defineProps({
 }
 
 .close {
-  @apply rounded-full size-[30px] p-0 border-none grid place-content-center;
+  @apply rounded-full min-w-[30px] h-[30px] p-0 border-none grid place-content-center;
 
   &:is(:hover, :focus-visible) {
     @apply bg-red-500;

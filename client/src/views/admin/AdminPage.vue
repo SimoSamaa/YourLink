@@ -9,7 +9,6 @@
     />
     <main class="py-5 pl-5 grid overflow-auto z-20">
       <!-- ADMIN PAGES -->
-      <!-- <router-view :isLoading></router-view> -->
       <router-view
         v-slot="slotProps"
         :isLoading

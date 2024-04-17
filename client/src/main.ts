@@ -13,12 +13,14 @@ import baseButton from '@/components/UI/BaseButton.vue';
 import LoadingSpinner from '@/components/UI/LoadingSpinner.vue';
 import LoadingButton from '@/components/UI/LoadingButton.vue';
 import PlaceholderLoading from '@/components/UI/PlaceholderLoading.vue';
+import BaseModal from './components/UI/BaseModal.vue';
 
 app.component('appIcon', AppIcons);
 app.component('base-button', baseButton);
 app.component('LoadingSpinner', LoadingSpinner);
 app.component('LoadingButton', LoadingButton);
 app.component('PlaceholderLoading', PlaceholderLoading);
+app.component('base-modal', BaseModal);
 
 app.use(store);
 

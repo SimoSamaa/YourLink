@@ -1,5 +1,11 @@
 <template>
   <section class="admin-page relative">
+    <base-modal
+      :showing="alert"
+      mess="Link copied to clipboard!"
+      statuse="border-l-sky-500"
+      @set-close-modal="closeModal()"
+    ></base-modal>
     <div
       v-if="!thumbnail && !linkPage"
       class="flex text-sm items-center gap-4 justify-between bg-blue-100 p-4 rounded-xl border-blue-500 border max-[650px]:block"
@@ -106,8 +112,8 @@
               class="input-header text-center outline-none w-full"
               @keydown.enter.prevent="handledUpdateHeaderKey($event, header)"
               @blur.prevent="
-        handledUpdateHeaderBlur($event, header, header.oldTitle)
-        "
+                handledUpdateHeaderBlur($event, header, header.oldTitle)
+                "
               @input="InputValue($event, header)"
               maxlength="20"
             />
@@ -203,10 +209,7 @@
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, computed, nextTick, PropType } from "vue";
 import { useStore } from "vuex";
 import linksSection from "@/components/admin/link/linksSection.vue";
@@ -250,8 +253,10 @@ const linkPage = ref<boolean>(false);
 const id = ref<string>("");
 const thumbnail = ref<boolean>(false);
 const processing = ref<boolean>(false);
+const alert = ref<boolean>(false);
 
 // FUNCTION TO COPY LINK USER PROFILE
+let alertTime: number;
 const copyLink = () => {
   const username = user.value.username;
   const url = `${window.location.origin}/${username}`;
@@ -261,8 +266,12 @@ const copyLink = () => {
   input.select();
   document.execCommand("copy");
   document.body.removeChild(input);
-  alert("Link copied to clipboard!");
+  alert.value = true;
+  clearTimeout(alertTime);
+  alertTime = setTimeout(() => alert.value = false, 2000);
 };
+
+const closeModal = () => alert.value = false;
 
 // ADD LINK (PAGE)
 const openAddLinkPage = () => (linkPage.value = true);
@@ -457,10 +466,7 @@ const handledDeleteHeader = async (id: string) => {
 };
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import "@/scss/helpers/mixins";
 
 li {

@@ -1,5 +1,11 @@
 <template>
   <div class="absolute w-full h-[89vh] z-10 bg-bg">
+    <base-modal
+      :showing="!!error && actionIcons"
+      :mess="error"
+      statuse="border-l-red-500"
+      @set-close-modal="closeModal()"
+    ></base-modal>
     <div class="base-card-style flex items-center justify-between">
       <base-button
         title="back"
@@ -151,21 +157,32 @@
           />
         </div>
         <!-- BOXICON LIST (JUST LOGO) -->
-        <ul class="flex flex-wrap gap-4 justify-center overflow-y-scroll max-h-[340px]">
-          <h3 v-if="iconNotFound">No icon found</h3>
-          <button
-            class="size-[70px] rounded-md border hover:bg-lightSeconder outline-none focus:bg-purple-100"
-            v-for="icon in icons"
-            :key="icon._id"
-            @click="chooseBoxicon(icon.name)"
-          >
-            <box-icon
-              :type="icon.type_of_icon.toLowerCase()"
-              :name="icon.name"
-              size="lg"
-              color="#676B5F"
-            ></box-icon>
-          </button>
+        <ul class="overflow-y-auto max-h-[397.6px]">
+          <h3
+            v-if="iconNotFound"
+            class="text-center"
+          >No icon found</h3>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <button
+              class="size-[70px] rounded-md border hover:bg-lightSeconder outline-none focus:bg-lightSeconder"
+              v-for="icon in icons"
+              :key="icon._id"
+              @click="chooseBoxicon(icon.name)"
+            >
+              <box-icon
+                :type="icon.type_of_icon.toLowerCase()"
+                :name="icon.name"
+                size="lg"
+                color="#676B5F"
+              ></box-icon>
+            </button>
+          </div>
+          <base-button
+            v-if="!iconNotFound"
+            v-show="!error"
+            class="mx-auto mt-4"
+            @click="loadMoreIcons()"
+          >load more</base-button>
         </ul>
       </div>
     </div>
@@ -191,7 +208,10 @@ const searchIcons = ref<string>("");
 const boxIcons = ref<BoxIcons[]>([]);
 const isUploading = ref<boolean>(false);
 const processing = ref<boolean>(false);
-const APP_URL = ref(process.env.VUE_APP_URL)
+const APP_URL = ref<string>(process.env.VUE_APP_URL);
+const pageNumber = ref<number>(1);
+const itemsPerPage = ref<number>(30);
+const error = ref<string>('');
 
 const closeThumbnail = () => emit("set-close-Thumbnail");
 const openListIcons = () => (actionIcons.value = true);
@@ -214,14 +234,17 @@ const checkUploadProgress = computed<boolean>(() => {
 
 const icons = computed(() => {
   if (boxIcons.value) {
+    const startIndex = (pageNumber.value - 1) * itemsPerPage.value;
+    const endIndex = pageNumber.value * itemsPerPage.value;
     return boxIcons.value.filter((icon) =>
       icon.name.toLowerCase().startsWith(searchIcons.value)
-    );
+    ).slice(startIndex, endIndex);
   } else {
     return [];
   }
 });
 
+const loadMoreIcons = () => itemsPerPage.value += 20;
 const startDragFile = () => isDrop.value = true;
 const endDragFile = () => isDrop.value = false;
 
@@ -271,15 +294,26 @@ const chooseBoxicon = async (boxiconName: string) => {
   }
 };
 
-async function getBoxIcon() {
-  const res = await fetch(
-    "https://boxicons.com/_next/data/DNHfRjsQaNmPABrOMCg7E/index.json"
-  );
-  const resIcons: pageProps = await res.json();
+const closeModal = () => error.value = '';
 
-  boxIcons.value = resIcons.pageProps.icons.filter(
-    (icon) => icon.type_of_icon === "LOGO"
-  );
+async function getBoxIcon() {
+  try {
+    const res = await fetch(
+      "https://boxicons.com/_next/data/DNHfRjsQaNmPABrOMCg7E/index.json"
+    );
+    const resIcons: pageProps = await res.json();
+
+    if (resIcons.pageProps && resIcons.pageProps.icons) {
+      boxIcons.value = resIcons.pageProps.icons.filter(
+        (icon) => icon.type_of_icon === "LOGO"
+      );
+    } else {
+      throw new Error('Invalid response');
+    }
+  } catch (err) {
+    error.value = (err as Error).message;
+    boxIcons.value = []
+  }
 }
 
 onMounted(() => getBoxIcon());

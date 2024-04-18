@@ -9,7 +9,7 @@
       >
       <h1>The page you’re looking for doesn’t exist.</h1>
       <base-button
-        style="background: #A855F7; color: #fff;"
+        style="background: #9BA4CD; color: #fff;"
         link
       >back to home</base-button>
     </div>

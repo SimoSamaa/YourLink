@@ -9,8 +9,8 @@
     >
       <span
         @click="deleteAccount()"
-        class="text-red-500 underline ml-2 cursor-pointer"
-      >delete</span>
+        class="text-orange-500 underline ml-2 cursor-pointer"
+      >confirm</span>
     </base-modal>
     <div class="info base-card-style leading-[2] divide-y divide-border">
       <div>
@@ -83,7 +83,7 @@ const deleteAccount = async () => {
     await store.dispatch('user/deleteUserAccount');
     accountLogout();
   } catch (err) {
-    console.log((err as Error).message);
+    console.error((err as Error).message);
   }
 };
 </script>

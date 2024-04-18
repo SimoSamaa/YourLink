@@ -8,7 +8,6 @@ export default {
     return {
       token: null as string | null,
       userId: null as string | null,
-      tokenExp: null as string | null
     }
   },
   mutations: authMutations,

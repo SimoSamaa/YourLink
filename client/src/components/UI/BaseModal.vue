@@ -9,6 +9,7 @@
         <div class="flex justify-between items-center gap-4">
           <p class="max-w-sm p-2">{{ mess }}</p>
           <base-button
+            title="close"
             mode="close"
             @click="closeModal()"
           >

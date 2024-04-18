@@ -84,9 +84,16 @@ exports.userLogin = (req, res, next) => {
         },
         'thisismyblablabla',
         { expiresIn: '1h' });
+
+      const expirationTimeMs = new Date().getTime() + (1 * 60 * 60 * 1000); // 1 hour
       res
         .status(200)
-        .json({ token: token, userId: loadedUser._id.toString(), username: loadedUser.username });
+        .json({
+          token: token,
+          userId: loadedUser._id.toString(),
+          username: loadedUser.username,
+          expiresIn: expirationTimeMs
+        });
     })
     .catch((err) => handleErrCatch(err, next));
 };

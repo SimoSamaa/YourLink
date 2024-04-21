@@ -1,16 +1,18 @@
+import { defineAsyncComponent } from 'vue';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import store from '@/modules/index'
 
 import HomePage from '@/views/visitor/HomePage.vue';
-import loginPage from '@/views/auth/LoginPage.vue';
-import signupPage from '@/views/auth/signupPage.vue';
 import AdminPage from '@/views/admin/AdminPage.vue';
 import LinksPage from '@/views/admin/LinksPage.vue';
 import AppearancePage from '@/views/admin/AppearancePage.vue';
 import AccountPage from '@/views/admin/AccountPage.vue';
 import PreviewPage from '@/views/admin/PreviewPage.vue';
 import UserProfile from '@/views/visitor/UserProfile.vue';
-import notFoundpage from '@/views/notFoundpage.vue';
+
+const notFoundpage = defineAsyncComponent(() => import('@/views/notFoundpage.vue'));
+const loginPage = defineAsyncComponent(() => import('@/views/auth/LoginPage.vue'));
+const signupPage = defineAsyncComponent(() => import('@/views/auth/signupPage.vue'));
 
 
 const router = createRouter({
@@ -47,6 +49,12 @@ const router = createRouter({
       path: '/:not(.*)',
       component: notFoundpage,
       name: 'notFound',
+    },
+    {
+      props: true,
+      path: '/reset-password/:token',
+      component: () => import('@/views/auth/ResetPassword.vue'),
+      name: 'resetPassword',
     },
     {
       path: '/admin',

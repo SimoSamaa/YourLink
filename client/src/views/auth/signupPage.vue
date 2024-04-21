@@ -29,7 +29,7 @@
             v-model.trim="signup.email.value"
           />
           <label for="email">Email</label>
-          <appIcons
+          <appIcon
             v-if="!signup.email.isValid"
             name="error"
           />
@@ -56,7 +56,7 @@
             @blur="clearValidity()"
           />
           <label for="username">username</label>
-          <appIcons
+          <appIcon
             v-if="!signup.username.isValid"
             name="error"
           />
@@ -132,10 +132,7 @@
   </section>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -276,10 +273,7 @@ const submitSignup = async () => {
 const stopErrorMessageRemoval = () => clearTimeout(timeoutId);
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import '@/scss/helpers/mixins';
 
 .bg-img {

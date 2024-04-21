@@ -33,7 +33,15 @@
 
   .#{$name}-leave-active {
     animation: #{$name} 300ms ease reverse;
-    position: if($use-opacity, static, absolute);
+
+    @if ($name =='modal-animation') {
+      position: fixed;
+    }
+
+    @else if ($name) {
+      position: if($use-opacity, static, absolute);
+    }
+
   }
 
   .#{$name}-move {

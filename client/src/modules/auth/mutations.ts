@@ -1,11 +1,12 @@
+type userType = { token: string, userId: string, didAutoLogout: boolean };
+
 export default {
-  setUser(state: any, payload: any) {
+  setUser(state: userType, payload: { token: string, userId: string }) {
     state.token = payload.token;
     state.userId = payload.userId;
+    state.didAutoLogout = false;
   },
-  logout(state: any) {
-    // Clear user-related state
-    state.token = null;
-    state.userId = null;
+  setAutoLogout(state: userType) {
+    state.didAutoLogout = true;
   }
 }

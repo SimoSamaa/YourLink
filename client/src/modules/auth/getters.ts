@@ -1,11 +1,14 @@
 export default {
   userId(state: { userId: string | null }) {
-    return state.userId
+    return state.userId;
   },
   token(state: { token: string | null }) {
-    return state.token
+    return state.token;
   },
   isAuth(state: { token: string | null }) {
-    return !!state.token
+    return !!state.token;
+  },
+  didAutoLogout(state: { didAutoLogout: boolean }) {
+    return state.didAutoLogout;
   }
-}
+};

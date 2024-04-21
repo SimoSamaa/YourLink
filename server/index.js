@@ -11,7 +11,7 @@ const user = require('./routers/user');
 const app = express();
 
 const MONGO_DB =
-  `mongodb+srv://${ process.env.MONGO_DB_USER }:${ process.env.MONGO__DB_PASS }@cluster0.1epo1j2.mongodb.net/${ process.env.MONGO_DB_NAME }?retryWrites=true&w=majority`;
+  `mongodb+srv://${ process.env.MONGO_DB_USER }:${ process.env.MONGO_DB_PASS }@cluster0.1epo1j2.mongodb.net/${ process.env.MONGO_DB_NAME }?retryWrites=true&w=majority`;
 
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));

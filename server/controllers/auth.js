@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const jwt = require('jsonwebtoken');
@@ -13,12 +14,15 @@ const {
 
 const transporter = nodemailer.createTransport(sendgridTransport({
   auth: {
-    api_key: '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',
+    api_key: process.env.SENDGRID_API,
   }
 }));
 
 const signupEmailTemplate = fs.readFileSync(path.join(__dirname, '..', 'emails', 'signup.html'), 'utf8');
+const loginEmailTemplate = fs.readFileSync(path.join(__dirname, '..', 'emails', 'login.html'), 'utf8');
+const resetPassTemplate = fs.readFileSync(path.join(__dirname, '..', 'emails', 'reset-password.html'), 'utf8');
 
+// SIGNUP
 exports.userSignup = (req, res, next) => {
   handleValidationErrors(req);
 
@@ -55,6 +59,7 @@ exports.userSignup = (req, res, next) => {
     .catch((err) => handleErrCatch(err, next));
 };
 
+// LOGIN
 exports.userLogin = (req, res, next) => {
   const { email, password } = req.body;
   let loadedUser;
@@ -82,10 +87,21 @@ exports.userLogin = (req, res, next) => {
           email: loadedUser.email,
           userId: loadedUser._id.toString()
         },
-        'thisismyblablabla',
+        process.env.JWT_SIGN,
         { expiresIn: '1h' });
 
-      const expirationTimeMs = new Date().getTime() + (1 * 60 * 60 * 1000); // 1 hour
+      const expirationTimeMs = (1 * 60 * 60 * 1000); // 1 hour
+      // SEND EMAIL
+      const logInEmail = loginEmailTemplate
+        .replace('{{username}}', loadedUser.username);
+
+      transporter.sendMail({
+        to: email,
+        from: 'rayanidbrahim@gmail.com',
+        subject: 'Login succeeded!',
+        html: logInEmail
+      });
+
       res
         .status(200)
         .json({
@@ -94,6 +110,73 @@ exports.userLogin = (req, res, next) => {
           username: loadedUser.username,
           expiresIn: expirationTimeMs
         });
+    })
+    .catch((err) => handleErrCatch(err, next));
+};
+
+// RESET PASSWORD
+exports.resetPassword = (req, res, next) => {
+  const email = req.body.email;
+  handleValidationErrors(req);
+  crypto.randomBytes(32, (err, buffer) => {
+    if(err) {
+      const error = new Error('fails to generate reset password token');
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const token = buffer.toString('hex');
+    User.findOne({ email: email })
+      .then((user) => {
+        handleNotFound(user, 'user', next);
+
+        user.resetToken = token;;
+        user.resetTokenExp = Date.now() + 3600000;
+        return user.save();
+      })
+      .then(() => {
+        const resetPassEmail = resetPassTemplate
+          .replace('token', `${ process.env.CLIENT_LOCATION }reset-password/${ token }`);
+
+        transporter.sendMail({
+          to: email,
+          from: 'rayanidbrahim@gmail.com',
+          subject: 'Reset your password',
+          html: resetPassEmail
+        });
+      })
+      .then(() => {
+        res.status(200).json({ message: 'email reset password sent successfully' });
+      })
+      .catch((err) => handleErrCatch(err, next));
+  });
+};
+
+// UPDATE PASSWORD
+exports.newPassword = (req, res, next) => {
+  const token = req.params.token;
+  const newPass = req.body.newPass;
+  let resetUser;
+  handleValidationErrors(req);
+
+  User.findOne({ resetToken: token, resetTokenExp: { $gt: Date.now() } })
+    .then((user) => {
+      resetUser = user;
+      return bcrypt.hash(newPass, 12);
+    })
+    .then((hashedPass) => {
+      resetUser.password = hashedPass;
+      resetUser.resetToken = undefined;
+      resetUser.resetTokenExp = undefined;
+      return resetUser.save();
+    })
+    .then(() => {
+      transporter.sendMail({
+        to: email,
+        from: 'rayanidbrahim@gmail.com',
+        subject: 'Update password',
+        html: `<h3>Your password is updated successfully</h3>`
+      });
     })
     .catch((err) => handleErrCatch(err, next));
 };

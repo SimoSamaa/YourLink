@@ -27,6 +27,8 @@ const userSchema = new Schema({
     type: String,
     default: ''
   },
+  resetToken: String,
+  resetTokenExp: Date,
   status: {
     type: String,
     default: 'I am new!',

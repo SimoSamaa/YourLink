@@ -32,4 +32,28 @@ router.post('/signup',
 
 router.post('/login', authControllers.userLogin);
 
+router.post('/reset-password',
+  [
+    body('email')
+      .isEmail()
+      .normalizeEmail()
+      .custom((value, { req }) => { // check if email not exists in database
+        return User.findOne({ email: value })
+          .then((matchUser) => {
+            if(!matchUser) return Promise
+              .reject('email not exists');
+          });
+      }),
+  ],
+  authControllers.resetPassword);
+
+router.post('/new-password/:token',
+  [
+    body('newPass')
+      .notEmpty()
+      .isLength({ min: 8 })
+      .trim()
+  ],
+  authControllers.newPassword);
+
 module.exports = router;

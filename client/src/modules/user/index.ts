@@ -1,7 +1,7 @@
 import userhMutations from './mutations';
 import userhActions from './actions';
 import userhGetters from './getters';
-import { User } from '../../types/interfacesAuth';
+import { User } from '@/types/interfacesAuth';
 
 export default {
   namespaced: true,

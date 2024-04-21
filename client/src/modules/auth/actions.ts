@@ -1,8 +1,9 @@
+import ResetPassword from '@/components/ResetPassword.vue';
 import { serverError, handleRequest } from '@/hooks/helpers';
 import { Signup, Login } from '@/types/interfacesAuth'
-import { ActionContext, Commit } from 'vuex';
+import { ActionContext, Commit, Dispatch } from 'vuex';
 
-type CommitType = { commit: Commit };
+type ContextType = { commit: Commit, dispatch: Dispatch };
 type ResType = { message: string, token: string, userId: string, expiresIn: number };
 
 let timer: number | undefined;
@@ -12,7 +13,7 @@ export default {
     const [ req, res ] = await handleRequest<ResType>('auth/signup', 'POST', null, payload);
     serverError(req, res, 'E-mail address already exists');
   },
-  async login(context: ActionContext<any, any>, payload: Login) {
+  async login(context: ContextType, payload: Login) {
     const [ req, res ] = await handleRequest<ResType>('auth/login', 'POST', null, payload);
     serverError(req, res, 'Invalid email or password');
 
@@ -24,7 +25,7 @@ export default {
     localStorage.setItem('tokenExpiration', expirationDate.toString());
 
     timer = setTimeout(() => {
-      context.dispatch('logout');
+      context.dispatch('autoLogout');
     }, expiresIn);
 
     context.commit('setUser', {
@@ -32,7 +33,7 @@ export default {
       userId: res.userId,
     })
   },
-  autoLogin(context: ActionContext<any, any>) {
+  autoLogin(context: ContextType) {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     const tokenExpiration = localStorage.getItem('tokenExpiration');
@@ -41,7 +42,7 @@ export default {
     if (expiresIn < 0) return;
 
     timer = setTimeout(() => {
-      context.dispatch('logout');
+      context.dispatch('autoLogout');
     }, expiresIn);
 
     if (token && userId) {
@@ -51,7 +52,7 @@ export default {
       })
     }
   },
-  logout({ commit }: CommitType) {
+  logout({ commit }: ContextType) {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('tokenExpiration');
@@ -62,5 +63,19 @@ export default {
       token: null,
       userId: null,
     })
+  },
+  autoLogout(context: ContextType) {
+    context.dispatch('logout');
+    context.commit('setAutoLogout');
+  },
+  async resetPassword(_context: ContextType, payload: string) {
+    const [ req, res ] = await handleRequest<ResType>('auth/reset-password', 'POST', null, payload);
+    serverError(req, res, 'email not exists');
+  },
+  async newPassword(_context: ContextType, payload: { token: string, newPass: string }) {
+    const [ req, res ] = await handleRequest<ResType>(
+      `auth/new-password/${payload.token}`, 'POST', null, { newPass: payload.newPass }
+    );
+    serverError(req, res, 'confirm your password');
   }
 }

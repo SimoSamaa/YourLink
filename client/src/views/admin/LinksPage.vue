@@ -3,7 +3,7 @@
     <base-modal
       :showing="alert"
       mess="Link copied to clipboard!"
-      statuse="border-l-sky-500"
+      statuse="border-l-green-400"
       @set-close-modal="closeModal()"
     ></base-modal>
     <div
@@ -200,7 +200,7 @@
     <transition name="animation-opacity">
       <div
         v-if="checkedLinkPage && !linkPage"
-        class="min-h-[64vh] w-full grid place-content-center"
+        class="min-h-[62vh] w-full grid place-content-center"
       >
         <LoadingSpinner v-if="isLoading" />
         <h1 v-else>No links now</h1>

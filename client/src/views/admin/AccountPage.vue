@@ -1,5 +1,9 @@
 <template>
-  <section class="space-y-4">
+  <section>
+    <ResetPassword
+      :open="isResetPass"
+      @set-reset-pass="toggleResetPass()"
+    />
     <base-modal
       statuse="border-l-orange-500"
       :showing="toggleModal"
@@ -41,8 +45,8 @@
         }}</h3>
       </div>
     </div>
-    <div class="base-card-style grid gap-2">
-      <base-button>reset password</base-button>
+    <div class="base-card-style grid gap-2 mt-4">
+      <base-button @click="toggleResetPass()">reset password</base-button>
       <base-button @click="accountLogout()">logout</base-button>
       <base-button
         @click="toggleDeleteAccount()"
@@ -54,20 +58,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { User } from '@/types/interfacesAuth';
-import PlaceholderLoading from '@/components/UI/PlaceholderLoading.vue';
+
+const ResetPassword = defineAsyncComponent(() =>
+  import('@/components/ResetPassword.vue')
+);
 
 const store = useStore();
 const router = useRouter();
 
 defineProps<{ isLoading: boolean }>();
 
-const toggleModal = ref<boolean>(false)
+const toggleModal = ref<boolean>(false);
+const isResetPass = ref<boolean>(false);
 
 const userInfo = computed<User>(() => store.getters[ 'user/user' ]);
+
+const toggleResetPass = () => isResetPass.value = !isResetPass.value;
 
 const accountLogout = () => {
   store.dispatch("auth/logout");

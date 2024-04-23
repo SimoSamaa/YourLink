@@ -157,10 +157,13 @@ exports.newPassword = (req, res, next) => {
   const token = req.params.token;
   const newPass = req.body.newPass;
   let resetUser;
+
   handleValidationErrors(req);
 
   User.findOne({ resetToken: token, resetTokenExp: { $gt: Date.now() } })
     .then((user) => {
+      handleNotFound(user, 'Reset token', next);
+
       resetUser = user;
       return bcrypt.hash(newPass, 12);
     })

@@ -254,17 +254,22 @@
         </template>
         <!-- SHARE -->
         <template v-else-if="actionAct === 3">
-          <div class="flex justify-between items-center mb-2">
-            <h3>SHARE</h3>
-            <base-button
-              mode="close"
-              @click="closeActions"
-            >
-              <appIcon
-                name="close"
-                size="20px"
-              />
-            </base-button>
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <h3>SHARE</h3>
+              <base-button
+                mode="close"
+                @click="closeActions"
+              >
+                <appIcon
+                  name="close"
+                  size="20px"
+                />
+              </base-button>
+            </div>
+            <div class="flex justify-center">
+              <ShareSocials />
+            </div>
           </div>
         </template>
         <!-- DELETE -->
@@ -298,9 +303,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, PropType, nextTick } from "vue";
+import { ref, PropType, nextTick, defineAsyncComponent } from "vue";
 import { useStore } from "vuex";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
+import LoadingSpinner from '../../UI/LoadingSpinner.vue'
+const ShareSocials = defineAsyncComponent({
+  loader: () => import('./ShareSocials.vue'),
+  loadingComponent: LoadingSpinner,
+  delay: 200,
+  timeout: 3000
+});
 
 const props = defineProps({
   linkId: {

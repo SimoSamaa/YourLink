@@ -1,5 +1,9 @@
 <template>
   <section class="auth-page">
+    <ResetPassword
+      :open="isResetPass"
+      @set-reset-pass="toggleResetPass()"
+    />
     <div class="px-10 py-8">
       <router-link to="/">
         <img
@@ -94,12 +98,19 @@
         <p>OR</p>
         <p>
           Don't have an account?
-          <router-link
-            to="/auth/signup"
-            class="text-blue-500 underline"
-          >
-            signup
-          </router-link>
+          <span class="space-x-1">
+            <router-link
+              to="/auth/signup"
+              class="text-blue-500 underline"
+            >
+              signup
+            </router-link>
+            <span>|</span>
+            <span
+              @click="toggleResetPass()"
+              class="text-blue-500 underline cursor-pointer"
+            >reset password</span>
+          </span>
         </p>
       </div>
     </div>
@@ -117,6 +128,7 @@ import { useRouter } from "vue-router";
 import { useInputType } from "@/hooks/helpers";
 import LoadingButton from "@/components/UI/LoadingButton.vue";
 import { Login } from "@/types/interfacesAuth";
+import ResetPassword from '@/components/ResetPassword.vue'
 
 const store = useStore();
 const router = useRouter();
@@ -126,6 +138,8 @@ const [ showPass, checkInputType ] = useInputType();
 const inputPass = ref<HTMLInputElement | null>(null);
 const errMess = ref<string>("");
 const processing = ref<boolean>(false);
+const isResetPass = ref<boolean>(false);
+
 const login = reactive<Login>({
   email: {
     value: "",
@@ -140,6 +154,8 @@ const login = reactive<Login>({
 const loginFormValidation = ref<boolean>(true);
 const actErrMess = ref<boolean>(false)
 const loading = ref<boolean>(true);
+
+const toggleResetPass = () => isResetPass.value = !isResetPass.value;
 
 const bgImg = new Image();
 bgImg.onload = () => loading.value = false;

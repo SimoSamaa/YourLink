@@ -178,7 +178,7 @@
             </button>
           </div>
           <base-button
-            v-if="!iconNotFound"
+            v-if="!iconNotFound && !searchIcons"
             v-show="!error && itemsPerPage <= 155"
             class="mx-auto mt-4"
             @click="loadMoreIcons()"

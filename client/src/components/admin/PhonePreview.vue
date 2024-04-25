@@ -1,6 +1,8 @@
 <template>
   <section class="phone-containe border-l-[1px] border-border p-4 flex justify-center max-[1000px]:p-0">
-    <div class="phone pt-10 px-4 bg-white fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8">
+    <div
+      :class="[ 'phone pt-10 px-4 fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8', theme.page || 'bg-base' ]"
+    >
 
       <div
         v-if="isLoading"
@@ -12,7 +14,9 @@
         <div class="h-[400px] overflow-auto overflow-x-hidden">
           <!-- USER INFO -->
           <div class="mb-4">
-            <div class="mx-auto size-20 rounded-full overflow-hidden bg-black2 grid place-content-center text-white">
+            <div
+              :class="[ 'mx-auto size-20 rounded-full overflow-hidden bg-black2 grid place-content-center', theme.bgImg || 'text-white' ]"
+            >
               <img
                 v-if="user.userImg"
                 class="size-20 object-cover object-center"
@@ -44,8 +48,8 @@
           <!-- LINKS -->
           <ul class="links">
             <li
-              class="bg-[#ddd] duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out"
-              :class="link.layout"
+              class="bg-white duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out"
+              :class="[ link.layout, theme.link ]"
               v-for="link in links"
               :key="link.id"
             >
@@ -53,6 +57,7 @@
                 :href="link.link"
                 target="_blank"
                 class="py-2 px-4"
+                tabindex="-1"
               >
                 <div>
                   <box-icon
@@ -81,7 +86,7 @@
       </div>
       <img
         src="@/assets/logo.webp"
-        class="w-[100px] absolute bottom-4 left-1/2 -translate-x-1/2"
+        :class="[ 'w-[100px] absolute bottom-4 left-1/2 -translate-x-1/2', theme.logo ]"
         alt="logo"
       />
     </div>
@@ -93,6 +98,8 @@ import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { HeaderLinks } from "@/types/interfacesHeader";
 import { Link } from "@/types/interfacesLink";
+import { User } from "@/types/interfacesAuth";
+import { Theme } from "@/types/interfacesTheme";
 
 const store = useStore();
 
@@ -112,7 +119,8 @@ const links = computed<Link[]>(() =>
     .sort((a: Link, b: Link) => a.dataIndex + b.dataIndex)
 );
 
-const user = computed(() => store.getters[ "user/user" ]);
+const user = computed<User>(() => store.getters[ "user/user" ]);
+const theme = computed<Theme>(() => store.getters[ 'theme/theme' ]);
 </script>
 
 <style scoped lang="scss">

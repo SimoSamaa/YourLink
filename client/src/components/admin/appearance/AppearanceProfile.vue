@@ -1,7 +1,7 @@
 <template>
   <form
     @submit.prevent="submitProfileUser"
-    class="base-card-style mt-2 space-y-4"
+    class="base-card-style mt-2 mb-5 space-y-4"
   >
     <div class="flex items-center gap-4">
       <div
@@ -74,7 +74,7 @@
       <label
         class="absolute left-4 top-2 text-text2 font-semibold"
         for="bio"
-      >Profile Title</label>
+      >bio</label>
       <span class="text-sm absolute right-0 -bottom-4">
         {{ userProfile.userbio.value?.length }}/80</span>
     </div>
@@ -86,10 +86,7 @@
   </form>
 </template>
 
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ref, computed, reactive, watch } from "vue";
 import { useStore } from "vuex";
 import { UserProfile } from "@/types/interfacesAuth";
@@ -172,10 +169,7 @@ watch(
 );
 </script>
 
-<style
-  scoped
-  lang="scss"
->
+<style scoped lang="scss">
 @import '@/scss/helpers/mixins';
 
 

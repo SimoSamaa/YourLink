@@ -42,4 +42,8 @@ body {
   #logo {
     @apply w-[125px]
   }
+
+  box-icon {
+    @apply fill-current;
+  }
 }

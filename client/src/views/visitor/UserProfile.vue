@@ -1,8 +1,15 @@
 <template>
   <section
     v-if="profileInfo"
-    class="p-8 max-w-lg mx-auto"
+    class="pt-8 pb-[48.18px] px-4 mx-auto"
   >
+    <div class="bg-bg p-4 w-full fixed bottom-0 left-0">
+      <img
+        src="@/assets/logo.webp"
+        alt="logo"
+        class="w-24 mx-auto"
+      >
+    </div>
     <!-- PLACE HOLDER LOADING -->
     <div
       v-if="isLoading"
@@ -27,7 +34,7 @@
         <img
           v-if="profileInfo.userImg"
           class="size-[150px] object-cover object-center"
-          :src="'http://localhost:2024/' + profileInfo.userImg"
+          :src="APP_URL + profileInfo.userImg"
           alt="user-img"
         />
         <p
@@ -52,17 +59,31 @@
         {{ header.title }}
       </li>
     </ul>
-    <ul class="links">
+    <!--  -->
+    <ul
+      v-if="isLoading"
+      class="max-w-[580px] w-[calc(100%-1rem)] mx-auto grid gap-4"
+    >
+      <PlaceholderLoading
+        class="h-[56px]"
+        v-for="index in 3"
+      />
+    </ul>
+    <ul
+      v-else
+      class="links max-w-[580px] w-[calc(100%-1rem)] mx-auto"
+    >
       <li
         class="bg-[#ddd] duration-150 transition-transform hover:scale-105 ease-out"
-        :class="link.layout"
+        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]	' ]"
         v-for=" link in profileLinks "
         :key="link.id"
       >
         <a
           :href="link.link"
           target="_blank"
-          class="py-2 px-4"
+          class="py-4 px-5 h-full"
+          :class="{ 'flex items-center': link.layout === 'classic' }"
         >
           <div>
             <box-icon
@@ -77,12 +98,14 @@
               class="w-6 h-6 rounded-full object-cover object-center"
             >
           </div>
-          <div class="text-sm">{{ link.title }}</div>
-          <div>
-            <appIcon
-              name="more"
-              size="20px"
-            />
+          <div class="pos-end font-semibold">{{ link.title }}</div>
+          <div class="pos-end">
+            <div class="bg-bg rounded-full size-8 grid place-content-center">
+              <appIcon
+                name="more"
+                size="20px"
+              />
+            </div>
           </div>
         </a>
       </li>
@@ -123,3 +146,12 @@ const fetchUserProfile = async (username: string | undefined) => {
 
 onMounted(() => fetchUserProfile(props.username));
 </script>
+
+
+<style scoped lang="scss">
+.featured {
+  .pos-end {
+    @apply flex items-end
+  }
+}
+</style>

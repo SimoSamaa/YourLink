@@ -52,6 +52,5 @@ const shareSocials = reactive([
     platform: 'messenger',
     linkToShare: `fb://messaging/compose/new`
   }
-
 ]);
 </script>

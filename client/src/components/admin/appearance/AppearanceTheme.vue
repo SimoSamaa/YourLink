@@ -36,24 +36,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import { useStore } from "vuex";
 import { Theme } from "@/types/interfacesTheme";
 
 const store = useStore();
 
-const themes = computed<Theme[]>(() => store.getters[ 'theme/themes' ])
-
+const themes = computed<Theme[]>(() => store.getters[ 'theme/themes' ]);
 const currentTheme = ref<string>('');
 
 const selectedTheme = async (theme: Theme) => {
   currentTheme.value = theme.name
-  await store.dispatch('theme/selectedTheme', {
-    page: theme.page,
-    link: theme.link,
-    bgImg: theme.bgImg,
-    logo: theme.logo
-  });
+  try {
+    await store.dispatch('theme/selectedTheme', { ...theme });
+  } catch (err) {
+    console.error((err as Error).message);
+  }
 };
 </script>
 

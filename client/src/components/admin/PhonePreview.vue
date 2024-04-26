@@ -48,8 +48,8 @@
           <!-- LINKS -->
           <ul class="links">
             <li
-              class="bg-white duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out"
-              :class="[ link.layout, theme.link ]"
+              class="duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out"
+              :class="[ link.layout, theme.link || 'bg-white' ]"
               v-for="link in links"
               :key="link.id"
             >

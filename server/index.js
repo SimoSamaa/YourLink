@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const header = require('./routers/header');
 const linsk = require('./routers/links');
+const theme = require('./routers/theme');
 const auth = require('./routers/auth');
 const user = require('./routers/user');
 
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', header);
 app.use('/admin', linsk);
+app.use('/admin', theme);
 app.use('/auth', auth);
 app.use(user);
 

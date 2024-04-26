@@ -34,7 +34,8 @@ const userSchema = new Schema({
     default: 'I am new!',
   },
   headers: [ { type: Schema.Types.ObjectId, ref: 'Header' } ],
-  links: [ { type: Schema.Types.ObjectId, ref: 'Link' } ]
+  links: [ { type: Schema.Types.ObjectId, ref: 'Link' } ],
+  theme: { type: Schema.Types.ObjectId, ref: 'Theme' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('user', userSchema);

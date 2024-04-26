@@ -53,8 +53,9 @@ const loadAdminData = async () => {
     await store.dispatch("links/featchHeaders");
     await store.dispatch("links/fetchLinks");
     await store.dispatch("user/fetchUser");
+    await store.dispatch("theme/fetchTheme");
   } catch (err) {
-    (err as Error).message;
+    console.error('ADMIN PAGE: ', (err as Error).message);
   } finally {
     isLoading.value = false;
   }

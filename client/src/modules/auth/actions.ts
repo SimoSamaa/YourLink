@@ -1,4 +1,3 @@
-import ResetPassword from '@/components/ResetPassword.vue';
 import { serverError, handleRequest } from '@/hooks/helpers';
 import { Signup, Login } from '@/types/interfacesAuth'
 import { ActionContext, Commit, Dispatch } from 'vuex';

@@ -24,7 +24,7 @@ export default {
           name: 'mint',
         },
         {
-          page: 'bg-them-blue-circle text-white',
+          page: 'bg-theme-blue-circle text-white',
           link: 'bg-opacity-0 border-white border-2',
           bgImg: 'bg-sky-700',
           logo: 'invert',

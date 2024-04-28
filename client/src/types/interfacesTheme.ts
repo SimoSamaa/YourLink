@@ -5,6 +5,7 @@ interface Theme {
   name: string;
   bgImg?: string,
   logo?: string,
+  bgClr?: string,
 }
 
 export { Theme }

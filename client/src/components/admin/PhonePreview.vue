@@ -2,6 +2,7 @@
   <section class="phone-containe border-l-[1px] border-border p-4 flex justify-center max-[1000px]:p-0">
     <div
       :class="[ 'phone pt-10 px-4 fixed top-1/2 -translate-y-1/2 rounded-3xl border-black2 border-8', theme.page || 'bg-base' ]"
+      :style="{ background: theme.bgClr }"
     >
 
       <div

@@ -17,6 +17,7 @@ const themeSchema = new Schema({
   },
   logo: String,
   bgImg: String,
+  bgClr: String,
   creator: {
     type: Schema.Types.ObjectId,
     ref: 'User',

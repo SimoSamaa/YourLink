@@ -16,7 +16,7 @@
     >
       <button
         @click="selectedTheme(theme)"
-        :class="[ 'selected-theme', { 'act': theme.name === currentTheme } ]"
+        :class="[ 'selected-theme', actTheme(theme.name) ]"
         :id="theme.name"
       >
         <div
@@ -36,14 +36,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, reactive } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { Theme } from "@/types/interfacesTheme";
 
 const store = useStore();
 
 const themes = computed<Theme[]>(() => store.getters[ 'theme/themes' ]);
+
 const currentTheme = ref<string>('');
+
+const actTheme = computed(() => {
+  return (themeName: string) => {
+    const theme: Theme = store.getters[ 'theme/theme' ];
+    if (theme.bgClr == undefined) {
+      return {
+        'act': themeName === currentTheme.value || String(theme.name) === themeName,
+      };
+    }
+  }
+});
 
 const selectedTheme = async (theme: Theme) => {
   currentTheme.value = theme.name
@@ -57,7 +69,7 @@ const selectedTheme = async (theme: Theme) => {
 
 <style lang="scss" scoped>
 .theme {
-  @apply mt-2 grid gap-4 justify-between;
+  @apply mt-2 mb-4 grid gap-4 justify-between;
   grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
 
   .selected {

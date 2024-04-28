@@ -30,6 +30,7 @@ exports.selectedTheme = (req, res, next) => {
         existingTheme.name = req.body.name;
         existingTheme.logo = req.body.logo;
         existingTheme.bgImg = req.body.bgImg;
+        existingTheme.bgClr = undefined;
         existingTheme.save()
           .then(() => res.status(200).json({ message: 'Theme updated successfully' }))
           .catch((err) => handleErrCatch(err, next));
@@ -46,5 +47,21 @@ exports.selectedTheme = (req, res, next) => {
           .catch((err) => handleErrCatch(err, next));
       }
     })
+    .catch((err) => handleErrCatch(err, next));
+};
+
+
+// UPDATE BACKGROUND COLOR
+exports.chnageBgclr = (req, res, next) => {
+  handleValidationErrors(req);
+  const color = req.body.hexClr;
+
+  Theme.findOne({ creator: req.userId })
+    .then((theme) => {
+      handleNotFound(theme, 'theme', next);
+      authorized(theme, req);
+      theme.bgClr = color;
+      return theme.save();
+    }).then(() => res.status(200).json({ message: 'Background color change successfully!!' }))
     .catch((err) => handleErrCatch(err, next));
 };

@@ -49,8 +49,19 @@
           <!-- LINKS -->
           <ul class="links">
             <li
-              class="duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out"
+              class="simo duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out scale-[.95]"
               :class="[ link.layout, theme.link || 'bg-white' ]"
+              :style="[
+                theme.link?.startsWith('link') ? '' :
+                  {
+                    backgroundColor: theme.link?.endsWith('line') ? '' : theme.linkClr,
+                    border: `1px solid ${theme.link?.endsWith('hard') ? theme.shadowlinkClr : theme.linkClr}`,
+                    color: theme.fontLinkClr,
+                    boxShadow:
+                      theme.link?.endsWith('hard') ? '4px 4px 0 0 ' + theme.shadowlinkClr : theme.link?.endsWith('soft') ? '0 4px 4px 0 ' + theme.shadowlinkClr : '',
+                  }
+              ]
+                "
               v-for="link in links"
               :key="link.id"
             >

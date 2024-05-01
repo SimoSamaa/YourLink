@@ -267,7 +267,7 @@ export default {
     const req = new XMLHttpRequest();
     req.open('PUT', `${URL_SERVER}upload-link-img/${payload.id}`);
     req.setRequestHeader('Authorization', `Bearer ${token}`);
-    req.upload.addEventListener('progress', (e: any) => {
+    req.upload.addEventListener('progress', (e) => {
       const percentComplete = parseInt((e.loaded / e.total * 100).toString());
       context.state.uploadProgress.progress = percentComplete;
       context.state.uploadProgress.id = payload.id;

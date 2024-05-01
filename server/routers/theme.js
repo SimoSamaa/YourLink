@@ -16,8 +16,23 @@ router.put('/change-bgClr',
   [
     body('hexClr')
       .isHexColor()
+      .isLength({ min: 4, max: 9 })
       .withMessage('Invalid color format')
   ]
   , isAuth, themeControllers.chnageBgclr);
+
+router.put('/link-style', isAuth, themeControllers.linkStyle);
+
+router.put('/link-change-clr',
+  [
+    body('colorLink')
+      .isHexColor()
+      .isLength({ min: 4, max: 9 })
+      .withMessage('Invalid color format')
+  ]
+  , isAuth, themeControllers.linkChangeclr);
+
+
+// link-change-clr
 
 module.exports = router;

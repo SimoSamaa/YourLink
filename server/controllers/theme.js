@@ -12,7 +12,6 @@ const {
 exports.getTheme = (req, res, next) => {
   Theme.findOne({ creator: req.userId })
     .then((theme) => {
-      handleNotFound(theme, 'theme', next);
       res.status(200).json({ message: 'Fetch theme', theme: theme });
     })
     .catch((err) => handleErrCatch(err, next));
@@ -31,6 +30,7 @@ exports.selectedTheme = (req, res, next) => {
         existingTheme.logo = req.body.logo;
         existingTheme.bgImg = req.body.bgImg;
         existingTheme.bgClr = undefined;
+        existingTheme.linkClr = undefined;
         existingTheme.save()
           .then(() => res.status(200).json({ message: 'Theme updated successfully' }))
           .catch((err) => handleErrCatch(err, next));
@@ -62,6 +62,35 @@ exports.chnageBgclr = (req, res, next) => {
       authorized(theme, req);
       theme.bgClr = color;
       return theme.save();
-    }).then(() => res.status(200).json({ message: 'Background color change successfully!!' }))
+    })
+    .then(() => res.status(200).json({ message: 'Background color change successfully!!' }))
+    .catch((err) => handleErrCatch(err, next));
+};
+
+exports.linkStyle = (req, res, next) => {
+  const linkStyle = req.body.linkStyle;
+
+  Theme.findOne({ creator: req.userId })
+    .then((theme) => {
+      handleNotFound(theme, 'theme', next);
+      authorized(theme, req);
+      theme.link = linkStyle;
+      return theme.save();
+    })
+    .then(() => res.status(200).json({ message: 'Link style change successfully!!' }))
+    .catch((err) => handleErrCatch(err, next));
+};
+
+exports.linkChangeclr = (req, res, next) => {
+  const colorLink = req.body.colorLink;
+
+  Theme.findOne({ creator: req.userId })
+    .then((theme) => {
+      handleNotFound(theme, 'theme', next);
+      authorized(theme, req);
+      theme.linkClr = colorLink;
+      return theme.save();
+    })
+    .then(() => res.status(200).json({ message: 'Background Link color change successfully!!' }))
     .catch((err) => handleErrCatch(err, next));
 };

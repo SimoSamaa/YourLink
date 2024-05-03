@@ -70,6 +70,7 @@ export default {
         dataIndex: linkData[ key ].dataIndex,
         isDisable: linkData[ key ].isDisable,
       }
+
       links.unshift(data)
     }
 
@@ -86,7 +87,9 @@ export default {
       headers.unshift(data)
     }
 
-    commit('SetFetchUserProfile', { info, links, headers });
+    const theme = res.user.theme;
+
+    commit('SetFetchUserProfile', { info, links, headers, theme });
   },
   async deleteUserAccount(context: any) {
     const userId = context.rootGetters[ 'auth/userId' ];

@@ -24,7 +24,9 @@ export default {
       logo: res.theme.logo,
       bgImg: res.theme.bgImg,
       bgClr: res.theme.bgClr,
-      linkClr: res.theme.linkClr
+      linkClr: res.theme.linkClr,
+      fontLinkClr: res.theme.fontLinkClr,
+      shadowlinkClr: res.theme.shadowlinkClr
     }
 
     context.commit('setSelectedTheme', theme);
@@ -48,9 +50,15 @@ export default {
     context.commit('setBackgroundLinkClr', payload);
   },
   async fontLinkClr(context: ActionContext<Commit, null>, payload: string) {
+    const token = context.rootGetters[ 'auth/token' ];
+    const [ req, res ] = await handleRequest<resType>('admin/link-font-clr', 'PUT', token, { linkFontClr: payload });
+    serverError(req, res, 'failed to change font link color');
     context.commit('setFontLinkClr', payload);
   },
   async shadowLinkClr(context: ActionContext<Commit, null>, payload: string) {
+    const token = context.rootGetters[ 'auth/token' ];
+    const [ req, res ] = await handleRequest<resType>('admin/link-shadow', 'PUT', token, { shadowlinkClr: payload });
+    serverError(req, res, 'failed to change shadow link color');
     context.commit('setShadowLinkClr', payload);
   }
 };

@@ -10,8 +10,9 @@ export default {
   setRemoveImgUser(state: { user: User }) {
     state.user.userImg = ''
   },
-  SetFetchUserProfile(state: any, { info, links, headers }: any) {
+  SetFetchUserProfile(state: any, { info, links, headers, theme }: any) {
     state.profileInfo = info;
+    state.theme = theme || {};
 
     state.profileLinks = links;
     state.profileLinks = state.profileLinks

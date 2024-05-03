@@ -7,7 +7,7 @@
       :openNavMobile="openNavMobile"
       @set-toggle-nav="handledToggleNav"
     />
-    <main class="py-5 pl-5 grid overflow-auto z-20">
+    <main class="py-5 pl-5 grid overflow-auto z-20 scroll-smooth">
       <!-- ADMIN PAGES -->
       <router-view
         v-slot="slotProps"

@@ -60,8 +60,7 @@
                     boxShadow:
                       theme.link?.endsWith('hard') ? '4px 4px 0 0 ' + theme.shadowlinkClr : theme.link?.endsWith('soft') ? '0 4px 4px 0 ' + theme.shadowlinkClr : '',
                   }
-              ]
-                "
+              ]"
               v-for="link in links"
               :key="link.id"
             >

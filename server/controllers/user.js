@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const Header = require('../models/header');
 const Link = require('../models/links');
+const Theme = require('../models/theme');
+
 const {
   handleErrCatch,
   handleNotFound,
@@ -78,6 +80,7 @@ exports.profilePage = (req, res, next) => {
   User.findOne({ username: name })
     .populate('links')
     .populate('headers')
+    .populate('theme')
     .then((user) => {
       handleNotFound(user, 'user', next);
 
@@ -86,7 +89,8 @@ exports.profilePage = (req, res, next) => {
         bio: user.bio,
         userImg: user.userImg,
         headers: user.headers,
-        links: user.links
+        links: user.links,
+        theme: user.theme
       };
 
       res.status(200)
@@ -114,7 +118,8 @@ exports.deleteAccount = (req, res, next) => {
           });
           return Promise.all([
             Header.deleteMany({ creator: deletedUserId }),
-            Link.deleteMany({ creator: deletedUserId })
+            Link.deleteMany({ creator: deletedUserId }),
+            Theme.deleteMany({ creator: deletedUserId })
           ]);
         })
         .then(() => {

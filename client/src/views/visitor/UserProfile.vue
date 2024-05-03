@@ -1,13 +1,14 @@
 <template>
   <section
     v-if="profileInfo"
-    class="pt-8 pb-[48.18px] px-4 mx-auto"
+    :class="[ 'pt-8 pb-[48.18px] px-4 mx-auto h-screen', theme.page || 'bg-base' ]"
+    :style="{ background: theme.bgClr }"
   >
-    <div class="bg-bg p-4 w-full fixed bottom-0 left-0">
+    <div class="p-4 w-full fixed bottom-0 left-0">
       <img
         src="@/assets/logo.webp"
         alt="logo"
-        class="w-24 mx-auto"
+        :class="[ 'w-24 mx-auto', theme.logo ]"
       >
     </div>
     <!-- PLACE HOLDER LOADING -->
@@ -28,7 +29,7 @@
       class="text-center mb-8 grid place-items-center"
     >
       <div
-        :class="!profileInfo.userImg ? 'bg-black2' : 'bg-transparent'"
+        :class="[ !profileInfo.userImg ? 'bg-black2' : 'bg-transparent', theme.bgImg || 'text-white' ]"
         class="border-border border-2 rounded-full text-white overflow-hidden grid place-content-center size-[150px]"
       >
         <img
@@ -74,10 +75,20 @@
       class="links max-w-[580px] w-[calc(100%-1rem)] mx-auto"
     >
       <li
-        class="bg-[#ddd] duration-150 transition-transform hover:scale-105 ease-out"
-        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]	' ]"
+        class="duration-150 transition-transform hover:scale-105 ease-out"
+        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]', theme.link || 'bg-white' ]"
         v-for=" link in profileLinks "
         :key="link.id"
+        :style="[
+          theme.link?.startsWith('link') ? '' :
+            {
+              backgroundColor: theme.link?.endsWith('line') ? '' : theme.linkClr,
+              border: `1px solid ${theme.link?.endsWith('hard') ? theme.shadowlinkClr : theme.linkClr}`,
+              color: theme.fontLinkClr,
+              boxShadow:
+                theme.link?.endsWith('hard') ? '4px 4px 0 0 ' + theme.shadowlinkClr : theme.link?.endsWith('soft') ? '0 4px 4px 0 ' + theme.shadowlinkClr : '',
+            }
+        ]"
       >
         <a
           :href="link.link"
@@ -100,7 +111,9 @@
           </div>
           <div class="pos-end font-semibold">{{ link.title }}</div>
           <div class="pos-end">
-            <div class="bg-bg rounded-full size-8 grid place-content-center">
+            <div
+              class="rounded-full size-8 grid place-content-center duration-300 ease-out hover:backdrop-contrast-[.8]"
+            >
               <appIcon
                 name="more"
                 size="20px"
@@ -117,6 +130,7 @@
 import { ref, computed, onMounted, PropType } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { Theme } from '@/types/interfacesTheme';
 
 const store = useStore();
 const router = useRouter();
@@ -131,6 +145,7 @@ const APP_URL = ref(process.env.VUE_APP_URL);
 const profileInfo = computed(() => store.getters[ "user/profileInfo" ]);
 const profileLinks = computed(() => store.getters[ "user/profileLinks" ]);
 const profileHeaders = computed(() => store.getters[ "user/profileHeaders" ]);
+const theme = computed<Theme>(() => store.getters[ 'user/theme' ]);
 
 const fetchUserProfile = async (username: string | undefined) => {
   isLoading.value = true;
@@ -146,7 +161,6 @@ const fetchUserProfile = async (username: string | undefined) => {
 
 onMounted(() => fetchUserProfile(props.username));
 </script>
-
 
 <style scoped lang="scss">
 .featured {

@@ -1,13 +1,16 @@
 <template>
   <div class="base-card-style theme">
     <div class="selected">
-      <button class="selected-theme p-2 border-black2 border-2">
+      <a
+        href="#custom-section"
+        class="selected-theme p-2 border-black2 border-2 block"
+      >
         <div
           class="border-dotted border-black2 border-2 h-full rounded-lg grid place-content-center font-semibold text-lg p-4"
         >
           CREATE YOUR OWN
         </div>
-      </button>
+      </a>
       <p class="bg-test font-semibold">Custom</p>
     </div>
     <div
@@ -36,29 +39,31 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import { Theme } from "@/types/interfacesTheme";
 
 const store = useStore();
 
-const themes = computed<Theme[]>(() => store.getters[ 'theme/themes' ]);
+const props = defineProps<{ checkTheme: boolean }>();
+const emit = defineEmits([ 'set-selectedTheme' ]);
 
-const currentTheme = ref<string>('');
+const themes = computed<Theme[]>(() => store.getters[ 'theme/themes' ]);
 
 const actTheme = computed(() => {
   return (themeName: string) => {
     const theme: Theme = store.getters[ 'theme/theme' ];
-    if (theme.bgClr == undefined) {
+    if ((theme.bgClr == undefined || theme.name === 'custom mode') && props.checkTheme) {
       return {
-        'act': themeName === currentTheme.value || String(theme.name) === themeName,
+        'act': String(theme.name) === themeName,
       };
     }
   }
 });
 
 const selectedTheme = async (theme: Theme) => {
-  currentTheme.value = theme.name
+  emit('set-selectedTheme');
+
   try {
     await store.dispatch('theme/selectedTheme', { ...theme });
   } catch (err) {

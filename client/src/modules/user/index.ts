@@ -4,6 +4,7 @@ import userhGetters from './getters';
 import { User } from '@/types/interfacesAuth';
 import { Link } from '@/types/interfacesLink';
 import { HeaderWithId } from '@/types/interfacesHeader';
+import { Theme } from '@/types/interfacesTheme';
 
 export default {
   namespaced: true,
@@ -11,6 +12,7 @@ export default {
     return {
       user: {} as User,
       profileInfo: {} as User,
+      theme: {} as Theme | null,
       profileLinks: [] as Link[],
       profileHeaders: [] as HeaderWithId[],
     }

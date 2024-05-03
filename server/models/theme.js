@@ -19,6 +19,8 @@ const themeSchema = new Schema({
   bgImg: String,
   bgClr: String,
   linkClr: String,
+  fontLinkClr: String,
+  shadowlinkClr: String,
   creator: {
     type: Schema.Types.ObjectId,
     ref: 'User',

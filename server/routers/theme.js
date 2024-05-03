@@ -32,7 +32,22 @@ router.put('/link-change-clr',
   ]
   , isAuth, themeControllers.linkChangeclr);
 
+router.put('/link-font-clr',
+  [
+    body('linkFontClr')
+      .isHexColor()
+      .isLength({ min: 4, max: 9 })
+      .withMessage('Invalid color format')
+  ]
+  , isAuth, themeControllers.linkChangeFontclr);
 
-// link-change-clr
+router.put('/link-shadow',
+  [
+    body('shadowlinkClr')
+      .isHexColor()
+      .isLength({ min: 4, max: 9 })
+      .withMessage('Invalid color format')
+  ]
+  , isAuth, themeControllers.linkChangeShadowClr);
 
 module.exports = router;

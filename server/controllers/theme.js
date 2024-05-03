@@ -31,6 +31,8 @@ exports.selectedTheme = (req, res, next) => {
         existingTheme.bgImg = req.body.bgImg;
         existingTheme.bgClr = undefined;
         existingTheme.linkClr = undefined;
+        existingTheme.fontLinkClr = undefined;
+        existingTheme.shadowlinkClr = undefined;
         existingTheme.save()
           .then(() => res.status(200).json({ message: 'Theme updated successfully' }))
           .catch((err) => handleErrCatch(err, next));
@@ -75,6 +77,7 @@ exports.linkStyle = (req, res, next) => {
       handleNotFound(theme, 'theme', next);
       authorized(theme, req);
       theme.link = linkStyle;
+      theme.name = 'custom mode';
       return theme.save();
     })
     .then(() => res.status(200).json({ message: 'Link style change successfully!!' }))
@@ -82,15 +85,43 @@ exports.linkStyle = (req, res, next) => {
 };
 
 exports.linkChangeclr = (req, res, next) => {
-  const colorLink = req.body.colorLink;
+  const color = req.body.colorLink;
 
   Theme.findOne({ creator: req.userId })
     .then((theme) => {
       handleNotFound(theme, 'theme', next);
       authorized(theme, req);
-      theme.linkClr = colorLink;
+      theme.linkClr = color;
       return theme.save();
     })
     .then(() => res.status(200).json({ message: 'Background Link color change successfully!!' }))
+    .catch((err) => handleErrCatch(err, next));
+};
+
+exports.linkChangeFontclr = (req, res, next) => {
+  color = req.body.linkFontClr;
+
+  Theme.findOne({ creator: req.userId })
+    .then((theme) => {
+      handleNotFound(theme, 'theme', next);
+      authorized(theme, req);
+      theme.fontLinkClr = color;
+      return theme.save();
+    })
+    .then(() => res.status(200).json({ message: 'Font Link color change successfully!!' }))
+    .catch((err) => handleErrCatch(err, next));
+};
+
+exports.linkChangeShadowClr = (req, res, next) => {
+  const color = req.body.shadowlinkClr;
+
+  Theme.findOne({ creator: req.userId })
+    .then((theme) => {
+      handleNotFound(theme, 'theme', next);
+      authorized(theme, req);
+      theme.shadowlinkClr = color;
+      return theme.save();
+    })
+    .then(() => res.status(200).json({ message: 'Shadow Link color change successfully!!' }))
     .catch((err) => handleErrCatch(err, next));
 };

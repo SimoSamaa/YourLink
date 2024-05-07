@@ -51,16 +51,7 @@
             <li
               class="simo duration-150 transition-transform hover:scale-105 hover:rounded-none ease-out scale-[.95]"
               :class="[ link.layout, theme.link || 'bg-white' ]"
-              :style="[
-                theme.link?.startsWith('link') ? '' :
-                  {
-                    backgroundColor: theme.link?.endsWith('line') ? '' : theme.linkClr,
-                    border: `1px solid ${theme.link?.endsWith('hard') ? theme.shadowlinkClr : theme.linkClr}`,
-                    color: theme.fontLinkClr,
-                    boxShadow:
-                      theme.link?.endsWith('hard') ? '4px 4px 0 0 ' + theme.shadowlinkClr : theme.link?.endsWith('soft') ? '0 4px 4px 0 ' + theme.shadowlinkClr : '',
-                  }
-              ]"
+              :style="linkStyle(theme)"
               v-for="link in links"
               :key="link.id"
             >
@@ -111,8 +102,10 @@ import { HeaderLinks } from "@/types/interfacesHeader";
 import { Link } from "@/types/interfacesLink";
 import { User } from "@/types/interfacesAuth";
 import { Theme } from "@/types/interfacesTheme";
+import { linkTheme } from '@/hooks/helpers';
 
 const store = useStore();
+const linkStyle = linkTheme();
 
 const APP_URL = ref(process.env.VUE_APP_URL);
 

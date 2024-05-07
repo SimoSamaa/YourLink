@@ -1,4 +1,6 @@
-import { ref } from 'vue';
+import { Ref, ref, computed } from 'vue';
+import { Theme } from '@/types/interfacesTheme';
+
 const URL_SERVER = process.env.VUE_APP_URL;
 
 function useInputType() {
@@ -16,8 +18,53 @@ function useInputType() {
     }
   }
 
-  return [ showPass, checkInputType ]
-}
+  return [ showPass, checkInputType ];
+};
+
+interface CopyLinkHookResult {
+  copyLink: (username: string) => void;
+  alert: Ref<boolean>;
+};
+
+function useCopyLink(): CopyLinkHookResult {
+  const alert = ref<boolean>(false);
+  let alertTime: number;
+
+  const copyLink = (username: string) => {
+    const url = `${window.location.origin}/${username}`;
+    const input = document.createElement("input");
+    input.setAttribute("value", url);
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
+    alert.value = true;
+    clearTimeout(alertTime);
+    alertTime = setTimeout(() => alert.value = false, 2000);
+  };
+
+  return { copyLink, alert };
+};
+
+function linkTheme() {
+  const linkStyle = computed(() => {
+    return (theme: Theme) => {
+      return [
+        theme.link?.startsWith('link') ? '' :
+          {
+            backgroundColor: theme.link?.endsWith('line') ? '' : theme.linkClr,
+            border: `1px solid ${theme.link?.endsWith('hard') ? theme.shadowlinkClr : theme.linkClr}`,
+            color: theme.fontLinkClr,
+            boxShadow:
+              theme.link?.endsWith('hard') ? '4px 4px 0 0 ' +
+                theme.shadowlinkClr : theme.link?.endsWith('soft') ? '0 4px 4px 0 ' + theme.shadowlinkClr : '',
+          }
+      ]
+    }
+  });
+
+  return linkStyle;
+};
 
 function serverError(req: Response, res: { message: string }, messErr: string) {
   if (!req.ok) {
@@ -59,4 +106,4 @@ async function handleRequest<T>
   return [ req, res ];
 }
 
-export { useInputType, serverError, handleRequest }
+export { useInputType, serverError, handleRequest, linkTheme, useCopyLink };

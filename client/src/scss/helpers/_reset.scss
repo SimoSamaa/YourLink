@@ -31,7 +31,7 @@ body {
     @apply text-xl text-left
   }
 
-  svg:not(.spinner) {
+  svg:not(.spinner, .snapchat) {
     @apply w-6 h-6 stroke-current stroke-[1.5px];
   }
 

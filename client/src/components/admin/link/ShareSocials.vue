@@ -27,7 +27,7 @@ const profileName = computed<string>(() =>
   store.getters[ "user/user" ].username
 );
 
-const appOriginUrl = 'https://front-olive-seven.vercel.app/' + profileName.value;
+const appOriginUrl = `${window.location.origin}/${profileName.value}`;
 
 const shareMessages = encodeURIComponent("I've just updated my YOURLINK with my latest content - check it out here!");
 

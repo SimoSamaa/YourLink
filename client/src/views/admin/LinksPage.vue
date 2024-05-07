@@ -23,7 +23,7 @@
         <p>Share YourLink to your socials</p>
         <base-button
           mode="white-btn"
-          @click="copyLink"
+          @click="copyLink(user.username)"
           class="max-[650px]:flex-1"
         >copy link</base-button>
       </div>
@@ -218,6 +218,7 @@ import { Link } from "@/types/interfacesLink";
 import BaseActionHover from "@/components/UI/BaseActionHover.vue";
 import AddThumbnail from "@/components/admin/link/AddThumbnail.vue";
 import AddLink from "@/components/admin/link/AddLink.vue";
+import { useCopyLink } from '@/hooks/helpers';
 
 const store = useStore();
 
@@ -253,24 +254,8 @@ const linkPage = ref<boolean>(false);
 const id = ref<string>("");
 const thumbnail = ref<boolean>(false);
 const processing = ref<boolean>(false);
-const alert = ref<boolean>(false);
 
-// FUNCTION TO COPY LINK USER PROFILE
-let alertTime: number;
-const copyLink = () => {
-  const username = user.value.username;
-  const url = `${window.location.origin}/${username}`;
-  const input = document.createElement("input");
-  input.setAttribute("value", url);
-  document.body.appendChild(input);
-  input.select();
-  document.execCommand("copy");
-  document.body.removeChild(input);
-  alert.value = true;
-  clearTimeout(alertTime);
-  alertTime = setTimeout(() => alert.value = false, 2000);
-};
-
+const { copyLink, alert } = useCopyLink();
 const closeModal = () => alert.value = false;
 
 // ADD LINK (PAGE)

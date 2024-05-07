@@ -73,22 +73,22 @@ export default {
         [
           { fill: 'rounded-none bg-black2' },
           { fill: 'rounded-md bg-black2' },
-          { fill: 'rounded-full bg-black2' }
+          { fill: 'rounded-3xl bg-black2' }
         ],
         [
           { outline: 'rounded-none border-black2 border line' },
           { outline: 'rounded-md border-black2 border line' },
-          { outline: 'rounded-full border-black2 border line' }
+          { outline: 'rounded-3xl border-black2 border line' }
         ],
         [
           { softShadow: 'rounded-none shadow-[0_4px_4px_0_rgb(0,0,0,0.16)] soft' },
           { softShadow: 'rounded-md shadow-[0_4px_4px_0_rgb(0,0,0,0.16)] soft' },
-          { softShadow: 'rounded-full shadow-[0_4px_4px_0_rgb(0,0,0,0.16)] soft' }
+          { softShadow: 'rounded-3xl shadow-[0_4px_4px_0_rgb(0,0,0,0.16)] soft' }
         ],
         [
           { hardShadow: 'rounded-none border-black2 border shadow-[4px_4px_0_0_black] hard' },
           { hardShadow: 'rounded-md border-black2 border shadow-[4px_4px_0_0_black] hard' },
-          { hardShadow: 'rounded-full border-black2 border shadow-[4px_4px_0_0_black] hard' }
+          { hardShadow: 'rounded-3xl border-black2 border shadow-[4px_4px_0_0_black] hard' }
         ],
       ] as LinksStyleArray,
       theme: {} as Theme

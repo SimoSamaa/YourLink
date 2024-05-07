@@ -1,9 +1,54 @@
 <template>
+  <ProfileSocialmedia
+    :toggleShareLink
+    :linkId
+    :name=profileInfo.username
+    @set-closeShareLink="closeShareLink()"
+  />
+  <base-modal
+    :showing="alert"
+    mess="Link copied to clipboard!"
+    statuse="border-l-green-400"
+    @set-close-modal="closeModal()"
+  ></base-modal>
   <section
     v-if="profileInfo"
-    :class="[ 'pt-8 pb-[48.18px] px-4 mx-auto h-screen', theme.page || 'bg-base' ]"
+    :class="[ 'pt-8 pb-[48.18px] px-4 mx-auto min-h-screen', theme.page || 'bg-base' ]"
     :style="{ background: theme.bgClr }"
   >
+    <div
+      :class="[ 'nav fixed top-4 left-1/2 -translate-x-1/2 max-w-[580px] w-[calc(100%-1rem)] p-3 rounded-full flex items-center justify-between  duration-300 ease-out transition-all', { 'activeNav': activeNav } ]"
+    >
+      <div
+        :class="[ !profileInfo.userImg ? 'bg-black2' : 'bg-transparent', theme.bgImg || 'text-white' ]"
+        class="border-border border-2 rounded-full overflow-hidden grid place-content-center size-[44px]"
+      >
+        <img
+          v-if="profileInfo.userImg"
+          class="size-[150px] object-cover object-center"
+          :src="APP_URL + profileInfo.userImg"
+          alt="user-img"
+        />
+        <p
+          v-else
+          class="font-semibold text-md"
+        >
+          {{ (profileInfo.username as string)?.charAt(0).toUpperCase() }}
+        </p>
+      </div>
+
+      <div :class="[ 'bg-transparent font-semibold', theme.bgImg ]">{{ profileInfo.username }}</div>
+
+      <button
+        @click="copyLink(profileInfo.username)"
+        :class="[ 'size-[40px] rounded-full grid place-content-center active:scale-95', theme.bgImg ]"
+      >
+        <appIcon
+          name="link"
+          size="20px"
+        />
+      </button>
+    </div>
     <div class="p-4 w-full fixed bottom-0 left-0">
       <img
         src="@/assets/logo.webp"
@@ -30,7 +75,7 @@
     >
       <div
         :class="[ !profileInfo.userImg ? 'bg-black2' : 'bg-transparent', theme.bgImg || 'text-white' ]"
-        class="border-border border-2 rounded-full text-white overflow-hidden grid place-content-center size-[150px]"
+        class="border-border border-2 rounded-full overflow-hidden grid place-content-center size-[150px]"
       >
         <img
           v-if="profileInfo.userImg"
@@ -74,27 +119,21 @@
       v-else
       class="links max-w-[580px] w-[calc(100%-1rem)] mx-auto"
     >
+      <div
+        v-if="currentLink && sharedLink(String($route.query.id))"
+        class="fixed inset-0 bg-black bg-opacity-50"
+      ></div>
       <li
-        class="duration-150 transition-transform hover:scale-105 ease-out"
-        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]', theme.link || 'bg-white' ]"
+        class="duration-150 transition-transform hover:scale-105 ease-out cursor-pointer select-none"
+        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]', theme.link || 'bg-white', sharedLink(link.id) ]"
         v-for=" link in profileLinks "
         :key="link.id"
-        :style="[
-          theme.link?.startsWith('link') ? '' :
-            {
-              backgroundColor: theme.link?.endsWith('line') ? '' : theme.linkClr,
-              border: `1px solid ${theme.link?.endsWith('hard') ? theme.shadowlinkClr : theme.linkClr}`,
-              color: theme.fontLinkClr,
-              boxShadow:
-                theme.link?.endsWith('hard') ? '4px 4px 0 0 ' + theme.shadowlinkClr : theme.link?.endsWith('soft') ? '0 4px 4px 0 ' + theme.shadowlinkClr : '',
-            }
-        ]"
+        :style="linkStyle(theme)"
       >
         <a
-          :href="link.link"
-          target="_blank"
           class="py-4 px-5 h-full"
           :class="{ 'flex items-center': link.layout === 'classic' }"
+          @click.prevent="handleLinkClick($event, link.link, link.id)"
         >
           <div>
             <box-icon
@@ -112,11 +151,12 @@
           <div class="pos-end font-semibold">{{ link.title }}</div>
           <div class="pos-end">
             <div
-              class="rounded-full size-8 grid place-content-center duration-300 ease-out hover:backdrop-contrast-[.8]"
+              class="more rounded-full size-8 grid place-content-center duration-300 ease-out hover:backdrop-brightness-[.8]"
             >
               <appIcon
                 name="more"
                 size="20px"
+                class="pointer-events-none"
               />
             </div>
           </div>
@@ -127,25 +167,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, PropType } from "vue";
+import { ref, computed, onMounted, PropType, defineAsyncComponent } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { Theme } from '@/types/interfacesTheme';
+import { linkTheme } from '@/hooks/helpers';
+import { useCopyLink } from '@/hooks/helpers';
+
+const ProfileSocialmedia = defineAsyncComponent({
+  loader: () => import('@/components/ProfileSocialmedia.vue'),
+  delay: 200,
+  timeout: 3000
+});
 
 const store = useStore();
 const router = useRouter();
+const route = useRoute();
+const linkStyle = linkTheme();
+const { copyLink, alert } = useCopyLink();
 
 const props = defineProps({
   username: String as PropType<string>,
 });
 
-const isLoading = ref(false);
-const APP_URL = ref(process.env.VUE_APP_URL);
+const isLoading = ref<boolean>(false);
+const toggleShareLink = ref<boolean>(false);
+const APP_URL = ref<string>(process.env.VUE_APP_URL);
+const currentLink = ref<boolean>(false);
+const linkId = ref<string>('');
+const activeNav = ref<boolean>(false)
 
 const profileInfo = computed(() => store.getters[ "user/profileInfo" ]);
 const profileLinks = computed(() => store.getters[ "user/profileLinks" ]);
 const profileHeaders = computed(() => store.getters[ "user/profileHeaders" ]);
 const theme = computed<Theme>(() => store.getters[ 'user/theme' ]);
+
+const closeModal = () => alert.value = false;
+
+const closeShareLink = () => {
+  toggleShareLink.value = !toggleShareLink.value;
+  document.body.style.overflow = String(toggleShareLink.value ? 'hidden' : 'auto');
+};
+
+const handleLinkClick = (e: Event, href: string, id: string) => {
+  if ((e.target as HTMLElement).classList.contains('more')) {
+    closeShareLink();
+    linkId.value = id;
+  } else {
+    window.open(href, '_blank');
+  }
+};
 
 const fetchUserProfile = async (username: string | undefined) => {
   isLoading.value = true;
@@ -159,13 +230,41 @@ const fetchUserProfile = async (username: string | undefined) => {
   }
 };
 
-onMounted(() => fetchUserProfile(props.username));
+const sharedLink = computed(() => (id: string) => route.query.id === id ? { 'current-link': currentLink.value } : '');
+
+onMounted(() => {
+  fetchUserProfile(props.username);
+  setTimeout(() => currentLink.value = true, 1000);
+  setTimeout(() => currentLink.value = false, 2000);
+
+  window.addEventListener('scroll', () => {
+    Math.round(scrollY) >= 240 ? activeNav.value = true : Math.round(scrollY) === 0 ? activeNav.value = false : null;
+  });
+});
 </script>
 
 <style scoped lang="scss">
 .featured {
   .pos-end {
     @apply flex items-end
+  }
+}
+
+.current-link {
+  @apply scale-105 transition-transform duration-1000 ease-out;
+}
+
+.nav {
+  &.activeNav {
+    @apply bg-[#ffffff80] border-[1px] border-[#ebeef1] backdrop-blur-sm;
+  }
+
+  & div:is(:nth-child(1), :nth-child(2)) {
+    @apply opacity-0;
+  }
+
+  &.activeNav div:is(:nth-child(1), :nth-child(2)) {
+    @apply opacity-100;
   }
 }
 </style>

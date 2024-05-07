@@ -7,7 +7,7 @@
     <div class="px-10 py-8">
       <router-link to="/">
         <img
-          src="../../assets/logo.webp"
+          src="@/assets/logo.webp"
           alt="logo"
           id="logo"
         />

@@ -28,3 +28,26 @@ app.use(store);
 app.use(router);
 
 app.mount('#app');
+
+
+const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme:light)");
+const favicon = document.createElement('link');
+favicon.rel = 'icon';
+document.head.appendChild(favicon);
+
+function handledFaviconMode(e: MediaQueryListEvent) {
+  if (e.matches) {
+    favicon.href = require('@/assets/icon.png')
+  } else {
+    favicon.href = require('@/assets/icon-l.png')
+  }
+};
+
+handledFaviconMode(
+  Object.create(null, {
+    currentTarget: {
+      value: darkModeMediaQuery,
+    },
+  })
+);
+darkModeMediaQuery.addListener(handledFaviconMode);

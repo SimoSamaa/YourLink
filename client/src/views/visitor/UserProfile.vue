@@ -17,6 +17,7 @@
     :style="{ background: theme.bgClr }"
   >
     <div
+      v-if="!isLoading"
       :class="[ 'nav fixed top-4 left-1/2 -translate-x-1/2 max-w-[580px] w-[calc(100%-1rem)] p-3 rounded-full flex items-center justify-between  duration-300 ease-out transition-all', { 'activeNav': activeNav } ]"
     >
       <div

@@ -42,7 +42,7 @@
 
       <button
         @click="copyLink(profileInfo.username)"
-        :class="[ 'size-[40px] rounded-full grid place-content-center active:scale-95', theme.bgImg ]"
+        :class="[ 'size-[40px] rounded-full grid place-content-center active:scale-95 bg-black2 text-white', theme.bgImg ]"
       >
         <appIcon
           name="link"
@@ -126,7 +126,7 @@
       ></div>
       <li
         class="duration-150 transition-transform hover:scale-105 ease-out cursor-pointer select-none"
-        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]', theme.link || 'bg-white', sharedLink(link.id) ]"
+        :class="[ link.layout, link.layout === 'classic' ? 'h-[56px]' : 'aspect-[2/1]', theme.link || 'bg-white', sharedLink(String(link.id)) ]"
         v-for=" link in profileLinks "
         :key="link.id"
         :style="linkStyle(theme)"
@@ -134,7 +134,7 @@
         <a
           class="py-4 px-5 h-full"
           :class="{ 'flex items-center': link.layout === 'classic' }"
-          @click.prevent="handleLinkClick($event, link.link, link.id)"
+          @click.prevent="handleLinkClick($event, link.link, String(link.id))"
         >
           <div>
             <box-icon
@@ -174,6 +174,9 @@ import { useRouter, useRoute } from "vue-router";
 import { Theme } from '@/types/interfacesTheme';
 import { linkTheme } from '@/hooks/helpers';
 import { useCopyLink } from '@/hooks/helpers';
+import { Link } from '@/types/interfacesLink';
+import { HeaderWithId } from '@/types/interfacesHeader';
+import { User } from '@/types/interfacesAuth';
 
 const ProfileSocialmedia = defineAsyncComponent({
   loader: () => import('@/components/ProfileSocialmedia.vue'),
@@ -193,14 +196,14 @@ const props = defineProps({
 
 const isLoading = ref<boolean>(false);
 const toggleShareLink = ref<boolean>(false);
-const APP_URL = ref<string>(process.env.VUE_APP_URL);
+const APP_URL = ref<string>(String(process.env.VUE_APP_URL));
 const currentLink = ref<boolean>(false);
 const linkId = ref<string>('');
 const activeNav = ref<boolean>(false)
 
-const profileInfo = computed(() => store.getters[ "user/profileInfo" ]);
-const profileLinks = computed(() => store.getters[ "user/profileLinks" ]);
-const profileHeaders = computed(() => store.getters[ "user/profileHeaders" ]);
+const profileInfo = computed<User>(() => store.getters[ "user/profileInfo" ]);
+const profileLinks = computed<Link[]>(() => store.getters[ "user/profileLinks" ]);
+const profileHeaders = computed<HeaderWithId[]>(() => store.getters[ "user/profileHeaders" ]);
 const theme = computed<Theme>(() => store.getters[ 'user/theme' ]);
 
 const closeModal = () => alert.value = false;

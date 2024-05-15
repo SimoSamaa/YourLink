@@ -1,6 +1,7 @@
 // LINK TYPE
 interface Link {
-  id: string
+  id?: string;
+  _id?: string;
   title: string;
   link: string,
   dataIndex: number;

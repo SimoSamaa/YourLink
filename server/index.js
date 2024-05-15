@@ -8,6 +8,7 @@ const linsk = require('./routers/links');
 const theme = require('./routers/theme');
 const auth = require('./routers/auth');
 const user = require('./routers/user');
+const { METHODS } = require('http');
 
 const app = express();
 
@@ -45,7 +46,12 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGO_DB)
   .then(() => {
-    app.listen(process.env.PORT || 2024);
+    const server = app.listen(process.env.PORT || 2024);
+    const io = require('./middleware/socket').init(server);
+
+    io.on('connection', Socket => {
+      console.log('client connected');
+    });
   })
   .catch((err) => {
     console.log('YOUR-LINK', err);

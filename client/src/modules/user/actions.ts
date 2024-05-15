@@ -1,8 +1,23 @@
 import { ActionContext } from 'vuex';
 import { serverError, handleRequest } from '@/hooks/helpers';
+import openSocket from 'socket.io-client';
 import { User } from '@/types/interfacesAuth';
+import { Theme } from '@/types/interfacesTheme';
+import { Link } from '@/types/interfacesLink';
+import { HeaderWithId } from '@/types/interfacesHeader';
 
 type resType = { message: string, user: User };
+type ProfileData = {
+  message: string,
+  user: {
+    username: string,
+    userImg: string,
+    bio: string,
+    theme: Theme,
+    headers: HeaderWithId[],
+    links: Link[]
+  }
+};
 
 export default {
   async fetchUser(context: ActionContext<{ user: User }, any>) {
@@ -21,7 +36,6 @@ export default {
       userImg: userImg,
       createdAt: res.user.createdAt
     }
-
     context.commit('setUser', user);
   },
   async updateProfil(context: ActionContext<{ user: User }, any>, payload: User) {
@@ -49,8 +63,8 @@ export default {
 
     context.commit('setRemoveImgUser');
   },
-  async fetchUserProfile({ commit }: any, payload: any) {
-    const [ req, res ] = await handleRequest<any>(payload, null, null, null);
+  async fetchUserProfile({ commit, rootGetters }: ActionContext<any, any>, payload: string) {
+    const [ req, res ] = await handleRequest<ProfileData>(payload, null, null, null);
     serverError(req, res, res.message);
     const info = {
       username: res.user.username,
@@ -59,9 +73,9 @@ export default {
     }
 
     const linkData = res.user.links;
-    const links: any = []
+    const links: Link[] = []
     for (const key in linkData) {
-      const data = {
+      const data: Link = {
         id: linkData[ key ]._id,
         title: linkData[ key ].title,
         link: linkData[ key ].link,
@@ -75,9 +89,9 @@ export default {
     }
 
     const headerData = res.user.headers;
-    const headers: any = []
+    const headers: HeaderWithId[] = []
     for (const key in headerData) {
-      const data = {
+      const data: HeaderWithId = {
         id: headerData[ key ]._id,
         title: headerData[ key ].title,
         dataIndex: headerData[ key ].dataIndex,
@@ -87,11 +101,30 @@ export default {
       headers.unshift(data)
     }
 
-    const theme = res.user.theme;
+    const theme: Theme = res.user.theme;
+    const isAuth = rootGetters[ 'auth/isAuth' ];
+    if (isAuth) {
+      const socket = openSocket(String(`${process.env.VUE_APP_URL}`));
+      socket.on('link', (data) => {
+        if (data.action === 'create') {
+          commit('setLinkRealTime', {
+            id: data.link._id,
+            title: data.link.title,
+            link: data.link.link,
+            layout: data.link.layout,
+            icon: data.link.icon,
+            dataIndex: data.link.dataIndex,
+            isDisable: data.link.isDisable,
+          });
+        } else if (data.action === 'delete') {
+          commit('setDeleteLinkRealTime', data.deleteLinkId);
+        }
+      })
+    }
 
     commit('SetFetchUserProfile', { info, links, headers, theme });
   },
-  async deleteUserAccount(context: any) {
+  async deleteUserAccount(context: ActionContext<any, any>) {
     const userId = context.rootGetters[ 'auth/userId' ];
     const token = context.rootGetters[ 'auth/token' ];
     const [ req, res ] = await handleRequest<resType>(`delete-account/${userId}`, 'DELETE', token, null);

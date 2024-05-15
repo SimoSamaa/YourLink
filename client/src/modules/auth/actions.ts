@@ -5,7 +5,7 @@ import { ActionContext, Commit, Dispatch } from 'vuex';
 type ContextType = { commit: Commit, dispatch: Dispatch };
 type ResType = { message: string, token: string, userId: string, expiresIn: number };
 
-let timer: number | undefined;
+let timer: number | NodeJS.Timeout;
 
 export default {
   async signup(_context: ActionContext<any, any>, payload: Signup) {

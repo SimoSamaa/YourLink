@@ -50,7 +50,7 @@ export default {
     updateLinkProperty(state, { id: payload.id, property: 'isDisable', value: payload.isDisable });
   },
   setUpdateLayout(state: { links: Link[] }, payload: Link) {
-    updateLinkProperty(state, { id: payload.id, property: 'layout', value: payload.layout });
+    updateLinkProperty(state, { id: String(payload.id), property: 'layout', value: payload.layout });
   },
   setUpdateChooseBoxicon(state: { links: Link[] }, payload: { id: string; icon: string }) {
     updateLinkProperty(state, { id: payload.id, property: 'icon', value: payload.icon });

@@ -5,7 +5,8 @@ interface Header {
 };
 
 interface HeaderWithId extends Header {
-  id: string;
+  id?: string;
+  _id?: string;
 }
 
 interface HeaderLinks extends Header {

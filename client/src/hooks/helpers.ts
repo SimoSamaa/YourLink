@@ -28,7 +28,7 @@ interface CopyLinkHookResult {
 
 function useCopyLink(): CopyLinkHookResult {
   const alert = ref<boolean>(false);
-  let alertTime: number;
+  let alertTime: number | NodeJS.Timeout;
 
   const copyLink = (username: string) => {
     const url = `${window.location.origin}/${username}`;

@@ -1,5 +1,6 @@
 const Link = require('../models/links');
 const User = require('../models/user');
+const io = require('../middleware/socket');
 
 const {
   handleErrCatch,
@@ -42,6 +43,7 @@ exports.createLink = (req, res, next) => {
 
   myLink.save()
     .then(() => {
+      io.getIo().emit('link', { action: 'create', link: myLink });
       return User.findById(req.userId);
     })
     .then((user) => {
@@ -76,6 +78,7 @@ exports.deleteLink = (req, res, next) => {
       return User.findById(req.userId);
     })
     .then((user) => {
+      io.getIo().emit('link', { action: 'delete', deleteLinkId: deletedLinkId });
       user.links.pull(deletedLinkId);
       return user.save();
     })
